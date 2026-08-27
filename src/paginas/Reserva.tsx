@@ -245,6 +245,7 @@ export function Reserva() {
         <BarraSesion
           perfil={contexto.perfil}
           alSalir={salir}
+          sede={cafeteria?.nombre}
           volver={contexto.perfil.rol === 'admin'
             ? { a: '/', texto: '← Todas las cafeterías' }
             : undefined}

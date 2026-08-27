@@ -23,20 +23,40 @@ interface Props {
   alSalir: () => void;
   /** A dónde vuelve esta pantalla, si vuelve a alguna parte. */
   volver?: { a: string; texto: string } | undefined;
+  /**
+   * El nombre de la sede, cuando la pantalla lo sabe.
+   *
+   * No se saca de `perfil.cafeteriaId`, que es el slug: «camilo-torres» en
+   * una barra de sesión se lee como un error, no como un dato. Lo pasa quien
+   * ya tiene la cafetería cargada.
+   */
+  sede?: string | undefined;
 }
 
-export function BarraSesion({ perfil, alSalir, volver }: Props) {
+export function BarraSesion({ perfil, alSalir, volver, sede }: Props) {
   return (
     <div className="barra-sesion">
-      {volver
-        ? <Link className="enlace-volver" to={volver.a}>{volver.texto}</Link>
-        : <span className="enlace-volver enlace-volver--inerte" aria-hidden="true" />}
+      {/*
+        Sin hueco reservado cuando no hay a dónde volver. Antes había un
+        `visibility: hidden` que seguía ocupando ancho: en un móvil eso es una
+        columna entera gastada en nada, y empujaba el resto hasta descuadrarlo.
+        `.barra-sesion__quien` lleva `margin-left: auto`, así que la fila queda
+        igual de bien con enlace y sin él.
+      */}
+      {volver && <Link className="enlace-volver" to={volver.a}>{volver.texto}</Link>}
 
       <span className="barra-sesion__quien">
         {/* `nombre` puede estar vacío: no es obligatorio en `perfil`. Entonces
             manda el rol, que nunca lo está. */}
-        {perfil.nombre || NOMBRE_ROL[perfil.rol] || 'Sesión'}
-        <span className="barra-sesion__rol">{NOMBRE_ROL[perfil.rol] ?? perfil.rol}</span>
+        <span className="barra-sesion__nombre">
+          {perfil.nombre || NOMBRE_ROL[perfil.rol] || 'Sesión'}
+        </span>
+        <span className="barra-sesion__rol">
+          {NOMBRE_ROL[perfil.rol] ?? perfil.rol}
+          {/* La sede es la mitad que de verdad importa comprobar: con qué
+              cuenta se registra da igual si es la sede equivocada. */}
+          {sede && ` · ${sede}`}
+        </span>
       </span>
 
       <button className="boton boton--secundario boton--sm" type="button" onClick={alSalir}>

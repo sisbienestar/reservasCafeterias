@@ -42,10 +42,25 @@
   flex-direction: column;
   line-height: 1.25;
   text-align: right;
+  /* Empuja la identidad a la derecha haya enlace de vuelta o no, así que la
+     franja se ve igual en las tres pantallas. */
   margin-left: auto;
+  /* Puede encogerse hasta cero antes que desbordar: es lo que permite que en
+     un móvil estrecho siga cabiendo junto al botón. */
+  min-width: 0;
+}
+
+/* El nombre se recorta con puntos suspensivos si no cabe; el rol y la sede,
+   NO. Un nombre a medias sigue identificando a la persona —quien lo lee ya
+   sabe cómo se llama—, pero media sede no sirve para nada, y comprobar la
+   sede es justo para lo que se mira esta franja. */
+.barra-sesion__nombre {
   font-size: var(--texto-sm);
   font-weight: var(--peso-medio);
   color: var(--c-texto);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .barra-sesion__rol {
@@ -54,12 +69,28 @@
   color: var(--c-texto-3);
 }
 
-/* Cuando no hay a dónde volver, el hueco se mantiene: sin él, `space-between`
-   pegaría el nombre a la izquierda y la franja bailaría entre pantallas. */
-.enlace-volver--inerte { visibility: hidden; }
-
+/*
+ * En móvil la identidad NO se esconde.
+ *
+ * Aquí había un `display: none` por debajo de 640 px, para ganar sitio. Era
+ * un error: el móvil es justo donde va a estar el mostrador, y esta franja
+ * existe para que nadie registre una mañana entera con la sesión de otra
+ * sede. Esconderla ahí la deja sin ninguna utilidad.
+ *
+ * Lo que se hace en su lugar es dejar que la fila se parta: el enlace de
+ * vuelta baja a su propia línea y la identidad se queda arriba con el botón.
+ */
 @media (max-width: 640px) {
-  .barra-sesion__quien { display: none; }
+  .barra-sesion { gap: var(--e-2); }
+
+  .barra-sesion .enlace-volver {
+    order: 1;
+    flex-basis: 100%;
+  }
+
+  /* Sin el `auto` la identidad se pegaría al botón; con `space-between` y dos
+     elementos, queda repartida a los lados, que es lo legible. */
+  .barra-sesion__quien { margin-left: 0; text-align: left; }
 }
 
 /* ── Dos huecos del marcado heredado ────────────────────────────────────
