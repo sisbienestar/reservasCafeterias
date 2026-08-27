@@ -13,7 +13,8 @@
     "tipos": "tsc --noEmit",
     "backend-local": "node --env-file=.env.local --import tsx pruebas/servidor.mjs",
     "importar": "node --env-file=.env.local supabase/importar.mjs",
-    "verificar": "node --env-file=.env.local supabase/verificar.mjs"
+    "verificar": "node --env-file=.env.local supabase/verificar.mjs",
+    "permisos": "node --env-file=.env.local pruebas/permisos.mjs"
   },
   "devDependencies": {
     "@types/node": "^26.4.0",

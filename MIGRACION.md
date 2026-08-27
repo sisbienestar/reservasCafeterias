@@ -17,12 +17,12 @@ Conviene saberlo, porque cambia cuánto hay que desconfiar de cada paso.
 |---|---|
 | El SQL de `supabase/` | **Ejecutado y funcionando** (27 de agosto de 2026). Las seis tablas y las funciones responden, y `npm run verificar` pasa 30 comprobaciones sobre los datos importados. |
 | La importación | **Hecha**: 5 cafeterías, 34 platos, 17 reservas, 32 asientos de historial. |
-| El backend de `api/` | Compila con `tsc` en modo estricto, y sus funciones de Postgres están probadas. **La capa de sesión y permisos no se ha ejecutado nunca**: eso es el paso 5. |
+| El backend de `api/` | **Probado contra la base real**: `contrato.mjs` pasa sus 70 comprobaciones y `npm run permisos` otras 26. |
 | El frontend de `src/` | Compila y empaqueta (`npm run construir`). **No se ha abierto en un navegador**: sin proyecto de Supabase no hay con qué entrar. |
 | `legado/` + `npm test` | 603 comprobaciones en verde, como siempre. Es lo único de aquí que está probado de verdad. |
 
-La prueba que convierte «compila» en «funciona» es el paso 5. Hasta ahí, no
-hay motivo para creerse nada.
+Lo único que sigue sin ejecutarse nunca es el frontend de React. La prueba que
+convierte «compila» en «funciona» para esa parte es el paso 6.
 
 > Nota sobre `npm test`: la suite `viajes` mide tiempos de pared y falla de
 > forma intermitente en máquinas cargadas —comprobado también sobre el commit
@@ -176,6 +176,26 @@ node pruebas/contrato.mjs http://localhost:3001 --token=<jwt> --escribir   # com
 
 **Verde = el backend cumple.** Es la misma prueba que pasaban el mock y Apps
 Script, así que no hay discusión sobre si «antes funcionaba».
+
+### Y los permisos, que el contrato no mira
+
+`pruebas/contrato.mjs` corre entero con un token de admin, así que comprueba
+las reglas de negocio y **ni una sola de autorización**. Y la autorización es
+lo que esta migración vino a arreglar.
+
+```bash
+npm run permisos
+```
+
+26 comprobaciones: que sin sesión no se hace nada, que una cuenta válida sin
+fila en `perfil` tampoco pasa, que un mostrador no puede cancelar ni consultar
+el histórico ni tocar el catálogo, y que **no ve otra sede aunque la pida
+explícitamente**. Esa última es la que importa: el cliente manda
+`cafeteria_id` en cada petición, y creérselo sería dejar que el navegador
+decidiera un permiso.
+
+Crea una cuenta de mostrador desechable, la usa y la borra. No toca ninguna
+cuenta real.
 
 `--escribir` trabaja entero dentro de una semana de enero de 2020, donde no
 vive ninguna reserva real. Deja dos reservas canceladas con esa fecha: es
