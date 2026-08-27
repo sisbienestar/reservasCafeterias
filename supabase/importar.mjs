@@ -16,6 +16,10 @@
  * saber si un asiento del volcado es el mismo que uno ya escrito.
  */
 
+// El primero de la lista, y tiene que seguir siéndolo: presta a Node el
+// WebSocket que supabase-js exige y que la versión 20 no trae. Ver el archivo.
+import './websocketDeNode.mjs';
+
 import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 

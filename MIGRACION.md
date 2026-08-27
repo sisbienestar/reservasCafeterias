@@ -75,21 +75,30 @@ select table_name from information_schema.tables
 
 ## 3. Sacar los datos de la hoja
 
-En el editor de Apps Script, ejecuta `exportarTodo()` y copia el JSON del
-registro a un archivo. **Sale troceado en varios mensajes: hay que pegarlos en
-orden.** No exportes las pestañas a CSV a mano — `opciones` e `historial`
-llevan comas dentro y se rompen.
+En el editor de Apps Script, ejecuta `exportarTodo()`. No exportes las
+pestañas a CSV a mano — `opciones` e `historial` llevan comas dentro y se
+rompen.
+
+**Guarda el JSON en un archivo llamado `volcado.json`, en la raíz de este
+repositorio** (al lado de `package.json`). Está en `.gitignore`: lleva nombres
+y móviles de personas reales y no puede acabar en un commit.
+
+El registro de Apps Script **corta los mensajes largos, así que el volcado sale
+troceado**: hay que pegar los trozos seguidos y en orden. Cuando esté completo,
+el archivo empieza por `{` y termina por `}`, y dentro se ven las tres claves
+`cafeterias`, `menuSemanal` y `reservas`. Si al pegarlo aparece un
+`--- volcado 2 ---` en medio, esa línea sobra: es del registro, no del JSON.
 
 ```bash
-export SUPABASE_URL=https://TU-PROYECTO.supabase.co
-export SUPABASE_SERVICE_ROLE_KEY=...
-
-node supabase/importar.mjs volcado.json              # ensayo: solo comprueba
-node supabase/importar.mjs volcado.json --de-verdad  # escribe
+npm run importar volcado.json              # ensayo: comprueba y no escribe nada
+npm run importar volcado.json -- --de-verdad   # escribe
 ```
 
-El ensayo no escribe nada y avisa de dos cosas que hay que arreglar **en la
-hoja** antes de importar:
+El ensayo **no toca la base de datos**, así que se puede lanzar cuantas veces
+haga falta. Si el archivo quedó mal pegado, lo dice ahí mismo con un error de
+JSON en vez de a mitad de la importación.
+
+Avisa además de dos cosas que hay que arreglar **en la hoja** antes de importar:
 
 - una reserva que apunte a una cafetería que no existe;
 - **dos reservas activas del mismo móvil el mismo día y sede.** El índice
@@ -117,9 +126,12 @@ Un `mostrador` necesita sede y un `admin` no puede tenerla: lo impone el
 Este es el paso que decide si la migración salió bien.
 
 ```bash
-cp .env.example .env.local     # y rellenar
 npm run backend-local          # ventana 1
 ```
+
+Los guiones `backend-local` e `importar` cargan `.env.local` con
+`--env-file`. Node no lo hace por su cuenta, así que llamarlos con `node` a
+pelo falla diciendo que faltan las variables.
 
 Hace falta un token de sesión **de un perfil `admin`**: el contrato ejercita
 cancelar, buscar y guardar la carta, que un perfil de mostrador tiene

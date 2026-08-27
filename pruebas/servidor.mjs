@@ -19,6 +19,11 @@
  * el borrado del sistema es lógico y no se pueden quitar del todo.
  */
 
+// El primero de la lista, y tiene que seguir siéndolo: presta a Node el
+// WebSocket que supabase-js exige y que la versión 20 no trae. En Vercel no
+// hace falta, porque el entorno Edge sí lo tiene.
+import '../supabase/websocketDeNode.mjs';
+
 import { createServer } from 'node:http';
 import { manejar } from '../api/_nucleo/enrutador.ts';
 

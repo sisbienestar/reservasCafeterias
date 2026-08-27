@@ -4,3 +4,8 @@ pruebas/banco/
 .env
 .env.local
 dist/
+
+# El volcado de la hoja: nombres y moviles de personas reales.
+# Nunca al repositorio.
+volcado.json
+volcado*.json
