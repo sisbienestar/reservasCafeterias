@@ -108,8 +108,13 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
             unaccent_simple(r.nombre) LIKE '%' || p_texto || '%' OR
             (p_digitos <> '' AND r.telefono LIKE '%' || p_digitos || '%'))
   ),
+  -- Solo los IDENTIFICADORES, y luego se vuelve a la tabla para armar el
+  -- JSON. No es un rodeo: `reserva_json` recibe un `reserva`, y una fila de un
+  -- CTE es un registro anónimo que Postgres NO coacciona a ese tipo compuesto
+  -- —falla con «no existe la función reserva_json(record)»—. Con un alias de
+  -- la tabla de verdad, el tipo es el que la función espera.
   detalle AS (
-    SELECT * FROM filtradas
+    SELECT id, fecha, creada_en FROM filtradas
      ORDER BY fecha DESC, creada_en DESC, id DESC
      -- NULL en LIMIT significa «sin límite», que es justo lo que quiere
      -- p_limite = 0. Un CASE dentro del LIMIT ahorra tener dos consultas.
@@ -117,9 +122,9 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
   )
   SELECT jsonb_build_object(
     'total',    (SELECT count(*) FROM filtradas),
-    'reservas', coalesce((SELECT jsonb_agg(reserva_json(d)
-                            ORDER BY d.fecha DESC, d.creada_en DESC, d.id DESC)
-                            FROM detalle d), '[]'::JSONB),
+    'reservas', coalesce((SELECT jsonb_agg(reserva_json(r)
+                            ORDER BY r.fecha DESC, r.creada_en DESC, r.id DESC)
+                            FROM reserva r JOIN detalle d ON d.id = r.id), '[]'::JSONB),
     'resumen',  resumir_reservas(p_desde, p_hasta, p_cafeteria_id,
                                  p_estado, p_texto, p_digitos));
 $$;

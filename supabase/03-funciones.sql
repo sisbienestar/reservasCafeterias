@@ -15,6 +15,19 @@
 -- ver entre sí. Aquí el candado es por cafetería y por día, que es el alcance
 -- real del conflicto.
 --
+-- EL ORDEN DE LOS ARCHIVOS, Y POR QUÉ NO SE PUEDE INVERTIR
+--
+-- Las tres funciones de escritura de aquí devuelven `reserva_json(...)`, que
+-- se define en 04-lecturas.sql. Aun así este archivo va ANTES, y no es un
+-- descuido: 04 llama a `resumir_reservas`, que está aquí, así que la
+-- dependencia va en los dos sentidos y hay que romperla por algún lado.
+--
+-- Se rompe por este: un cuerpo PL/pgSQL no resuelve los nombres al crearse,
+-- solo al ejecutarse, así que `crear_reserva` puede nombrar una función que
+-- todavía no existe. Las de 04 son LANGUAGE sql y sí se resuelven al crearse,
+-- de modo que ESAS no pueden adelantarse. Invertir el orden rompe la
+-- instalación; este orden solo la deja rara de leer.
+
 -- Lo que NO está aquí, a propósito: las reglas de negocio que producen los
 -- códigos de error del contrato —SIN_SERVICIO, MENU_INVALIDO,
 -- DATOS_INCOMPLETOS—. Esas viven en api/_nucleo/reglas.ts, donde se leen, se
@@ -170,7 +183,10 @@ CREATE OR REPLACE FUNCTION crear_reserva(
   p_medio        TEXT,
   p_pago         TEXT,
   p_autor        UUID
-) RETURNS reserva
+-- JSONB y no `reserva`: la fila cruda NO es la forma del contrato. Le falta
+-- `historial`, llama `creada_en` a lo que el cliente lee como `timestamp` y
+-- lleva un `consecutivo` que es de la base de datos y no de nadie más.
+) RETURNS JSONB
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE
   v_codigo      TEXT;
@@ -202,7 +218,9 @@ BEGIN
   INSERT INTO reserva_asiento (reserva_id, tipo, ocurrido_en, autor)
   VALUES (v_reserva.id, 'creacion', v_reserva.creada_en, p_autor);
 
-  RETURN v_reserva;
+  -- Después del asiento, no antes: `reserva_json` lee el historial de la
+  -- tabla, así que devolverlo antes daría una reserva sin su propia creación.
+  RETURN reserva_json(v_reserva);
 END;
 $$;
 
@@ -230,7 +248,7 @@ CREATE OR REPLACE FUNCTION actualizar_reserva(
   p_medio       TEXT,
   p_pago        TEXT,
   p_autor       UUID
-) RETURNS reserva
+) RETURNS JSONB
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE
   v_previa   reserva;
@@ -291,7 +309,8 @@ BEGIN
   SELECT v_asiento, c->>'campo', c->>'antes', c->>'despues', (indice - 1)::INT
     FROM jsonb_array_elements(v_cambios) WITH ORDINALITY AS t(c, indice);
 
-  RETURN v_reserva;
+  -- Al final del todo, para que el historial que vuelve incluya este cambio.
+  RETURN reserva_json(v_reserva);
 END;
 $$;
 
@@ -303,7 +322,7 @@ $$;
  * referencia a las reservas históricas de una sede que se cierre.
  */
 CREATE OR REPLACE FUNCTION cancelar_reserva(p_id TEXT, p_autor UUID)
-RETURNS reserva
+RETURNS JSONB
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE
   v_estado  TEXT;
@@ -323,7 +342,7 @@ BEGIN
   INSERT INTO reserva_asiento (reserva_id, tipo, autor)
   VALUES (p_id, 'cancelacion', p_autor);
 
-  RETURN v_reserva;
+  RETURN reserva_json(v_reserva);
 END;
 $$;
 
