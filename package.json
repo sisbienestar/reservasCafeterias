@@ -12,7 +12,8 @@
     "vistaPrevia": "vite preview",
     "tipos": "tsc --noEmit",
     "backend-local": "node --env-file=.env.local --import tsx pruebas/servidor.mjs",
-    "importar": "node --env-file=.env.local supabase/importar.mjs"
+    "importar": "node --env-file=.env.local supabase/importar.mjs",
+    "verificar": "node --env-file=.env.local supabase/verificar.mjs"
   },
   "devDependencies": {
     "@types/node": "^26.4.0",

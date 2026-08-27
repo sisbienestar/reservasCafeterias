@@ -15,8 +15,9 @@ Conviene saberlo, porque cambia cuánto hay que desconfiar de cada paso.
 
 | Pieza | Estado |
 |---|---|
-| El SQL de `supabase/` | **Sin ejecutar nunca.** No hay Postgres en la máquina donde se escribió: ni `psql` ni Docker. La primera ejecución es el paso 2, y es donde saldrán las erratas si las hay. |
-| El backend de `api/` | Compila con `tsc` en modo estricto. **No se ha ejecutado contra una base de datos real.** |
+| El SQL de `supabase/` | **Ejecutado y funcionando** (27 de agosto de 2026). Las seis tablas y las funciones responden, y `npm run verificar` pasa 30 comprobaciones sobre los datos importados. |
+| La importación | **Hecha**: 5 cafeterías, 34 platos, 17 reservas, 32 asientos de historial. |
+| El backend de `api/` | Compila con `tsc` en modo estricto, y sus funciones de Postgres están probadas. **La capa de sesión y permisos no se ha ejecutado nunca**: eso es el paso 5. |
 | El frontend de `src/` | Compila y empaqueta (`npm run construir`). **No se ha abierto en un navegador**: sin proyecto de Supabase no hay con qué entrar. |
 | `legado/` + `npm test` | 603 comprobaciones en verde, como siempre. Es lo único de aquí que está probado de verdad. |
 
@@ -115,6 +116,20 @@ Avisa además de dos cosas que hay que arreglar **en la hoja** antes de importar
   `reserva_sin_duplicado` no las admite. Apps Script aplicaba la regla, pero la
   hoja se editaba a veces a mano, así que puede haber parejas que la incumplan.
   Hay que cancelar una de las dos.
+
+### Comprobar lo importado
+
+```bash
+npm run verificar
+```
+
+30 comprobaciones sobre los datos de verdad: que `telefono` sea cadena, que
+`activa` sea booleano, que `fecha` salga como `'AAAA-MM-DD'`, que el historial
+llegue anidado dentro de cada reserva, que `por_dia` traiga también los días
+vacíos y que el límite recorte el detalle pero nunca los totales.
+
+No sustituye a `pruebas/contrato.mjs` —no mira sesión, ni permisos, ni códigos
+de error—, pero se puede lanzar aquí mismo, antes de que exista ninguna cuenta.
 
 ## 4. Crear las cuentas
 
