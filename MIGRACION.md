@@ -204,9 +204,14 @@ esperado, porque el borrado del sistema es lógico y debe serlo.
 ## 6. Levantar la aplicación en local
 
 ```bash
-npm run backend-local    # ventana 1 · el backend en :3001
-npm run dev              # ventana 2 · el frontend en :5173
+npm run local            # backend en :3001 y frontend en :5173
 ```
+
+Los dos con un solo comando, y **Ctrl+C para los dos**. Se niega a arrancar si
+alguno de los puertos está ocupado: dejar que Vite se vaya al 5174 «para no
+molestar» es lo que acaba dando dos instancias sirviendo aplicaciones
+distintas, y el síntoma —datos que no cargan, o directamente la app de otra
+rama— tarda un rato en entenderse.
 
 Vite redirige `/api` al backend local, así que el navegador habla igual que en
 producción y `VITE_API_URL` no cambia entre entornos.

@@ -40,12 +40,19 @@ Si falla solo `viajes`, y solo en «salen las tres a la vez», es una medida de
 tiempo de pared que falla de forma intermitente en máquinas cargadas. Ya
 fallaba antes de la migración.
 
-Para ver el proyecto nuevo hacen falta dos ventanas y un `.env.local`:
+Para ver el proyecto nuevo, con un `.env.local` relleno:
 
 ```bash
-npm run backend-local    # el backend en :3001
-npm run dev              # el frontend en :5173
+npm run local            # backend en :3001 y frontend en :5173
 ```
+
+Un solo comando, y **Ctrl+C para los dos**. Arrancarlos por separado
+—`backend-local` y `dev`— sigue funcionando, pero es de donde salen los
+problemas: si una ventana se cierra sin la otra queda un Vite vivo contra un
+backend muerto, y el síntoma no dice nada útil —la pantalla carga, el diseño
+está bien y los datos no llegan—. `npm run local` además se niega a arrancar
+si el puerto ya está ocupado, en vez de irse al 5174 «para no molestar», que
+es lo que acaba dando dos instancias sirviendo cosas distintas.
 
 Para ver el que está en producción: `npx serve legado` y abrir el puerto que
 diga. Los módulos ES no funcionan con `file://`.
