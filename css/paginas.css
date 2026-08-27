@@ -1,0 +1,141 @@
+/* ============================================================================
+   paginas.css · lo específico de cada vista
+   cabecera y pie (compartidos) · index · reserva
+   ========================================================================== */
+
+/* ── Cabecera y pie ──────────────────────────────────────────────────── */
+
+.cabecera {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--c-fondo) 82%, transparent);
+  backdrop-filter: saturate(180%) blur(18px);
+  border-bottom: 1px solid var(--c-borde);
+}
+
+.cabecera__interior {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 66px;
+  padding-block: var(--e-3);
+}
+
+.pie {
+  border-top: 1px solid var(--c-borde);
+  padding-block: var(--e-5);
+  font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+  text-align: center;
+}
+
+/* ── index.html ──────────────────────────────────────────────────────── */
+
+/* Sin tope de ancho: el título y la bajada ocupan todo el contenedor. El
+   límite real lo pone `.contenedor` con su --ancho-contenedor. */
+.portada {
+  padding-block: var(--e-6) var(--e-8);
+}
+
+.portada__fecha {
+  font-size: var(--texto-sm);
+  color: var(--c-acento);
+  font-weight: var(--peso-medio);
+  margin-bottom: var(--e-3);
+}
+
+.portada__titulo {
+  font-size: var(--texto-2xl);
+  margin-bottom: var(--e-4);
+}
+
+.portada__bajada {
+  font-size: var(--texto-lg);
+  color: var(--c-texto-2);
+}
+
+/* ── reserva.html ────────────────────────────────────────────────────── */
+
+.enlace-volver {
+  display: inline-block;
+  font-size: var(--texto-sm);
+  color: var(--c-texto-3);
+  margin-bottom: var(--e-5);
+  transition: color var(--transicion);
+}
+
+.enlace-volver:hover { color: var(--c-acento); }
+
+.encabezado-reserva {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--e-5);
+  flex-wrap: wrap;
+  padding-bottom: var(--e-6);
+  border-bottom: 1px solid var(--c-borde);
+  margin-bottom: var(--e-6);
+}
+
+.encabezado-reserva__ubicacion {
+  font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: var(--e-2);
+}
+
+.encabezado-reserva__titulo {
+  font-size: var(--texto-2xl);
+  margin-bottom: var(--e-3);
+}
+
+.encabezado-reserva__meta {
+  font-size: var(--texto-sm);
+  color: var(--c-texto-2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+}
+
+.encabezado-reserva__meta .separador { color: var(--c-borde-fuerte); }
+
+/* El aviso ocupa el hueco entre el encabezado y la tabla solo cuando existe;
+   `hidden` lo saca del flujo y no deja un salto en blanco. */
+#aviso:not([hidden]) { margin-bottom: var(--e-6); }
+
+.bloque-tabla { margin-top: var(--e-2); }
+
+/* ── Móvil ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .contenedor { padding-inline: var(--e-4); }
+
+  .pagina { padding-block: var(--e-5) var(--e-7); }
+
+  .portada { padding-block: var(--e-4) var(--e-6); }
+
+  .marca__institucion { display: none; }
+
+  .encabezado-reserva {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  /* El botón principal a ancho completo: es la acción de la página. */
+  .encabezado-reserva .boton { width: 100%; }
+
+  .tabla th,
+  .tabla td,
+  .tabla__caption { padding-inline: var(--e-4); }
+
+  /* Cuatro columnas no caben en un móvil estrecho. La tabla se desplaza
+     dentro de su propia caja: apretarla haría que cada nombre ocupara tres
+     líneas, y dejarla desbordar movería la página entera de lado. */
+  #contenedor-tabla { overflow-x: auto; }
+
+  .tabla { min-width: 440px; }
+
+  .modal__panel { padding: var(--e-5); }
+}

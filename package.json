@@ -1,0 +1,14 @@
+{
+  "name": "reservas-cafeterias",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Reserva de almuerzos para las cafeterias de la UIS. La APLICACION no tiene dependencias ni compilacion: se abre index.html y funciona. Este package.json existe solo para las pruebas, que necesitan jsdom para montar las paginas sin navegador. Nada de node_modules llega al navegador.",
+  "type": "module",
+  "scripts": {
+    "test": "bash pruebas/sincroniza.sh && node pruebas/ejecutar.mjs",
+    "sincroniza": "bash pruebas/sincroniza.sh"
+  },
+  "devDependencies": {
+    "jsdom": "^24.0.0"
+  }
+}

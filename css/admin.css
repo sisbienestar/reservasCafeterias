@@ -1,0 +1,527 @@
+/* ============================================================================
+   admin.css · módulo de administración
+   ----------------------------------------------------------------------------
+   Va en su propio archivo, y no dentro de los tres existentes, por una razón
+   concreta: la pantalla operativa ya está terminada y este módulo no debe
+   poder romperla. Aquí no se redefine ni una regla de base/componentes/paginas;
+   solo se añaden piezas nuevas, todas construidas con las mismas variables del
+   :root, para que se vean parte del mismo sistema.
+   ========================================================================== */
+
+/* ── Encabezado ──────────────────────────────────────────────────────── */
+
+.encabezado-admin {
+  padding-bottom: var(--e-5);
+}
+
+.encabezado-admin__titulo {
+  font-size: var(--texto-2xl);
+  margin-bottom: var(--e-3);
+}
+
+.encabezado-admin__bajada {
+  font-size: var(--texto-lg);
+  color: var(--c-texto-2);
+  max-width: 56ch;
+}
+
+/* ── Pestañas ────────────────────────────────────────────────────────── */
+
+.pestanas {
+  border-bottom: 1px solid var(--c-borde);
+  margin-bottom: var(--e-5);
+}
+
+.pestanas__lista {
+  display: flex;
+  gap: var(--e-5);
+  overflow-x: auto;
+}
+
+.pestana {
+  position: relative;
+  padding: var(--e-3) 0 var(--e-4);
+  border: none;
+  background: none;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--fuente-titulo);
+  font-size: var(--texto-base);
+  font-weight: var(--peso-medio);
+  color: var(--c-texto-3);
+  transition: color var(--transicion);
+}
+
+.pestana:hover { color: var(--c-texto); }
+
+.pestana--activa { color: var(--c-texto); font-weight: var(--peso-fuerte); }
+
+/* El subrayado se dibuja sobre el borde del contenedor, no debajo, para que
+   no empuje el contenido un píxel al cambiar de pestaña. */
+.pestana--activa::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--c-acento);
+  border-radius: var(--radio-pildora);
+}
+
+/* ── Barra de filtros ────────────────────────────────────────────────── */
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--e-4);
+  padding: var(--e-5);
+  margin-bottom: var(--e-5);
+  background: var(--c-superficie);
+  border: 1px solid var(--c-borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-sm);
+}
+
+.filtros__campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-2);
+  flex: 1 1 130px;
+  min-width: 0;
+}
+
+.filtros__campo--ancho { flex-basis: 190px; }
+
+.filtros__campo .campo__control { min-height: 42px; }
+
+.filtros__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-3);
+  margin-left: auto;
+}
+
+#aviso:not([hidden]),
+#aviso-cafeteria:not([hidden]) { margin-bottom: var(--e-5); }
+
+/* ── Tablas del administrador ────────────────────────────────────────── */
+
+/* La tabla de detalle tiene siete columnas: en cuanto la ventana se estrecha
+   se desplaza dentro de su caja en vez de apretar el nombre a tres líneas. */
+.tabla-envoltorio,
+#tabla-reservas,
+#tabla-cafeterias { overflow-x: auto; }
+
+.tabla--admin { min-width: 860px; }
+
+/* Esta tabla no fija anchos: empieza por el identificador entero, que ocupa
+   lo que ocupa, y sus columnas son de largo muy distinto —el navegador las
+   reparte mejor que un porcentaje escrito a mano—. Los anchos del mostrador
+   viven en `.tabla--mostrador` y no llegan hasta aquí. */
+
+.tabla--totales { min-width: 320px; margin-top: var(--e-4); }
+
+.tabla__fecha {
+  color: var(--c-texto-2);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabla__numero {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Una fila cancelada sigue siendo consultable, pero no compite por atención
+   con las activas. */
+.tabla__fila--apagada .tabla__nombre,
+.tabla__fila--apagada .tabla__menu,
+.tabla__fila--apagada .tabla__fecha,
+.tabla__fila--apagada .tabla__telefono { color: var(--c-texto-3); }
+
+.tabla__nota {
+  margin-top: var(--e-3);
+  font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+}
+
+/* ── Marca de estado ─────────────────────────────────────────────────── */
+
+/* Lleva texto, no solo color: el estado es un dato y no puede depender de
+   distinguir verde de rojo. */
+.marca-estado {
+  display: inline-block;
+  padding: 2px var(--e-3);
+  border-radius: var(--radio-pildora);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+  white-space: nowrap;
+}
+
+.marca-estado--activa {
+  background: var(--c-exito-suave);
+  color: var(--c-exito);
+}
+
+.marca-estado--cancelada {
+  background: var(--c-superficie-2);
+  color: var(--c-texto-3);
+}
+
+/* ── Indicadores ─────────────────────────────────────────────────────── */
+
+.rejilla-indicadores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: var(--e-4);
+  margin-bottom: var(--e-6);
+}
+
+.indicador {
+  padding: var(--e-5);
+  background: var(--c-superficie);
+  border: 1px solid var(--c-borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-sm);
+}
+
+.indicador__rotulo {
+  font-size: var(--texto-xs);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--c-texto-3);
+  margin-bottom: var(--e-2);
+}
+
+/* Cifras proporcionales, no tabulares: `tabular-nums` da a cada dígito el
+   ancho de un cero y a este tamaño un «121» se ve suelto. Lo tabular se
+   reserva para columnas que tienen que alinearse. */
+.indicador__valor {
+  font-family: var(--fuente-titulo);
+  font-size: var(--texto-2xl);
+  font-weight: var(--peso-fuerte);
+  letter-spacing: var(--espaciado-titulo);
+  line-height: 1.1;
+}
+
+.indicador__detalle {
+  margin-top: var(--e-2);
+  font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+}
+
+/* ── Bloques del consolidado ─────────────────────────────────────────── */
+
+.bloque-consolidado {
+  padding: var(--e-5);
+  margin-bottom: var(--e-5);
+  background: var(--c-superficie);
+  border: 1px solid var(--c-borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-sm);
+}
+
+.bloque-consolidado__titulo {
+  font-size: var(--texto-lg);
+  margin-bottom: var(--e-2);
+}
+
+.bloque-consolidado__nota {
+  font-size: var(--texto-sm);
+  color: var(--c-texto-3);
+  margin-bottom: var(--e-4);
+  max-width: 70ch;
+}
+
+/* ── Gráficas ────────────────────────────────────────────────────────── */
+
+.grafica {
+  position: relative;
+  margin-top: var(--e-4);
+}
+
+.grafica__lienzo {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* Rejilla de un solo escalón sobre el fondo, continua y de un píxel: tiene
+   que sostener la lectura sin competir con los datos. */
+.grafica__rejilla {
+  stroke: var(--c-borde);
+  stroke-width: 1;
+}
+
+.grafica__marca {
+  fill: var(--c-texto-3);
+  font-family: var(--fuente-texto);
+  font-size: 11px;
+}
+
+.grafica__valor {
+  fill: var(--c-texto-2);
+  font-family: var(--fuente-texto);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.grafica__dato { transition: opacity var(--transicion); }
+.grafica__dato:hover { opacity: 0.75; }
+
+.grafica__globo {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 12px));
+  padding: var(--e-2) var(--e-3);
+  border-radius: var(--radio-sm);
+  background: var(--c-texto);
+  color: #fff;
+  font-size: var(--texto-xs);
+  white-space: nowrap;
+  /* El globo sigue al cursor: si capturara el ratón, entrar en él dispararía
+     el mouseleave de la barra y parpadearía sin parar. */
+  pointer-events: none;
+  z-index: 2;
+}
+
+.grafica__vacio {
+  padding: var(--e-6);
+  text-align: center;
+  font-size: var(--texto-sm);
+  color: var(--c-texto-3);
+}
+
+/* ── Catálogo ────────────────────────────────────────────────────────── */
+
+.bloque-admin { margin-bottom: var(--e-7); }
+
+.formulario-catalogo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--e-4);
+  padding: var(--e-5);
+  margin-bottom: var(--e-5);
+  background: var(--c-superficie);
+  border: 1px solid var(--c-borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-sm);
+}
+
+.barra-semana {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--e-4);
+  margin-bottom: var(--e-5);
+}
+
+.barra-semana__navegacion {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+}
+
+.barra-semana__rotulo {
+  min-width: 150px;
+  text-align: center;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  font-variant-numeric: tabular-nums;
+}
+
+.rejilla-carta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--e-4);
+}
+
+.dia-carta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-3);
+  padding: var(--e-4);
+  background: var(--c-superficie);
+  border: 1px solid var(--c-borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-sm);
+}
+
+.dia-carta--hoy { border-color: var(--c-acento); }
+
+.dia-carta__cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--e-2);
+}
+
+.dia-carta__dia {
+  font-family: var(--fuente-titulo);
+  font-weight: var(--peso-fuerte);
+  text-transform: capitalize;
+}
+
+.dia-carta__fecha {
+  font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+}
+
+.dia-carta__area {
+  resize: vertical;
+  min-height: 96px;
+  font-size: var(--texto-sm);
+  line-height: 1.5;
+}
+
+.dia-carta__pie {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  flex-wrap: wrap;
+}
+
+/* Estado de cada día: cuántos platos tiene, o si está sin guardar.
+   Lleva texto y no solo color, como el resto de estados de la aplicación. */
+.dia-carta__estado {
+  font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+}
+
+.dia-carta__estado--pendiente {
+  color: var(--c-aviso);
+  font-weight: var(--peso-medio);
+}
+
+/* El día con cambios sin guardar se señala en el borde: en una rejilla de
+   siete tarjetas, un color de texto pequeño se pierde. */
+.dia-carta:has(.dia-carta__estado--pendiente) {
+  border-color: var(--c-aviso);
+  background: var(--c-aviso-suave);
+}
+
+/* Sábado y domingo: sin servicio y sin carta que publicar. Se apagan y su
+   caja queda de solo lectura, pero siguen a la vista para que la semana se
+   lea completa y no parezca que falta un día por rellenar. */
+.dia-carta--sin-servicio { background: var(--c-superficie-2); }
+.dia-carta--sin-servicio .dia-carta__dia { color: var(--c-texto-3); }
+
+.dia-carta--sin-servicio .dia-carta__area {
+  background: transparent;
+  border-color: transparent;
+  cursor: not-allowed;
+  resize: none;
+}
+.dia-carta--sin-servicio .dia-carta__area:hover { border-color: transparent; }
+
+.barra-semana__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-3);
+}
+
+.nota-bloque {
+  font-size: var(--texto-sm);
+  color: var(--c-texto-3);
+  margin-bottom: var(--e-4);
+  max-width: 70ch;
+}
+
+#aviso-carta:not([hidden]) { margin-bottom: var(--e-4); }
+
+/* ── Móvil ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 700px) {
+  .filtros,
+  .formulario-catalogo { padding: var(--e-4); }
+
+  .filtros__campo,
+  .filtros__campo--ancho { flex-basis: 100%; }
+
+  .filtros__acciones {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .filtros__acciones .boton { flex: 1; }
+
+  .barra-semana__navegacion { width: 100%; justify-content: space-between; }
+
+  .barra-semana__acciones { width: 100%; }
+
+  .barra-semana__acciones .boton { flex: 1; }
+}
+
+/* Enlace a administración desde el pie de la página operativa. Discreto a
+   propósito: no es una acción del personal de mostrador, es una puerta que
+   tiene que existir mientras no haya autenticación ni un menú propio. */
+.pie__enlace {
+  color: var(--c-texto-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.pie__enlace:hover { color: var(--c-acento); }
+
+/* ── Pantalla de acceso ──────────────────────────────────────────────── */
+
+.acceso {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.acceso__panel {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-4);
+  padding: var(--e-6);
+  background: var(--c-superficie);
+  border: 1px solid var(--c-borde);
+  border-radius: var(--radio-xl);
+  box-shadow: var(--sombra-md);
+}
+
+.acceso__titulo { font-size: var(--texto-xl); }
+
+.acceso__nota {
+  font-size: var(--texto-sm);
+  color: var(--c-texto-2);
+  margin-top: calc(var(--e-2) * -1);
+}
+
+.acceso__error {
+  padding: var(--e-3) var(--e-4);
+  border-radius: var(--radio-sm);
+  background: var(--c-error-suave);
+  color: var(--c-error);
+  font-size: var(--texto-sm);
+}
+
+.acceso__salida {
+  font-size: var(--texto-sm);
+  color: var(--c-texto-3);
+  text-align: center;
+  transition: color var(--transicion);
+}
+
+.acceso__salida:hover { color: var(--c-acento); }
+
+/* ── Barra de sesión ─────────────────────────────────────────────────── */
+
+/* «Cerrar sesión» a la vista y no escondido en un menú: la pantalla vive en
+   un equipo compartido y salir tiene que costar un clic. */
+.barra-sesion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-4);
+  flex-wrap: wrap;
+}
+
+.barra-sesion .enlace-volver { margin-bottom: 0; }

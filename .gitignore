@@ -1,0 +1,6 @@
+node_modules/
+pruebas/banco/
+.vercel/
+.env
+.env.local
+dist/
