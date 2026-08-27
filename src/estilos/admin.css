@@ -112,7 +112,29 @@
    se desplaza dentro de su caja en vez de apretar el nombre a tres líneas. */
 .tabla-envoltorio,
 #tabla-reservas,
-#tabla-cafeterias { overflow-x: auto; }
+#tabla-cafeterias {
+  overflow-x: auto;
+
+  /*
+   * `position: relative` NO es decorativo: sin él la página se va de lado en
+   * móvil, y el síntoma no señala aquí en absoluto.
+   *
+   * La cabecera de la columna de acciones lleva un
+   * `<span class="visualmente-oculto">Acciones</span>`, que es
+   * `position: absolute`. Sin un ancestro posicionado, su bloque contenedor
+   * pasa a ser el del documento: el span se ESCAPA de esta caja con
+   * desplazamiento y se ancla en la coordenada que ocupa dentro de la tabla
+   * —582 px en un móvil de 413—, ensanchando el documento entero.
+   *
+   * Entonces la tabla se desplaza bien dentro de su caja, como debe, pero la
+   * página arrastra 170 px de más y todo aparece corrido: los títulos
+   * cortados por la izquierda y los diálogos descolocados. Un span de un
+   * píxel, invisible por definición, moviendo la pantalla completa.
+   *
+   * Con esto, el span queda contenido aquí y no llega al documento.
+   */
+  position: relative;
+}
 
 .tabla--admin { min-width: 860px; }
 
