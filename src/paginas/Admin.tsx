@@ -261,8 +261,8 @@ export function Admin() {
 
   return (
     <main className="contenedor pagina" id="contenido">
-      <div className="pagina__encabezado">
-        <h1 className="pagina__titulo">Administración</h1>
+      <div className="encabezado-admin">
+        <h1 className="encabezado-admin__titulo">Administración</h1>
       </div>
 
       <nav className="pestanas" role="tablist" aria-label="Secciones de administración">
@@ -300,7 +300,7 @@ export function Admin() {
           className="filtros"
           onSubmit={(e) => { e.preventDefault(); aplicar(); }}
         >
-          <label className="campo campo--linea">
+          <label className="campo filtros__campo">
             <span className="campo__etiqueta">Periodo</span>
             <select className="campo__control" value={periodo}
                     onChange={(e) => cambiarPeriodo(e.target.value)}>
@@ -315,7 +315,7 @@ export function Admin() {
             </select>
           </label>
 
-          <label className="campo campo--linea">
+          <label className="campo filtros__campo">
             <span className="campo__etiqueta">Desde</span>
             <input className="campo__control" type="date" value={filtros.desde}
                    onChange={(e) => {
@@ -324,7 +324,7 @@ export function Admin() {
                    }} />
           </label>
 
-          <label className="campo campo--linea">
+          <label className="campo filtros__campo">
             <span className="campo__etiqueta">Hasta</span>
             <input className="campo__control" type="date" value={filtros.hasta}
                    onChange={(e) => {
@@ -333,7 +333,7 @@ export function Admin() {
                    }} />
           </label>
 
-          <label className="campo campo--linea">
+          <label className="campo filtros__campo">
             <span className="campo__etiqueta">Cafetería</span>
             <select className="campo__control" value={filtros.cafeteriaId}
                     onChange={(e) => setFiltros({ ...filtros, cafeteriaId: e.target.value })}>
@@ -344,7 +344,7 @@ export function Admin() {
             </select>
           </label>
 
-          <label className="campo campo--linea">
+          <label className="campo filtros__campo">
             <span className="campo__etiqueta">Estado</span>
             <select className="campo__control" value={filtros.estado}
                     onChange={(e) => setFiltros({ ...filtros, estado: e.target.value as EstadoReserva | '' })}>
@@ -354,7 +354,7 @@ export function Admin() {
             </select>
           </label>
 
-          <label className="campo campo--linea">
+          <label className="campo filtros__campo">
             <span className="campo__etiqueta">Nombre o móvil</span>
             <input className="campo__control" type="search" value={filtros.texto}
                    onChange={(e) => setFiltros({ ...filtros, texto: e.target.value })}

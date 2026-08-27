@@ -45,7 +45,7 @@ export function TablaAdminReservas({ reservas, total, nombreCafeteria, alEditar 
         </p>
       )}
 
-      <div className="tabla__envoltorio">
+      <div className="tabla-envoltorio">
         <table className="tabla">
           <thead>
             <tr>
@@ -67,7 +67,7 @@ export function TablaAdminReservas({ reservas, total, nombreCafeteria, alEditar 
               return (
                 <tr
                   key={reserva.id}
-                  className={cancelada ? 'tabla__fila tabla__fila--cancelada' : 'tabla__fila'}
+                  className={cancelada ? 'tabla__fila tabla__fila--apagada' : 'tabla__fila'}
                 >
                   <td className="tabla__numero-reserva">{reserva.numero || <Vacio />}</td>
                   <td>{formatearFechaCorta(reserva.fecha)}</td>

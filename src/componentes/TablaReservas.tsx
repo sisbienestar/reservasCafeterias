@@ -43,7 +43,7 @@ function MarcaPago({ pago }: { pago: string }) {
 
 export function TablaReservas({ reservas, idDestacado, alEditar, alVerTicket }: Props) {
   return (
-    <div className="tabla__envoltorio">
+    <div className="tabla-envoltorio">
       <table className="tabla">
         <thead>
           <tr>
@@ -62,7 +62,7 @@ export function TablaReservas({ reservas, idDestacado, alEditar, alVerTicket }: 
           {reservas.map((reserva) => (
             <tr
               key={reserva.id}
-              className={reserva.id === idDestacado ? 'tabla__fila tabla__fila--destacada' : 'tabla__fila'}
+              className={reserva.id === idDestacado ? 'tabla__fila tabla__fila--nueva' : 'tabla__fila'}
             >
               {/* El número corto puede faltar en las reservas del formato
                   antiguo. No romper con ellas es parte del contrato. */}

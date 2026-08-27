@@ -21,9 +21,9 @@ export function Inicio() {
 
   return (
     <main className="contenedor pagina" id="contenido">
-      <div className="pagina__encabezado">
-        <h1 className="pagina__titulo">Cafeterías</h1>
-        <p className="pagina__fecha">{formatearFechaLarga(hoy)}</p>
+      <div className="portada">
+        <h1 className="portada__titulo">Cafeterías</h1>
+        <p className="portada__fecha">{formatearFechaLarga(hoy)}</p>
       </div>
 
       {cargando && <BloqueEstado tipo="cargando" titulo="Cargando cafeterías…" />}

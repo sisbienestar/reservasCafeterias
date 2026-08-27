@@ -1,0 +1,370 @@
+/* ==========================================================================
+   Lo que la app de React añadió y el CSS heredado no tenía.
+   ==========================================================================
+
+   Se carga DESPUÉS de base, componentes, páginas y admin, y solo define lo
+   que de verdad es nuevo. Todo lo demás —botones, campos, tablas, modales,
+   avisos, cifras, el ticket— reutiliza las clases que ya existían: la
+   migración cambió cómo se pinta la interfaz, no qué aspecto tiene.
+
+   Casi todo lo de aquí cae en tres grupos:
+
+     · La sesión. El prototipo no tenía a quién nombrar en la cabecera ni una
+       pantalla de acceso, porque no había sesión.
+     · Los gráficos del consolidado. El módulo anterior dibujaba en un lienzo
+       que ya no existe; estos son cajas con altura y anchura calculadas.
+     · Los formularios de administración, que antes vivían en el HTML.
+
+   Sin dependencias de gráficos, como todo el proyecto. Son barras: un
+   rectángulo con una altura es un rectángulo con una altura, y una librería
+   pesaría más que esta hoja entera.
+   ========================================================================== */
+
+/* ── Estados que faltaban ────────────────────────────────────────────────
+   `.estado--error` ya existía. Estas dos no, y la diferencia entre ellas
+   importa: «cargando» es transitorio y «vacío» es una respuesta. */
+
+.estado--cargando { color: var(--c-texto-2); }
+
+.estado--vacio {
+  background: var(--c-superficie-2);
+  border-style: dashed;
+}
+
+/* ── La sesión en la cabecera ───────────────────────────────────────────
+   En una herramienta que comparten varios turnos, saber con qué cuenta se
+   está trabajando es lo que evita registrar toda una mañana con la sesión de
+   otra sede. */
+
+.cabecera__sesion {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  margin-left: auto;
+}
+
+.cabecera__quien {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  text-align: right;
+}
+
+.cabecera__quien strong {
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-fuerte);
+  color: var(--c-texto);
+}
+
+.cabecera__rol {
+  font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+}
+
+@media (max-width: 640px) {
+  /* En móvil el nombre se va y queda solo el rol: la cabecera ya está
+     apretada y el logo institucional no se negocia. */
+  .cabecera__quien strong { display: none; }
+}
+
+/* ── La pantalla de acceso ─────────────────────────────────────────────── */
+
+.pagina--estrecha {
+  max-width: 26rem;
+  margin-inline: auto;
+}
+
+.acceso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-4);
+  padding: var(--e-6);
+  background: var(--c-superficie);
+  border: 1px solid var(--c-borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-md);
+}
+
+.acceso__titulo {
+  margin: 0;
+  font-family: var(--fuente-titulo);
+  font-size: var(--texto-xl);
+  letter-spacing: var(--espaciado-titulo);
+  color: var(--c-texto);
+}
+
+.acceso__nota {
+  margin: 0;
+  font-size: var(--texto-sm);
+  color: var(--c-texto-2);
+  line-height: var(--interlinea-texto);
+}
+
+/* ── Campos ─────────────────────────────────────────────────────────────
+   `.campo`, `.campo__etiqueta`, `.campo__control` y `.campo__error` ya
+   existían. Faltaban la ayuda y el grupo de radios. */
+
+.campo__ayuda {
+  display: block;
+  margin-top: var(--e-1);
+  font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+  line-height: var(--interlinea-texto);
+}
+
+.campo__ayuda code {
+  padding: 0 var(--e-1);
+  background: var(--c-superficie-2);
+  border-radius: var(--radio-sm);
+  font-size: 0.95em;
+}
+
+.campo__radios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+}
+
+/* Toda la pastilla es el objetivo, no solo el circulito: en un mostrador se
+   pulsa deprisa y a veces con el dedo. */
+.radio {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-2);
+  padding: var(--e-2) var(--e-3);
+  border: 1px solid var(--c-borde-fuerte);
+  border-radius: var(--radio-pildora);
+  font-size: var(--texto-sm);
+  cursor: pointer;
+  transition: background var(--transicion), border-color var(--transicion);
+}
+
+.radio:hover { background: var(--c-superficie-2); }
+
+.radio:has(input:checked) {
+  border-color: var(--c-acento);
+  background: var(--c-acento-suave);
+  font-weight: var(--peso-medio);
+}
+
+.radio:has(input:focus-visible) {
+  outline: 2px solid var(--c-acento);
+  outline-offset: 2px;
+}
+
+.radio:has(input:disabled) { opacity: 0.55; cursor: not-allowed; }
+
+/* ── Un botón que no lo es ──────────────────────────────────────────────
+   El enlace de WhatsApp se sustituye por esto cuando el móvil no sirve. Se
+   deja a la vista y apagado, en vez de desaparecer: que falte explica más
+   que un hueco donde antes había algo. */
+
+.boton--inerte {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Acciones de una pantalla ───────────────────────────────────────────── */
+
+.pagina__acciones {
+  display: flex;
+  gap: var(--e-3);
+  margin-bottom: var(--e-5);
+}
+
+/* ── Administración · catálogo ──────────────────────────────────────────── */
+
+.catalogo { display: block; }
+
+.bloque-admin__titulo {
+  margin: 0 0 var(--e-4);
+  font-family: var(--fuente-titulo);
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-fuerte);
+  letter-spacing: var(--espaciado-titulo);
+}
+
+.formulario-admin {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--e-4);
+  align-items: start;
+  padding: var(--e-5);
+  margin-bottom: var(--e-5);
+  background: var(--c-superficie);
+  border: 1px solid var(--c-borde);
+  border-radius: var(--radio-md);
+}
+
+.formulario-admin__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e-3);
+  /* Ocupa la fila entera: los botones no son un campo más de la rejilla. */
+  grid-column: 1 / -1;
+}
+
+/* ── Administración · la carta de la semana ─────────────────────────────── */
+
+.carta__navegacion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-3);
+  margin-bottom: var(--e-4);
+}
+
+.carta__rango {
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--c-texto-2);
+}
+
+/* ── Administración · consolidado ───────────────────────────────────────── */
+
+.consolidado { display: block; }
+
+.consolidado__columnas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: var(--e-5);
+  margin-top: var(--e-6);
+}
+
+.resumen__cifras--anchas {
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+}
+
+/* ── Gráficas ───────────────────────────────────────────────────────────── */
+
+.grafica__titulo {
+  margin: 0 0 var(--e-3);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-fuerte);
+  color: var(--c-texto-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* La serie diaria: una columna por día, con desplazamiento lateral si el
+   rango es largo. Recortar los días para que quepan mentiría sobre el
+   periodo consultado. */
+.grafica__lienzo {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  overflow-x: auto;
+  padding-bottom: var(--e-2);
+}
+
+.grafica__columna {
+  display: flex;
+  flex: 1 0 1.5rem;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--e-1);
+  min-width: 1.5rem;
+}
+
+.grafica__barras {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-start;
+  width: 100%;
+  border-radius: var(--radio-sm) var(--radio-sm) 0 0;
+  overflow: hidden;
+  background: var(--c-superficie-2);
+}
+
+.grafica__barra { display: block; width: 100%; }
+
+.grafica__barra--activa { background: var(--c-acento); }
+
+/* Las canceladas van encima y en otro color, no en otra barra: apiladas, la
+   altura total es el total del día, que es lo que se compara de un vistazo. */
+.grafica__barra--cancelada { background: var(--c-borde-fuerte); }
+
+.grafica__etiqueta {
+  font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+  white-space: nowrap;
+  /* Vacío en los días que no llevan rótulo, pero ocupando su hueco: sin esto
+     las columnas con etiqueta y sin etiqueta tendrían alturas distintas. */
+  min-height: 1em;
+}
+
+.grafica__leyenda {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+  margin-top: var(--e-2);
+  font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+}
+
+.grafica__muestra {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 3px;
+}
+
+.grafica__muestra--activa { background: var(--c-acento); }
+.grafica__muestra--cancelada { background: var(--c-borde-fuerte); margin-left: var(--e-3); }
+
+/* ── Barras horizontales: por sede y por plato ──────────────────────────
+   El nombre a la izquierda con su ancho fijo, la barra en medio y la cifra a
+   la derecha. Con el nombre encima de la barra, listas de dos y de diez
+   elementos se leerían de formas distintas. */
+
+.barras {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.barras__fila {
+  display: grid;
+  grid-template-columns: minmax(6rem, 10rem) 1fr auto;
+  align-items: center;
+  gap: var(--e-3);
+}
+
+.barras__nombre {
+  font-size: var(--texto-sm);
+  color: var(--c-texto-2);
+  /* Un plato con nombre largo no debe empujar la barra fuera de la caja. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barras__pista {
+  height: 0.6rem;
+  background: var(--c-superficie-2);
+  border-radius: var(--radio-pildora);
+  overflow: hidden;
+}
+
+.barras__relleno {
+  display: block;
+  height: 100%;
+  background: var(--c-acento);
+  border-radius: var(--radio-pildora);
+  /* Mínimo visible: un plato con una sola comanda tiene que verse, o parece
+     que no se pidió. */
+  min-width: 2px;
+}
+
+.barras__valor {
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-fuerte);
+  font-variant-numeric: tabular-nums;
+  color: var(--c-texto);
+}

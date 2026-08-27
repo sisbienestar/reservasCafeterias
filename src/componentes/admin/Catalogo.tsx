@@ -198,7 +198,7 @@ function SeccionCafeterias({ pedirConfirmacion, alCambiar }: {
       )}
 
       {cafeterias && (
-        <div className="tabla__envoltorio">
+        <div className="tabla-envoltorio">
           <table className="tabla">
             <thead>
               <tr>
@@ -213,7 +213,7 @@ function SeccionCafeterias({ pedirConfirmacion, alCambiar }: {
             <tbody>
               {cafeterias.map((cafeteria) => (
                 <tr key={cafeteria.id}
-                    className={cafeteria.activa ? 'tabla__fila' : 'tabla__fila tabla__fila--cancelada'}>
+                    className={cafeteria.activa ? 'tabla__fila' : 'tabla__fila tabla__fila--apagada'}>
                   <td><code>{cafeteria.codigo}</code></td>
                   <td className="tabla__nombre">{cafeteria.nombre}</td>
                   <td>{cafeteria.ubicacion || <span className="tabla__vacio">—</span>}</td>
@@ -329,13 +329,13 @@ function SeccionCarta({ hoy, permitirFinDeSemana }: { hoy: string; permitirFinDe
 
       {semana && (
         <>
-          <div className="carta__semana">
+          <div className="rejilla-carta">
             {semana.map((dia) => {
               const habil = esDiaDeServicio(dia.fecha, permitirFinDeSemana);
               return (
-                <label className={habil ? 'carta__dia' : 'carta__dia carta__dia--sin-servicio'}
+                <label className={habil ? 'dia-carta' : 'dia-carta dia-carta--sin-servicio'}
                        key={dia.fecha}>
-                  <span className="carta__dia-nombre">
+                  <span className="dia-carta__dia">
                     {nombreDiaCorto(dia.fecha)} {dia.fecha.slice(8)}
                   </span>
                   <textarea

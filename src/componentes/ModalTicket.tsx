@@ -90,7 +90,7 @@ export function ModalTicket({ reserva, cafeteria, alCerrar }: Props) {
         <pre className="ticket" ref={papel}>{texto}</pre>
 
         {aviso && (
-          <p className={avisoEsFallo ? 'ticket__aviso ticket__aviso--fallo' : 'ticket__aviso'}
+          <p className={avisoEsFallo ? 'ticket__aviso ticket__aviso--error' : 'ticket__aviso'}
              role="status">
             {aviso}
           </p>

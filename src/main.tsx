@@ -16,6 +16,7 @@ import './estilos/base.css';
 import './estilos/componentes.css';
 import './estilos/paginas.css';
 import './estilos/admin.css';
+import './estilos/react.css';
 
 import { ProveedorSesion } from './contexto/Sesion.js';
 import { App } from './App.js';

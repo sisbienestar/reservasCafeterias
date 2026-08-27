@@ -35,7 +35,7 @@ export function BloqueEstado({ tipo, titulo, detalle, accion, children }: Props)
       role="status"
       aria-live="polite"
     >
-      {tipo === 'cargando' && <span className="estado__girador" aria-hidden="true" />}
+      {tipo === 'cargando' && <span className="estado__spinner" aria-hidden="true" />}
       <p className="estado__titulo">{titulo}</p>
       {detalle && <p className="estado__detalle">{detalle}</p>}
       {accion && (

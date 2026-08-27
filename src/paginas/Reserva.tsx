@@ -239,10 +239,10 @@ export function Reserva() {
         <Link className="enlace-volver" to="/">← Todas las cafeterías</Link>
       )}
 
-      <div className="pagina__encabezado">
-        <h1 className="pagina__titulo">{cafeteria?.nombre ?? 'Cargando…'}</h1>
-        <p className="pagina__ubicacion">{cafeteria?.ubicacion}</p>
-        <p className="pagina__fecha">{hoy && formatearFechaLarga(hoy)}</p>
+      <div className="encabezado-reserva">
+        <h1 className="encabezado-reserva__titulo">{cafeteria?.nombre ?? 'Cargando…'}</h1>
+        <p className="encabezado-reserva__ubicacion">{cafeteria?.ubicacion}</p>
+        <p className="encabezado-reserva__meta">{hoy && formatearFechaLarga(hoy)}</p>
       </div>
 
       {/*
