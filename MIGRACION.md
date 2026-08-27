@@ -40,17 +40,38 @@ Región la más cercana a Colombia. Anota de `Project Settings → API`:
 
 ## 2. Ejecutar el esquema
 
-En el editor SQL, **en este orden y uno a uno**:
+Son cuatro archivos de la carpeta `supabase/` de este repositorio, y hay que
+llevarlos al editor SQL de Supabase **en este orden y de uno en uno**:
 
-```
-supabase/01-esquema.sql     tablas, índices y restricciones
-supabase/02-rls.sql         cierra el acceso directo por la API REST
-supabase/03-funciones.sql   las escrituras atómicas y el resumen
-supabase/04-lecturas.sql    las lecturas con la forma del contrato
-```
+1. `supabase/01-esquema.sql` — tablas, índices y restricciones
+2. `supabase/02-rls.sql` — cierra el acceso directo por la API REST
+3. `supabase/03-funciones.sql` — las escrituras atómicas y el resumen
+4. `supabase/04-lecturas.sql` — las lecturas con la forma del contrato
+
+Para cada uno: ábrelo en el editor, selecciona **todo** el contenido
+(`Ctrl+A`), cópialo, pégalo en el editor SQL de Supabase y pulsa **Run**.
+
+> Lo que se pega es el CONTENIDO del archivo, no su nombre. Pegar
+> `supabase/01-esquema.sql` en el editor da `syntax error at or near
+> "supabase"`, que es exactamente lo que Postgres debe decir cuando le mandas
+> una ruta de archivo en vez de SQL.
 
 De uno en uno y mirando el resultado de cada uno: si el tercero falla a medias,
 saber cuál fue es la diferencia entre corregir una línea y volver a empezar.
+
+Los cuatro terminan sin devolver filas. `Success. No rows returned` es el
+resultado correcto: son órdenes que crean cosas, no consultas.
+
+### Comprobar que el primero entró bien
+
+Antes de seguir con el 02, pega esto y pulsa Run. Tienen que salir seis filas:
+`cafeteria`, `carta_opcion`, `perfil`, `reserva`, `reserva_asiento` y
+`reserva_cambio`.
+
+```sql
+select table_name from information_schema.tables
+ where table_schema = 'public' order by table_name;
+```
 
 ## 3. Sacar los datos de la hoja
 
