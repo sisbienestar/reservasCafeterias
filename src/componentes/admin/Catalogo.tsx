@@ -114,15 +114,15 @@ function SeccionCafeterias({ pedirConfirmacion, alCambiar }: {
    */
   function pedirArchivar(cafeteria: Cafeteria) {
     pedirConfirmacion({
-      titulo: `¿Archivar «${cafeteria.nombre}»?`,
+      titulo: `¿Cerrar «${cafeteria.nombre}»?`,
       detalle:
         'Dejará de aparecer en el inicio y no se podrán registrar reservas en ella. ' +
         'Sus reservas históricas se conservan y se puede reactivar cuando haga falta.',
-      textoConfirmar: 'Archivar',
+      textoConfirmar: 'Cerrar la cafetería',
       alConfirmar: async () => {
         try {
           await archivarCafeteria(cafeteria.id);
-          setAviso({ tipo: 'exito', mensaje: `«${cafeteria.nombre}» archivada.` });
+          setAviso({ tipo: 'exito', mensaje: `«${cafeteria.nombre}» cerrada.` });
           recargar();
           alCambiar();
         } catch (e) {
@@ -207,41 +207,48 @@ function SeccionCafeterias({ pedirConfirmacion, alCambiar }: {
           <table className="tabla tabla--admin">
             <thead>
               <tr>
-                <th scope="col">Código</th>
-                <th scope="col">Nombre</th>
+                <th scope="col">Cafetería</th>
                 <th scope="col">Ubicación</th>
                 <th scope="col">Platos fijos</th>
                 <th scope="col">Estado</th>
-                <th scope="col"><span className="visualmente-oculto">Acciones</span></th>
+                <th className="tabla__acciones" scope="col">
+                  <span className="visualmente-oculto">Acciones</span>
+                </th>
               </tr>
             </thead>
             <tbody>
               {cafeterias.map((cafeteria) => (
                 <tr key={cafeteria.id}
                     className={cafeteria.activa ? 'tabla__fila' : 'tabla__fila tabla__fila--apagada'}>
-                  <td><code>{cafeteria.codigo}</code></td>
                   <td className="tabla__nombre">{cafeteria.nombre}</td>
-                  <td>{cafeteria.ubicacion || <span className="tabla__vacio">—</span>}</td>
-                  <td>{cafeteria.platosFijos.length}</td>
+                  <td className="tabla__menu">{cafeteria.ubicacion || '—'}</td>
+                  {/* Los NOMBRES, no cuántos hay: «3» no dice si falta alguno,
+                      y esta tabla existe para revisarlos de un vistazo. */}
+                  <td className="tabla__menu">
+                    {cafeteria.platosFijos.join(' · ') || '—'}
+                  </td>
                   <td>
                     <span className={`marca-estado marca-estado--${cafeteria.activa ? 'activa' : 'cancelada'}`}>
-                      {cafeteria.activa ? 'En servicio' : 'Archivada'}
+                      {cafeteria.activa ? 'En servicio' : 'Cerrada'}
                     </span>
                   </td>
                   <td className="tabla__acciones">
                     <button type="button" className="boton boton--secundario boton--sm"
-                            onClick={() => empezarEdicion(cafeteria)}>
+                            onClick={() => empezarEdicion(cafeteria)}
+                            aria-label={`Editar ${cafeteria.nombre}`}>
                       Editar
                     </button>
                     {cafeteria.activa ? (
                       <button type="button" className="boton boton--secundario boton--sm"
-                              onClick={() => pedirArchivar(cafeteria)}>
-                        Archivar
+                              onClick={() => pedirArchivar(cafeteria)}
+                              aria-label={`Cerrar ${cafeteria.nombre}`}>
+                        Cerrar
                       </button>
                     ) : (
                       <button type="button" className="boton boton--secundario boton--sm"
-                              onClick={() => void reactivar(cafeteria)}>
-                        Reactivar
+                              onClick={() => void reactivar(cafeteria)}
+                              aria-label={`Reabrir ${cafeteria.nombre}`}>
+                        Reabrir
                       </button>
                     )}
                   </td>

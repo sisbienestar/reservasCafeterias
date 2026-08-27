@@ -1,50 +1,47 @@
 /**
- * La tabla del histórico. Se parece a la del mostrador pero no es la misma, y
- * las diferencias son las que justifican que sean dos:
+ * Tabla de detalle del administrador.
  *
- *  · Lleva columna de FECHA y de CAFETERÍA. En el mostrador las dos son
- *    siempre la misma y ocuparían sitio sin decir nada; aquí son el filtro.
- *  · Muestra las CANCELADAS, atenuadas. Es la única pantalla donde se pueden
- *    ver: en el mostrador desaparecen, y ese es justo el sitio donde alguien
- *    querría comprobar qué pasó con una.
+ * Es más ancha que la de la página operativa —lleva fecha, cafetería y
+ * estado— porque aquí se mira a través de días y sedes, no un solo servicio.
+ * Se mantiene como componente aparte en vez de parametrizar `TablaReservas`:
+ * las dos tablas responden a preguntas distintas y fundirlas obligaría a
+ * llenar la de mostrador de condicionales que allí no pintan nada.
+ *
+ * NO lleva «Medio» ni «Pago». Son datos del cobro de un servicio concreto y
+ * quien consulta el histórico busca otra cosa; están dentro del modal de cada
+ * reserva y en la exportación a CSV, que sí los lleva.
  */
 
 import type { Reserva } from '../../servicios/reservasServicio.js';
 import { formatearTelefono } from '../../utiles/telefono.js';
-import { formatearFechaCorta } from '../../utiles/fechas.js';
+import { formatearFechaCorta, nombreDiaCorto } from '../../utiles/fechas.js';
 
-const ETIQUETAS: Record<string, string> = {
-  presencial: 'Presencial',
-  telefono: 'Teléfono',
-  pagado: 'Pagado',
-  debe: 'Debe',
-};
+const COLUMNAS = [
+  'N.º de reserva', 'Fecha', 'Cafetería', 'Nombre', 'Móvil', 'Menú del día', 'Estado',
+];
 
 interface Props {
   reservas: Reserva[];
   total: number;
   nombreCafeteria: (id: string) => string;
   alEditar: (reserva: Reserva) => void;
+  alVerTicket: (reserva: Reserva) => void;
 }
 
-const Vacio = () => <span className="tabla__vacio">—</span>;
+/** Etiqueta de estado. Lleva texto, no solo color: el color no es un dato. */
+function MarcaEstado({ estado }: { estado: string }) {
+  return (
+    <span className={`marca-estado marca-estado--${estado}`}>
+      {estado === 'activa' ? 'Activa' : 'Cancelada'}
+    </span>
+  );
+}
 
-export function TablaAdminReservas({ reservas, total, nombreCafeteria, alEditar }: Props) {
+export function TablaAdminReservas({
+  reservas, total, nombreCafeteria, alEditar, alVerTicket,
+}: Props) {
   return (
     <>
-      {/*
-        Cuando el límite recorta, hay que DECIRLO. El servidor devuelve el
-        total real aunque solo mande 500 filas, y una tabla que enseña 500
-        debajo de un titular de 1.240 sin explicar la diferencia parece un
-        error de suma. La exportación sí se lleva todas.
-      */}
-      {total > reservas.length && (
-        <p className="tabla__nota" role="status">
-          Se muestran las {reservas.length} más recientes de {total}. Exporta el
-          CSV para llevarte todas.
-        </p>
-      )}
-
       <div className="tabla-envoltorio">
         <table className="tabla tabla--admin">
           <caption className="tabla__caption">
@@ -52,60 +49,56 @@ export function TablaAdminReservas({ reservas, total, nombreCafeteria, alEditar 
           </caption>
           <thead>
             <tr>
-              <th scope="col">N.º</th>
-              <th scope="col">Fecha</th>
-              <th scope="col">Cafetería</th>
-              <th scope="col">Nombre</th>
-              <th scope="col">Móvil</th>
-              <th scope="col">Menú</th>
-              <th scope="col">Medio</th>
-              <th scope="col">Pago</th>
-              <th scope="col">Estado</th>
-              <th scope="col"><span className="visualmente-oculto">Acciones</span></th>
+              {COLUMNAS.map((texto) => <th key={texto} scope="col">{texto}</th>)}
+              <th className="tabla__acciones" scope="col">
+                <span className="visualmente-oculto">Acciones</span>
+              </th>
             </tr>
           </thead>
           <tbody>
             {reservas.map((reserva) => {
-              const cancelada = reserva.estado === 'cancelada';
+              const activa = reserva.estado === 'activa';
               return (
                 <tr
                   key={reserva.id}
-                  className={cancelada ? 'tabla__fila tabla__fila--apagada' : 'tabla__fila'}
+                  className={activa ? 'tabla__fila' : 'tabla__fila tabla__fila--apagada'}
                 >
-                  <td className="tabla__numero-reserva">{reserva.numero || <Vacio />}</td>
-                  <td>{formatearFechaCorta(reserva.fecha)}</td>
-                  <td>{nombreCafeteria(reserva.cafeteriaId)}</td>
+                  {/* El identificador ENTERO: esta tabla cruza sedes y fechas,
+                      así que el consecutivo suelto no distinguiría nada. */}
+                  <td className="tabla__id-reserva">{reserva.id}</td>
+                  <td className="tabla__fecha">
+                    {nombreDiaCorto(reserva.fecha)} {formatearFechaCorta(reserva.fecha)}
+                  </td>
+                  <td className="tabla__menu">{nombreCafeteria(reserva.cafeteriaId)}</td>
                   <td className="tabla__nombre">{reserva.nombre}</td>
                   <td className="tabla__telefono">{formatearTelefono(reserva.telefono)}</td>
                   <td className="tabla__menu">{reserva.menuNombre}</td>
-                  <td>{reserva.medio ? ETIQUETAS[reserva.medio] : <Vacio />}</td>
-                  <td>
-                    {reserva.pago
-                      ? <span className={`marca-pago marca-pago--${reserva.pago}`}>
-                          {ETIQUETAS[reserva.pago]}
-                        </span>
-                      : <Vacio />}
-                  </td>
-                  <td>
-                    <span className={`marca-estado marca-estado--${reserva.estado}`}>
-                      {cancelada ? 'Cancelada' : 'Activa'}
-                    </span>
-                  </td>
+                  <td><MarcaEstado estado={reserva.estado} /></td>
                   <td className="tabla__acciones">
-                    {/*
-                      Una cancelada no se abre para editar: el servidor lo
-                      rechaza con RESERVA_CANCELADA, y ofrecer un botón que
-                      siempre falla es peor que no ofrecerlo. Su historial se
-                      lee en la propia fila, que ya dice lo que pasó.
-                    */}
-                    {!cancelada && (
+                    {/* Una reserva cancelada no se puede editar: ofrecer el
+                        botón sería prometer algo que la API rechaza. */}
+                    {activa && (
                       <button
                         type="button"
                         className="boton boton--secundario boton--sm"
                         onClick={() => alEditar(reserva)}
-                        aria-label={`Abrir la reserva de ${reserva.nombre}`}
+                        aria-label={`Editar la reserva de ${reserva.nombre}`}
                       >
-                        Abrir
+                        Editar
+                      </button>
+                    )}
+                    {/* Tampoco tiene ticket: el comprobante dice «presenta
+                        esto al reclamar tu almuerzo», y ese almuerzo ya no
+                        existe. Mandarlo sería citar a alguien a recoger algo
+                        que no le van a dar. */}
+                    {activa && (
+                      <button
+                        type="button"
+                        className="boton boton--secundario boton--sm"
+                        onClick={() => alVerTicket(reserva)}
+                        aria-label={`Ver el ticket de ${reserva.nombre}`}
+                      >
+                        Ticket
                       </button>
                     )}
                   </td>
@@ -115,6 +108,19 @@ export function TablaAdminReservas({ reservas, total, nombreCafeteria, alEditar 
           </tbody>
         </table>
       </div>
+
+      {/*
+        Debajo de la tabla y no encima: es una nota sobre lo que se acaba de
+        leer, no una advertencia previa. El servidor devuelve el total real
+        aunque solo mande 500 filas, así que sin esto la tabla no cuadraría
+        con su propio titular.
+      */}
+      {reservas.length < total && (
+        <p className="tabla__nota">
+          Mostrando {reservas.length} de {total} reservas. Afina el filtro para
+          verlas todas, o expórtalas a CSV: la exportación las lleva todas.
+        </p>
+      )}
     </>
   );
 }

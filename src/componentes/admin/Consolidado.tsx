@@ -1,169 +1,170 @@
 /**
- * El consolidado: los totales del filtro, la serie por día y los repartos por
- * sede y por plato.
+ * Vista consolidada: indicadores, gráficas y tablas de totales.
  *
- * Las cifras NO se calculan aquí. Llegan ya sumadas dentro de la respuesta de
+ * Cada gráfica va acompañada de su tabla con los mismos números. No es
+ * redundancia: la gráfica da la forma de un vistazo y la tabla da el valor
+ * exacto, que es el que se copia a un informe. Además es lo que hace la
+ * pantalla utilizable con lector de pantalla, donde un SVG no dice nada.
+ *
+ * Las cifras NO se calculan aquí: llegan ya sumadas dentro de la respuesta de
  * `reservas.buscar`, porque el administrador puede pedir un trimestre y
  * mandar miles de filas al navegador para que cuente es justo lo que no hay
- * que hacer. Esta pantalla solo dibuja.
- *
- * Los gráficos son cajas con una altura y una anchura calculadas, no una
- * librería. Son dos formas sencillas —barras verticales apiladas y barras
- * horizontales— y una dependencia de gráficos pesa más que todo lo que hay
- * aquí; además tendría que llegar al navegador, y el proyecto lleva desde el
- * principio sin nada que lo haga.
+ * que hacer.
  */
 
+import type { ReactNode } from 'react';
 import type { ResumenReservas } from '../../servicios/reservasServicio.js';
-import { formatearFechaCorta, nombreDiaCorto } from '../../utiles/fechas.js';
+import { formatearFechaCorta, lunesDeSemana } from '../../utiles/fechas.js';
+import { GraficaBarras, GraficaColumnas, Indicador, type DatoColumna } from './graficas.js';
 
-interface Props { resumen: ResumenReservas }
+/** Cuántos días caben en la gráfica diaria antes de pasar a semanas. */
+const TOPE_DIAS = 45;
 
-export function Consolidado({ resumen }: Props) {
+/**
+ * Agrupa la serie diaria por semanas.
+ *
+ * Un trimestre son noventa columnas de dos píxeles: ilegible. Cuando el rango
+ * se pasa de largo, la unidad deja de ser el día y pasa a ser la semana, y se
+ * dice en el título para que nadie lea una barra semanal como si fuera un día.
+ */
+function agruparPorSemana(porDia: ResumenReservas['porDia']): DatoColumna[] {
+  const semanas = new Map<string, number>();
+  for (const dia of porDia) {
+    const lunes = lunesDeSemana(dia.fecha);
+    semanas.set(lunes, (semanas.get(lunes) ?? 0) + dia.activas);
+  }
+  return [...semanas.entries()].map(([lunes, activas]) => ({
+    etiqueta: formatearFechaCorta(lunes),
+    valorEje: `Semana del ${formatearFechaCorta(lunes)}`,
+    valor: activas,
+  }));
+}
+
+function serieDiaria(porDia: ResumenReservas['porDia']): DatoColumna[] {
+  return porDia.map((d) => ({
+    etiqueta: formatearFechaCorta(d.fecha),
+    valorEje: formatearFechaCorta(d.fecha),
+    valor: d.activas,
+  }));
+}
+
+/** Bloque con título, gráfica y tabla. */
+function Bloque({ titulo, subtitulo, children }: {
+  titulo: string; subtitulo?: string | undefined; children: ReactNode;
+}) {
+  return (
+    <section className="bloque-consolidado">
+      <h3 className="bloque-consolidado__titulo">{titulo}</h3>
+      {subtitulo && <p className="bloque-consolidado__nota">{subtitulo}</p>}
+      {children}
+    </section>
+  );
+}
+
+/** Tabla simple de totales. La primera columna es el nombre; el resto, cifras. */
+function TablaTotales({ cabeceras, filas }: {
+  cabeceras: string[]; filas: (string | number)[][];
+}) {
+  return (
+    <div className="tabla-envoltorio">
+      <table className="tabla tabla--totales">
+        <thead>
+          <tr>
+            {cabeceras.map((c) => <th key={c} scope="col">{c}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {filas.map((fila, i) => (
+            <tr key={`${String(fila[0])}-${i}`}>
+              {fila.map((celda, j) => (
+                <td key={j} className={j === 0 ? 'tabla__nombre' : 'tabla__numero'}>
+                  {String(celda)}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export function Consolidado({ resumen }: { resumen: ResumenReservas }) {
   const { totales, porDia, porCafeteria, porPlato } = resumen;
 
-  if (totales.total === 0) {
-    return (
-      <p className="grafica__vacio">
-        Ninguna reserva coincide con el filtro, así que no hay nada que consolidar.
-      </p>
-    );
-  }
+  const porSemana = porDia.length > TOPE_DIAS;
+  const serie = porSemana ? agruparPorSemana(porDia) : serieDiaria(porDia);
+  const tituloSerie = porSemana ? 'Reservas activas por semana' : 'Reservas activas por día';
 
   return (
-    <div className="consolidado">
+    <>
       <div className="rejilla-indicadores">
-        <Indicador rotulo="Reservas activas" valor={totales.activas} />
+        <Indicador rotulo="Reservas activas" valor={totales.activas.toLocaleString('es-CO')} />
         <Indicador
           rotulo="Canceladas"
-          valor={totales.canceladas}
+          valor={totales.canceladas.toLocaleString('es-CO')}
           detalle={totales.total > 0
             ? `${Math.round((totales.canceladas / totales.total) * 100)}% del total`
             : undefined}
         />
         <Indicador
           rotulo="Promedio por día"
-          valor={totales.promedioDiario}
+          valor={totales.promedioDiario.toLocaleString('es-CO')}
           detalle={`sobre ${totales.diasConServicio} días con servicio`}
         />
         <Indicador rotulo="Cafeterías con reservas" valor={porCafeteria.length} />
       </div>
 
-      <SerieDiaria porDia={porDia} />
-
-      <div className="consolidado__columnas">
-        <BarrasHorizontales
-          titulo="Por cafetería"
-          filas={porCafeteria.map((c) => ({ nombre: c.nombre, total: c.activas }))}
-          vacio="Ninguna reserva activa en este rango."
-        />
-        <BarrasHorizontales
-          titulo="Platos más pedidos"
-          filas={porPlato}
-          vacio="Ningún plato servido en este rango."
-        />
-      </div>
-    </div>
-  );
-}
-
-/** Un titular del consolidado. El detalle de debajo es lo que evita que una
- *  cifra suelta se lea mal: «3,2» no dice nada sin «sobre 12 días». */
-function Indicador({ rotulo, valor, detalle }: {
-  rotulo: string; valor: number; detalle?: string | undefined;
-}) {
-  return (
-    <div className="indicador">
-      <p className="indicador__rotulo">{rotulo}</p>
-      {/* Separador de miles en español: un trimestre puede pasar de mil. */}
-      <p className="indicador__valor">{valor.toLocaleString('es-CO')}</p>
-      {detalle && <p className="indicador__detalle">{detalle}</p>}
-    </div>
-  );
-}
-
-/**
- * La serie por día, en barras.
- *
- * `porDia` trae TODOS los días del rango, también los que no tuvieron ni una
- * reserva: eso lo garantiza el servidor. Un hueco es información —un puente,
- * unas vacaciones— y omitirlo juntaría dos fechas lejanas como si fueran
- * consecutivas, que es una gráfica que miente.
- */
-function SerieDiaria({ porDia }: { porDia: ResumenReservas['porDia'] }) {
-  if (porDia.length === 0) return null;
-
-  const mayor = Math.max(1, ...porDia.map((d) => d.activas + d.canceladas));
-  const ALTO = 160;
-
-  // Con muchos días no cabe una etiqueta por barra. Se van poniendo cada N
-  // para que el eje siga situando sin amontonarse.
-  const paso = Math.ceil(porDia.length / 12);
-
-  return (
-    <section className="grafica">
-      <h3 className="grafica__titulo">Reservas por día</h3>
-      <div className="grafica__lienzo" role="img"
-           aria-label={`Serie de ${porDia.length} días. Máximo diario: ${mayor} reservas.`}>
-        {porDia.map((dia, i) => {
-          const alturaActivas = (dia.activas / mayor) * ALTO;
-          const alturaCanceladas = (dia.canceladas / mayor) * ALTO;
-          return (
-            <div className="grafica__columna" key={dia.fecha}>
-              <div className="grafica__barras" style={{ height: `${ALTO}px` }}>
-                {/* Las canceladas encima de las activas: apiladas, la altura
-                    total es el total de reservas del día, que es lo que se
-                    quiere comparar de un vistazo. */}
-                <span className="grafica__barra grafica__barra--cancelada"
-                      style={{ height: `${alturaCanceladas}px` }} />
-                <span className="grafica__barra grafica__barra--activa"
-                      style={{ height: `${alturaActivas}px` }} />
-              </div>
-              <span className="grafica__etiqueta">
-                {i % paso === 0
-                  ? `${nombreDiaCorto(dia.fecha)} ${formatearFechaCorta(dia.fecha)}`
-                  : ''}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-      <p className="grafica__leyenda">
-        <span className="grafica__muestra grafica__muestra--activa" aria-hidden="true" /> Activas
-        <span className="grafica__muestra grafica__muestra--cancelada" aria-hidden="true" /> Canceladas
-      </p>
-    </section>
-  );
-}
-
-/** Reparto en barras horizontales, de mayor a menor. El orden lo trae ya el
- *  servidor: reordenar aquí haría que dos pantallas contaran distinto. */
-function BarrasHorizontales({ titulo, filas, vacio }: {
-  titulo: string;
-  filas: { nombre: string; total: number }[];
-  vacio: string;
-}) {
-  const mayor = Math.max(1, ...filas.map((f) => f.total));
-
-  return (
-    <section className="grafica">
-      <h3 className="grafica__titulo">{titulo}</h3>
-      {filas.length === 0 ? (
-        <p className="grafica__vacio">{vacio}</p>
+      {/* Sin nada que consolidar se dice con palabras, en vez de enseñar
+          cuatro ceros y tres gráficas vacías. */}
+      {totales.total === 0 ? (
+        <p className="grafica__vacio">
+          Ninguna reserva coincide con el filtro, así que no hay nada que consolidar.
+        </p>
       ) : (
-        <ul className="barras">
-          {filas.map((fila) => (
-            <li className="barras__fila" key={fila.nombre}>
-              <span className="barras__nombre">{fila.nombre}</span>
-              <span className="barras__pista">
-                <span className="barras__relleno"
-                      style={{ width: `${(fila.total / mayor) * 100}%` }} />
-              </span>
-              <span className="barras__valor">{fila.total}</span>
-            </li>
-          ))}
-        </ul>
+        <>
+          <Bloque
+            titulo={tituloSerie}
+            subtitulo={porSemana
+              ? 'El rango supera las seis semanas, así que cada barra es una semana completa.'
+              : 'Los días sin barra son días sin servicio: fines de semana y festivos.'}
+          >
+            <GraficaColumnas datos={serie} titulo={tituloSerie} />
+            <TablaTotales
+              cabeceras={[porSemana ? 'Semana del' : 'Día', 'Activas']}
+              filas={serie.filter((d) => d.valor > 0).map((d) => [d.valorEje, d.valor])}
+            />
+          </Bloque>
+
+          <Bloque titulo="Reservas por cafetería">
+            <GraficaBarras
+              datos={porCafeteria.map((c) => ({ etiqueta: c.nombre, valor: c.activas }))}
+              titulo="Reservas activas por cafetería"
+            />
+            <TablaTotales
+              cabeceras={['Cafetería', 'Activas', 'Canceladas', 'Total']}
+              filas={porCafeteria.map((c) =>
+                [c.nombre, c.activas, c.canceladas, c.activas + c.canceladas])}
+            />
+          </Bloque>
+
+          <Bloque
+            titulo="Platos más pedidos"
+            subtitulo="Solo cuenta reservas activas: sumar las canceladas mandaría a cocinar de más."
+          >
+            {/* La gráfica se queda en los diez primeros —más barras no se
+                distinguen— pero la tabla los lleva todos. */}
+            <GraficaBarras
+              datos={porPlato.slice(0, 10).map((p) => ({ etiqueta: p.nombre, valor: p.total }))}
+              titulo="Platos más pedidos"
+            />
+            <TablaTotales
+              cabeceras={['Plato', 'Reservas']}
+              filas={porPlato.map((p) => [p.nombre, p.total])}
+            />
+          </Bloque>
+        </>
       )}
-    </section>
+    </>
   );
 }

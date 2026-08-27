@@ -1,21 +1,22 @@
 /**
  * El formulario de acceso.
  *
- * Es la pantalla que el prototipo no tenía. `reserva.html` no pedía nada y
- * `admin.html` comparaba un SHA-256 en el navegador, así que cualquiera con
- * la URL veía los móviles de contacto de todo el campus. Era, escrito en el
- * propio README, «la deuda más importante del proyecto».
+ * Reutiliza el marcado de la pantalla de acceso que tenía `admin.html`
+ * —`.acceso`, `.acceso__panel`, `.acceso__titulo`…—, pero lo que hay detrás
+ * es otra cosa. Allí era un pestillo: un SHA-256 comparado en el navegador,
+ * que se saltaba con las herramientas de desarrollo, y `reserva.html` no
+ * pedía nada. Aquí es una sesión que valida el servidor, y la piden las tres
+ * pantallas.
  *
  * No hay registro ni «he olvidado mi contraseña», y es deliberado: las
  * cuentas de esto no se piden, se dan. Son las del personal de cafetería, las
- * crea administración y llevan asociado un perfil con su sede. Un formulario
- * de alta abierto dejaría entrar a cualquiera con un correo — hasta la puerta
- * siguiente, sí, pero esa puerta no debería tener cola.
+ * crea administración y llevan asociado un perfil con su sede.
  */
 
 import { useState, type FormEvent } from 'react';
 import { useSesion } from '../contexto/Sesion.js';
 import { Cabecera } from '../componentes/Cabecera.js';
+import { Pie } from '../componentes/Pie.js';
 
 export function Entrar() {
   const { entrar } = useSesion();
@@ -33,8 +34,8 @@ export function Entrar() {
     try {
       await entrar(correo, clave);
       // No se navega a ninguna parte: al cambiar la sesión, `App` deja de
-      // pintar esta pantalla por su cuenta. Redirigir aquí además sería
-      // decidir dos veces lo mismo, y las dos podrían discrepar.
+      // pintar esta pantalla por su cuenta. Redirigir aquí sería decidir dos
+      // veces lo mismo, y las dos podrían discrepar.
     } catch (e) {
       setError((e as Error).message);
       setEnviando(false);
@@ -44,18 +45,24 @@ export function Entrar() {
   return (
     <>
       <Cabecera />
-      <main className="contenedor pagina pagina--estrecha">
-        <form className="acceso" onSubmit={alEnviar}>
+      <main className="contenedor pagina acceso">
+        <form className="acceso__panel" onSubmit={alEnviar} noValidate>
           <h1 className="acceso__titulo">Entrar</h1>
           <p className="acceso__nota">
             Usa la cuenta que te dio administración. Si no tienes una, pídela:
             no hay registro abierto.
           </p>
 
-          <label className="campo">
-            <span className="campo__etiqueta">Correo</span>
+          {/* `alert` y no `status`: es la respuesta directa a algo que la
+              persona acaba de hacer, y esperar a que termine de leerse otra
+              cosa dejaría el fallo sin anunciar. */}
+          {error && <p className="acceso__error" role="alert">{error}</p>}
+
+          <div className="campo">
+            <label className="campo__etiqueta" htmlFor="campo-correo">Correo</label>
             <input
               className="campo__control"
+              id="campo-correo"
               type="email"
               name="correo"
               value={correo}
@@ -67,28 +74,23 @@ export function Entrar() {
                  pantalla siempre viene a escribir. */
               autoFocus
             />
-          </label>
+          </div>
 
-          <label className="campo">
-            <span className="campo__etiqueta">Contraseña</span>
+          <div className="campo">
+            <label className="campo__etiqueta" htmlFor="campo-clave">Clave</label>
             <input
               className="campo__control"
+              id="campo-clave"
               type="password"
               name="clave"
               value={clave}
               onChange={(e) => setClave(e.target.value)}
               autoComplete="current-password"
+              placeholder="••••••••"
               required
               disabled={enviando}
             />
-          </label>
-
-          {error && (
-            /* `assertive` aquí sí: es la respuesta directa a algo que la
-               persona acaba de hacer, y esperar a que termine de leerse otra
-               cosa dejaría el fallo sin anunciar. */
-            <p className="campo__error" role="alert" aria-live="assertive">{error}</p>
-          )}
+          </div>
 
           <button
             type="submit"
@@ -101,6 +103,7 @@ export function Entrar() {
           </button>
         </form>
       </main>
+      <Pie />
     </>
   );
 }

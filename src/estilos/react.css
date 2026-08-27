@@ -4,20 +4,17 @@
 
    Se carga DESPUÉS de base, componentes, páginas y admin.
 
-   La primera versión de este archivo definía cincuenta clases, y casi todas
-   sobraban: eran nombres paralelos para cosas que el proyecto ya tenía con
-   otro nombre —`.tabla__envoltorio` por `.tabla-envoltorio`, `.radio` por
-   `.opcion`, `.formulario-admin` por `.formulario-catalogo`—. El resultado
-   era una interfaz con dos sistemas de diseño discutiendo. Ahora los
-   componentes usan el que ya existía, y aquí queda solo lo que de verdad es
-   nuevo:
+   Este archivo llegó a tener cincuenta reglas y casi todas sobraban: eran
+   nombres paralelos para cosas que el proyecto ya tenía con otro nombre
+   —`.tabla__envoltorio` por `.tabla-envoltorio`, `.radio` por `.opcion`,
+   `.barras` por las gráficas SVG de `.grafica`—. El resultado era una
+   interfaz con dos sistemas de diseño discutiendo, y se notaba.
 
-     · La sesión. El prototipo no tenía a quién nombrar ni pantalla de
-       acceso, porque no había sesión.
-     · Las gráficas del consolidado. El módulo anterior dibujaba en un lienzo
-       que ya no existe; estas son cajas con altura y anchura calculadas.
+   Lo que queda es lo que de verdad no existía, y es poco porque el
+   prototipo estaba bien resuelto: nueve reglas, casi todas de la sesión, que
+   es lo único que la migración añadió a la interfaz.
 
-   Antes de añadir nada aquí, buscar el nombre en los otros cuatro archivos.
+   ANTES DE AÑADIR NADA AQUÍ, buscar el nombre en los otros cuatro archivos.
    Lo más probable es que ya esté.
    ========================================================================== */
 
@@ -33,7 +30,8 @@
 }
 
 /* ── La sesión ──────────────────────────────────────────────────────────
-   `.barra-sesion` ya existía —la usaba administración— y es una fila con
+   `.barra-sesion` ya existía —la usaba administración para «← Ir a la
+   pantalla de mostrador» y «Cerrar sesión»— y es una fila con
    `space-between`. Solo hace falta vestir el bloque de en medio, que es lo
    nuevo: en una herramienta que comparten varios turnos, saber con qué
    cuenta se trabaja es lo que evita registrar toda una mañana con la sesión
@@ -64,39 +62,6 @@
   .barra-sesion__quien { display: none; }
 }
 
-/* ── La pantalla de acceso ─────────────────────────────────────────────── */
-
-.pagina--estrecha {
-  max-width: 26rem;
-  margin-inline: auto;
-}
-
-.acceso {
-  display: flex;
-  flex-direction: column;
-  gap: var(--e-4);
-  padding: var(--e-6);
-  background: var(--c-superficie);
-  border: 1px solid var(--c-borde);
-  border-radius: var(--radio-lg);
-  box-shadow: var(--sombra-md);
-}
-
-.acceso__titulo {
-  margin: 0;
-  font-family: var(--fuente-titulo);
-  font-size: var(--texto-xl);
-  letter-spacing: var(--espaciado-titulo);
-  color: var(--c-texto);
-}
-
-.acceso__nota {
-  margin: 0;
-  font-size: var(--texto-sm);
-  color: var(--c-texto-2);
-  line-height: var(--interlinea-texto);
-}
-
 /* ── Dos huecos del marcado heredado ────────────────────────────────────
    `.encabezado-reserva` es una fila con el texto a un lado y el botón al
    otro; este bloque agrupa el texto. `.opcion__texto` es la etiqueta dentro
@@ -107,7 +72,9 @@
 
 .opcion__texto { user-select: none; }
 
-/* ── Ayuda bajo un campo ────────────────────────────────────────────────── */
+/* ── Ayuda bajo un campo ────────────────────────────────────────────────
+   El original no tenía ninguna. Aquí explica por qué el identificador y el
+   código de una cafetería no se pueden editar. */
 
 .campo__ayuda {
   display: block;
@@ -135,139 +102,8 @@
   pointer-events: none;
 }
 
-/* ── Consolidado ────────────────────────────────────────────────────────
-   Los indicadores de arriba usan `.rejilla-indicadores` e `.indicador`, que
-   ya existían. Esto es solo el reparto de las dos columnas de abajo. */
+/* ── Catálogo ───────────────────────────────────────────────────────────
+   Sus dos bloques ya se separan solos con `.bloque-admin`; esto solo existe
+   para que el envoltorio no colapse el margen del primero. */
 
-.catalogo,
-.consolidado { display: block; }
-
-.consolidado__columnas {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-  gap: var(--e-5);
-  margin-top: var(--e-6);
-}
-
-/* ── Gráficas ───────────────────────────────────────────────────────────
-   `.grafica`, `.grafica__lienzo` y `.grafica__vacio` ya existían. Lo demás
-   es de la serie de barras nueva. Sin librería: son rectángulos con una
-   altura, y una dependencia de gráficos pesaría más que esta hoja entera. */
-
-.grafica__titulo {
-  margin: 0 0 var(--e-3);
-  font-size: var(--texto-sm);
-  font-weight: var(--peso-fuerte);
-  color: var(--c-texto-2);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.grafica__columna {
-  display: flex;
-  flex: 1 0 1.5rem;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--e-1);
-  min-width: 1.5rem;
-}
-
-.grafica__barras {
-  display: flex;
-  flex-direction: column-reverse;
-  justify-content: flex-start;
-  width: 100%;
-  border-radius: var(--radio-sm) var(--radio-sm) 0 0;
-  overflow: hidden;
-  background: var(--c-superficie-2);
-}
-
-.grafica__barra { display: block; width: 100%; }
-
-.grafica__barra--activa { background: var(--c-acento); }
-
-/* Las canceladas van encima y en otro color, no en otra barra: apiladas, la
-   altura total es el total del día, que es lo que se compara de un vistazo. */
-.grafica__barra--cancelada { background: var(--c-borde-fuerte); }
-
-.grafica__etiqueta {
-  font-size: var(--texto-xs);
-  color: var(--c-texto-3);
-  white-space: nowrap;
-  /* Vacío en los días que no llevan rótulo, pero ocupando su hueco: sin esto
-     las columnas con etiqueta y sin etiqueta tendrían alturas distintas. */
-  min-height: 1em;
-}
-
-.grafica__leyenda {
-  display: flex;
-  align-items: center;
-  gap: var(--e-2);
-  margin-top: var(--e-2);
-  font-size: var(--texto-xs);
-  color: var(--c-texto-3);
-}
-
-.grafica__muestra {
-  display: inline-block;
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: 3px;
-}
-
-.grafica__muestra--activa { background: var(--c-acento); }
-.grafica__muestra--cancelada { background: var(--c-borde-fuerte); margin-left: var(--e-3); }
-
-/* ── Barras horizontales: por sede y por plato ──────────────────────────
-   El nombre a la izquierda con su ancho fijo, la barra en medio y la cifra a
-   la derecha. Con el nombre encima de la barra, listas de dos y de diez
-   elementos se leerían de formas distintas. */
-
-.barras {
-  display: flex;
-  flex-direction: column;
-  gap: var(--e-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.barras__fila {
-  display: grid;
-  grid-template-columns: minmax(6rem, 10rem) 1fr auto;
-  align-items: center;
-  gap: var(--e-3);
-}
-
-.barras__nombre {
-  font-size: var(--texto-sm);
-  color: var(--c-texto-2);
-  /* Un plato con nombre largo no debe empujar la barra fuera de la caja. */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.barras__pista {
-  height: 0.6rem;
-  background: var(--c-superficie-2);
-  border-radius: var(--radio-pildora);
-  overflow: hidden;
-}
-
-.barras__relleno {
-  display: block;
-  height: 100%;
-  background: var(--c-acento);
-  border-radius: var(--radio-pildora);
-  /* Mínimo visible: un plato con una sola comanda tiene que verse, o parece
-     que no se pidió. */
-  min-width: 2px;
-}
-
-.barras__valor {
-  font-size: var(--texto-sm);
-  font-weight: var(--peso-fuerte);
-  font-variant-numeric: tabular-nums;
-  color: var(--c-texto);
-}
+.catalogo { display: block; }

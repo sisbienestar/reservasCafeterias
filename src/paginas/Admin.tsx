@@ -30,6 +30,7 @@ import { lunesDeSemana, sumarDias } from '../utiles/fechas.js';
 import { BloqueEstado } from '../componentes/BloqueEstado.js';
 import { ModalReserva, type DatosReserva } from '../componentes/ModalReserva.js';
 import { ModalConfirmacion, type PeticionConfirmacion } from '../componentes/ModalConfirmacion.js';
+import { ModalTicket } from '../componentes/ModalTicket.js';
 import { TablaAdminReservas } from '../componentes/admin/TablaAdminReservas.js';
 import { Consolidado } from '../componentes/admin/Consolidado.js';
 import { Catalogo } from '../componentes/admin/Catalogo.js';
@@ -107,6 +108,7 @@ export function Admin() {
   const [enEdicion, setEnEdicion] = useState<Reserva | null>(null);
   const [menuDeLaReserva, setMenuDeLaReserva] = useState<OpcionMenu[]>([]);
   const [confirmacion, setConfirmacion] = useState<PeticionConfirmacion | null>(null);
+  const [ticket, setTicket] = useState<Reserva | null>(null);
   const [versionCafeterias, setVersionCafeterias] = useState(0);
 
   /* ── Datos ────────────────────────────────────────────────────────────── */
@@ -403,14 +405,14 @@ export function Admin() {
         <section id="vista-reservas" role="tabpanel" aria-labelledby="pestana-reservas">
           {cargando && <BloqueEstado tipo="cargando" titulo="Buscando reservas…" />}
           {error && (
-            <BloqueEstado tipo="error" titulo="No se pudo hacer la consulta"
+            <BloqueEstado tipo="error" titulo="No se pudo completar la búsqueda"
                           detalle={error} accion={{ texto: 'Reintentar', alPulsar: recargar }} />
           )}
           {resultado && resultado.reservas.length === 0 && !cargando && (
             <BloqueEstado
               tipo="vacio"
-              titulo="Ninguna reserva con esos filtros"
-              detalle="Prueba a ampliar el rango de fechas o a quitar el texto de búsqueda."
+              titulo="Ninguna reserva coincide con el filtro"
+              detalle="Prueba a ampliar el rango de fechas o a quitar alguna condición."
             />
           )}
           {resultado && resultado.reservas.length > 0 && (
@@ -419,6 +421,7 @@ export function Admin() {
               total={resultado.total}
               nombreCafeteria={nombreCafeteria}
               alEditar={(r) => void abrirEdicion(r)}
+              alVerTicket={(r) => setTicket(r)}
             />
           )}
         </section>
@@ -426,9 +429,9 @@ export function Admin() {
 
       {pestana === 'consolidado' && (
         <section id="vista-consolidado" role="tabpanel" aria-labelledby="pestana-consolidado">
-          {cargando && <BloqueEstado tipo="cargando" titulo="Calculando…" />}
+          {cargando && <BloqueEstado tipo="cargando" titulo="Buscando reservas…" />}
           {error && (
-            <BloqueEstado tipo="error" titulo="No se pudo hacer la consulta"
+            <BloqueEstado tipo="error" titulo="No se pudo completar la búsqueda"
                           detalle={error} accion={{ texto: 'Reintentar', alPulsar: recargar }} />
           )}
           {/* Se pinta con la MISMA respuesta que la tabla: cambiar de pestaña
@@ -461,6 +464,15 @@ export function Admin() {
       />
 
       <ModalConfirmacion peticion={confirmacion} alCerrar={cerrarConfirmacion} />
+
+      {/* La sede sale del propio identificador de la reserva, no de la
+          pantalla: aquí conviven cinco, y el ticket tiene que llevar el
+          nombre de la suya. */}
+      <ModalTicket
+        reserva={ticket}
+        cafeteria={ticket ? { nombre: nombreCafeteria(ticket.cafeteriaId) } : null}
+        alCerrar={() => setTicket(null)}
+      />
     </main>
     <Pie />
     </>
