@@ -37,6 +37,8 @@ import { ResumenDelDia } from '../componentes/ResumenDelDia.js';
 import { TablaReservas } from '../componentes/TablaReservas.js';
 import { ModalReserva, type DatosReserva } from '../componentes/ModalReserva.js';
 import { ModalTicket } from '../componentes/ModalTicket.js';
+import { BarraSesion } from '../componentes/BarraSesion.js';
+import { Pie } from '../componentes/Pie.js';
 
 interface Aviso {
   tipo: 'exito' | 'aviso';
@@ -46,7 +48,7 @@ interface Aviso {
 
 export function Reserva() {
   const { cafeteriaId = '' } = useParams();
-  const { contexto } = useSesion();
+  const { contexto, salir } = useSesion();
   const hoy = contexto?.hoy ?? '';
   const permitirFinDeSemana = contexto?.permitirFinDeSemana ?? false;
   const diaHabil = hoy ? esDiaDeServicio(hoy, permitirFinDeSemana) : false;
@@ -223,27 +225,55 @@ export function Reserva() {
 
   if (falloDePagina) {
     return (
-      <main className="contenedor pagina" id="contenido">
-        <BloqueEstado tipo="error" titulo="No se encontró esa cafetería" detalle={falloDePagina}>
-          <Link className="boton boton--secundario boton--sm" to="/">Volver al inicio</Link>
-        </BloqueEstado>
-      </main>
+      <>
+        <main className="contenedor pagina" id="contenido">
+          <BloqueEstado tipo="error" titulo="No se encontró esa cafetería" detalle={falloDePagina}>
+            <Link className="boton boton--secundario boton--sm" to="/">Volver al inicio</Link>
+          </BloqueEstado>
+        </main>
+        <Pie />
+      </>
     );
   }
 
   return (
+    <>
     <main className="contenedor pagina" id="contenido">
       {/* El enlace de vuelta solo tiene sentido para quien puede elegir sede.
           Al mostrador, con una sola, lo llevaría a una lista de un elemento. */}
-      {contexto?.perfil.rol === 'admin' && (
-        <Link className="enlace-volver" to="/">← Todas las cafeterías</Link>
+      {contexto && (
+        <BarraSesion
+          perfil={contexto.perfil}
+          alSalir={salir}
+          volver={contexto.perfil.rol === 'admin'
+            ? { a: '/', texto: '← Todas las cafeterías' }
+            : undefined}
+        />
       )}
 
-      <div className="encabezado-reserva">
-        <h1 className="encabezado-reserva__titulo">{cafeteria?.nombre ?? 'Cargando…'}</h1>
-        <p className="encabezado-reserva__ubicacion">{cafeteria?.ubicacion}</p>
-        <p className="encabezado-reserva__meta">{hoy && formatearFechaLarga(hoy)}</p>
-      </div>
+      {/*
+        El orden es ubicación, nombre y fecha, y el botón va DENTRO de esta
+        sección. `.encabezado-reserva` es una fila: el texto a la izquierda y
+        la acción a la derecha. Sacar el botón a una franja de debajo lo
+        dejaba suelto y descolocaba el bloque entero.
+      */}
+      <section className="encabezado-reserva">
+        <div className="encabezado-reserva__texto">
+          <p className="encabezado-reserva__ubicacion">{cafeteria?.ubicacion}</p>
+          <h1 className="encabezado-reserva__titulo">{cafeteria?.nombre ?? '…'}</h1>
+          <p className="encabezado-reserva__meta">{hoy && formatearFechaLarga(hoy)}</p>
+        </div>
+        {diaHabil && (
+          <button
+            type="button"
+            className="boton boton--primario"
+            onClick={() => abrirFormulario(null)}
+            disabled={cargando || !cafeteria}
+          >
+            Registrar reserva
+          </button>
+        )}
+      </section>
 
       {/*
         El interruptor de pruebas se anuncia en pantalla, y no solo en un
@@ -283,18 +313,13 @@ export function Reserva() {
           detalle="Los sábados y domingos las cafeterías no prestan servicio, así que no se registran reservas."
         />
       ) : (
-        <>
-          <div className="pagina__acciones">
-            <button
-              type="button"
-              className="boton boton--primario"
-              onClick={() => abrirFormulario(null)}
-              disabled={cargando || !cafeteria}
-            >
-              Registrar reserva
-            </button>
-          </div>
+        <section className="bloque-tabla" aria-labelledby="titulo-tabla">
+          <h2 className="seccion__titulo" id="titulo-tabla">Reservas de hoy</h2>
 
+          {/*
+            El consolidado va DENTRO de esta sección, no en una propia: habla
+            de las mismas reservas que la tabla y lo cubre su mismo título.
+          */}
           <ResumenDelDia reservas={reservas} />
 
           {cargando && <BloqueEstado tipo="cargando" titulo="Cargando reservas…" />}
@@ -327,7 +352,7 @@ export function Reserva() {
               alVerTicket={(reserva) => setTicket(reserva)}
             />
           )}
-        </>
+        </section>
       )}
 
       {/*
@@ -347,5 +372,7 @@ export function Reserva() {
 
       <ModalTicket reserva={ticket} cafeteria={cafeteria} alCerrar={() => setTicket(null)} />
     </main>
+    <Pie />
+    </>
   );
 }

@@ -7,10 +7,11 @@
  * mandar miles de filas al navegador para que cuente es justo lo que no hay
  * que hacer. Esta pantalla solo dibuja.
  *
- * Los gráficos son SVG escrito a mano y no una librería. Son tres formas
- * sencillas —barras verticales, barras horizontales— y una dependencia de
- * gráficos pesa más que todo lo que hay aquí; además tendría que llegar al
- * navegador, y el proyecto lleva desde el principio sin nada que lo haga.
+ * Los gráficos son cajas con una altura y una anchura calculadas, no una
+ * librería. Son dos formas sencillas —barras verticales apiladas y barras
+ * horizontales— y una dependencia de gráficos pesa más que todo lo que hay
+ * aquí; además tendría que llegar al navegador, y el proyecto lleva desde el
+ * principio sin nada que lo haga.
  */
 
 import type { ResumenReservas } from '../../servicios/reservasServicio.js';
@@ -21,16 +22,32 @@ interface Props { resumen: ResumenReservas }
 export function Consolidado({ resumen }: Props) {
   const { totales, porDia, porCafeteria, porPlato } = resumen;
 
+  if (totales.total === 0) {
+    return (
+      <p className="grafica__vacio">
+        Ninguna reserva coincide con el filtro, así que no hay nada que consolidar.
+      </p>
+    );
+  }
+
   return (
     <div className="consolidado">
-      <ul className="resumen__cifras resumen__cifras--anchas">
-        <Cifra rotulo="Reservas" valor={totales.total} />
-        <Cifra rotulo="Activas" valor={totales.activas} modificador="pagado" />
-        <Cifra rotulo="Canceladas" valor={totales.canceladas}
-               modificador={totales.canceladas > 0 ? 'debe' : undefined} />
-        <Cifra rotulo="Días con servicio" valor={totales.diasConServicio} />
-        <Cifra rotulo="Promedio diario" valor={totales.promedioDiario} />
-      </ul>
+      <div className="rejilla-indicadores">
+        <Indicador rotulo="Reservas activas" valor={totales.activas} />
+        <Indicador
+          rotulo="Canceladas"
+          valor={totales.canceladas}
+          detalle={totales.total > 0
+            ? `${Math.round((totales.canceladas / totales.total) * 100)}% del total`
+            : undefined}
+        />
+        <Indicador
+          rotulo="Promedio por día"
+          valor={totales.promedioDiario}
+          detalle={`sobre ${totales.diasConServicio} días con servicio`}
+        />
+        <Indicador rotulo="Cafeterías con reservas" valor={porCafeteria.length} />
+      </div>
 
       <SerieDiaria porDia={porDia} />
 
@@ -50,14 +67,18 @@ export function Consolidado({ resumen }: Props) {
   );
 }
 
-function Cifra({ rotulo, valor, modificador }: {
-  rotulo: string; valor: number; modificador?: string | undefined;
+/** Un titular del consolidado. El detalle de debajo es lo que evita que una
+ *  cifra suelta se lea mal: «3,2» no dice nada sin «sobre 12 días». */
+function Indicador({ rotulo, valor, detalle }: {
+  rotulo: string; valor: number; detalle?: string | undefined;
 }) {
   return (
-    <li className={modificador ? `cifra cifra--${modificador}` : 'cifra'}>
-      <p className="cifra__rotulo">{rotulo}</p>
-      <p className="cifra__valor">{valor}</p>
-    </li>
+    <div className="indicador">
+      <p className="indicador__rotulo">{rotulo}</p>
+      {/* Separador de miles en español: un trimestre puede pasar de mil. */}
+      <p className="indicador__valor">{valor.toLocaleString('es-CO')}</p>
+      {detalle && <p className="indicador__detalle">{detalle}</p>}
+    </div>
   );
 }
 

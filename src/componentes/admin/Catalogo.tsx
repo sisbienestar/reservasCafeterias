@@ -13,7 +13,10 @@ import {
 } from '../../servicios/cafeteriasServicio.js';
 import { getMenuSemana, guardarMenuSemana } from '../../servicios/menuServicio.js';
 import { usePeticion } from '../../utiles/usePeticion.js';
-import { esDiaDeServicio, formatearFechaLarga, lunesDeSemana, nombreDiaCorto, sumarDias } from '../../utiles/fechas.js';
+import {
+  esDiaDeServicio, formatearFechaCorta, formatearFechaLarga,
+  lunesDeSemana, nombreDiaCorto, sumarDias,
+} from '../../utiles/fechas.js';
 import { BloqueEstado } from '../BloqueEstado.js';
 import type { PeticionConfirmacion } from '../ModalConfirmacion.js';
 
@@ -142,34 +145,36 @@ function SeccionCafeterias({ pedirConfirmacion, alCambiar }: {
 
   return (
     <section className="bloque-admin">
-      <h2 className="bloque-admin__titulo">Cafeterías</h2>
+      <h2 className="seccion__titulo">Cafeterías</h2>
 
       {aviso && <p className={`aviso aviso--${aviso.tipo}`} role="status">{aviso.mensaje}</p>}
 
-      <form className="formulario-admin" onSubmit={guardar}>
-        <label className="campo">
-          <span className="campo__etiqueta">Nombre</span>
-          <input className="campo__control" value={nombre}
-                 onChange={(e) => setNombre(e.target.value)} required disabled={guardando} />
-        </label>
+      <form className="formulario-catalogo" onSubmit={guardar} noValidate>
+        <div className="filtros__campo filtros__campo--ancho">
+          <label className="campo__etiqueta" htmlFor="cafeteria-nombre">Nombre</label>
+          <input className="campo__control" id="cafeteria-nombre" type="text"
+                 autoComplete="off" placeholder="Cafetería de Salud"
+                 value={nombre} onChange={(e) => setNombre(e.target.value)}
+                 required disabled={guardando} />
+        </div>
 
-        <label className="campo">
-          <span className="campo__etiqueta">Ubicación</span>
-          <input className="campo__control" value={ubicacion}
-                 onChange={(e) => setUbicacion(e.target.value)} disabled={guardando} />
-        </label>
+        <div className="filtros__campo filtros__campo--ancho">
+          <label className="campo__etiqueta" htmlFor="cafeteria-ubicacion">Ubicación</label>
+          <input className="campo__control" id="cafeteria-ubicacion" type="text"
+                 autoComplete="off" placeholder="Facultad de Salud · Primer piso"
+                 value={ubicacion} onChange={(e) => setUbicacion(e.target.value)}
+                 disabled={guardando} />
+        </div>
 
-        <label className="campo">
-          <span className="campo__etiqueta">Platos fijos (uno por línea)</span>
-          <textarea className="campo__control" rows={4} value={platosFijos}
-                    onChange={(e) => setPlatosFijos(e.target.value)} disabled={guardando} />
-          <span className="campo__ayuda">
-            Los productos que esta sede ofrece todos los días con servicio, haya
-            carta publicada o no: Mini Lunch, los especiales…
-          </span>
-        </label>
+        <div className="filtros__campo filtros__campo--ancho">
+          <label className="campo__etiqueta" htmlFor="cafeteria-fijos">Platos fijos</label>
+          <textarea className="campo__control" id="cafeteria-fijos" rows={3} spellCheck={false}
+                    placeholder="Uno por línea. Se ofrecen todos los días."
+                    value={platosFijos} onChange={(e) => setPlatosFijos(e.target.value)}
+                    disabled={guardando} />
+        </div>
 
-        {/* El identificador y el código no se editan y se dice por qué: son
+        {/* El identificador y el código no se editan, y se dice por qué: son
             la clave con la que las reservas históricas apuntan aquí. */}
         {editando && (
           <p className="campo__ayuda">
@@ -178,9 +183,9 @@ function SeccionCafeterias({ pedirConfirmacion, alCambiar }: {
           </p>
         )}
 
-        <div className="formulario-admin__acciones">
+        <div className="filtros__acciones">
           <button type="submit" className="boton boton--primario" disabled={guardando}>
-            {editando ? 'Guardar cambios' : 'Crear cafetería'}
+            {editando ? 'Guardar cambios' : 'Añadir cafetería'}
           </button>
           {editando && (
             <button type="button" className="boton boton--secundario"
@@ -199,7 +204,7 @@ function SeccionCafeterias({ pedirConfirmacion, alCambiar }: {
 
       {cafeterias && (
         <div className="tabla-envoltorio">
-          <table className="tabla">
+          <table className="tabla tabla--admin">
             <thead>
               <tr>
                 <th scope="col">Código</th>
@@ -303,20 +308,37 @@ function SeccionCarta({ hoy, permitirFinDeSemana }: { hoy: string; permitirFinDe
 
   return (
     <section className="bloque-admin">
-      <h2 className="bloque-admin__titulo">Carta de la semana</h2>
+      <h2 className="seccion__titulo">Carta semanal</h2>
 
-      <div className="carta__navegacion">
-        <button type="button" className="boton boton--secundario boton--sm"
-                onClick={() => setLunes(sumarDias(lunes, -7))}>
-          ← Semana anterior
-        </button>
-        <span className="carta__rango">
-          {formatearFechaLarga(lunes)} — {formatearFechaLarga(sumarDias(lunes, 6))}
-        </span>
-        <button type="button" className="boton boton--secundario boton--sm"
-                onClick={() => setLunes(sumarDias(lunes, 7))}>
-          Semana siguiente →
-        </button>
+      <p className="nota-bloque">
+        La carta es la misma para todas las cafeterías. Escribe un plato por
+        línea y guarda la semana entera de una vez.
+      </p>
+
+      <div className="barra-semana">
+        <div className="barra-semana__navegacion">
+          <button type="button" className="boton boton--secundario boton--sm"
+                  onClick={() => setLunes(sumarDias(lunes, -7))}
+                  aria-label="Semana anterior">←</button>
+          {/* aria-live: al cambiar de semana con las flechas, el rótulo es lo
+              único que dice dónde se ha ido a parar. */}
+          <p className="barra-semana__rotulo" aria-live="polite">
+            {formatearFechaLarga(lunes)} — {formatearFechaLarga(sumarDias(lunes, 6))}
+          </p>
+          <button type="button" className="boton boton--secundario boton--sm"
+                  onClick={() => setLunes(sumarDias(lunes, 7))}
+                  aria-label="Semana siguiente">→</button>
+          <button type="button" className="boton boton--secundario boton--sm"
+                  onClick={() => setLunes(lunesDeSemana(hoy))}>
+            Esta semana
+          </button>
+        </div>
+        <div className="barra-semana__acciones">
+          <button type="button" className="boton boton--primario"
+                  onClick={() => void guardar()} disabled={guardando || !tocado}>
+            {guardando ? 'Guardando…' : 'Guardar semana'}
+          </button>
+        </div>
       </div>
 
       {aviso && <p className={`aviso aviso--${aviso.tipo}`} role="status">{aviso.mensaje}</p>}
@@ -332,14 +354,19 @@ function SeccionCarta({ hoy, permitirFinDeSemana }: { hoy: string; permitirFinDe
           <div className="rejilla-carta">
             {semana.map((dia) => {
               const habil = esDiaDeServicio(dia.fecha, permitirFinDeSemana);
+              const clases = ['dia-carta'];
+              if (dia.fecha === hoy) clases.push('dia-carta--hoy');
+              if (!habil) clases.push('dia-carta--sin-servicio');
               return (
-                <label className={habil ? 'dia-carta' : 'dia-carta dia-carta--sin-servicio'}
-                       key={dia.fecha}>
-                  <span className="dia-carta__dia">
-                    {nombreDiaCorto(dia.fecha)} {dia.fecha.slice(8)}
-                  </span>
+                <article className={clases.join(' ')} key={dia.fecha}>
+                  <header className="dia-carta__cabecera">
+                    <p className="dia-carta__dia">{nombreDiaCorto(dia.fecha)}</p>
+                    <p className="dia-carta__fecha">
+                      {formatearFechaCorta(dia.fecha)}{dia.fecha === hoy ? ' · hoy' : ''}
+                    </p>
+                  </header>
                   <textarea
-                    className="campo__control"
+                    className="campo__control dia-carta__area"
                     rows={5}
                     value={borrador[dia.fecha] ?? ''}
                     onChange={(e) => {
@@ -351,19 +378,16 @@ function SeccionCarta({ hoy, permitirFinDeSemana }: { hoy: string; permitirFinDe
                        escribir algo que no se va a poder guardar. */
                     disabled={!habil || guardando}
                     placeholder={habil ? 'Un plato por línea' : 'Sin servicio'}
+                    aria-label={`Carta del ${formatearFechaLarga(dia.fecha)}`}
                   />
-                </label>
+                </article>
               );
             })}
           </div>
 
-          <div className="formulario-admin__acciones">
-            <button type="button" className="boton boton--primario"
-                    onClick={() => void guardar()} disabled={guardando || !tocado}>
-              {guardando ? 'Publicando…' : 'Publicar la semana'}
-            </button>
-            {tocado && <span className="campo__ayuda">Hay cambios sin publicar.</span>}
-          </div>
+          {tocado && (
+            <p className="nota-bloque">Hay cambios sin guardar en esta semana.</p>
+          )}
         </>
       )}
     </section>

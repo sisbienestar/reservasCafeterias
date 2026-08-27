@@ -46,7 +46,10 @@ export function TablaAdminReservas({ reservas, total, nombreCafeteria, alEditar 
       )}
 
       <div className="tabla-envoltorio">
-        <table className="tabla">
+        <table className="tabla tabla--admin">
+          <caption className="tabla__caption">
+            {total} {total === 1 ? 'reserva encontrada' : 'reservas encontradas'}
+          </caption>
           <thead>
             <tr>
               <th scope="col">N.º</th>

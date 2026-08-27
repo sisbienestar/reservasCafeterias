@@ -13,6 +13,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { useSesion } from './contexto/Sesion.js';
 import { Cabecera } from './componentes/Cabecera.js';
+import { Pie } from './componentes/Pie.js';
 import { BloqueEstado } from './componentes/BloqueEstado.js';
 import { Entrar } from './paginas/Entrar.js';
 import { Inicio } from './paginas/Inicio.js';
@@ -47,7 +48,7 @@ export function App() {
   if (!contexto) {
     return (
       <>
-        <Cabecera alSalir={salir} />
+        <Cabecera />
         <main className="contenedor pagina">
           <BloqueEstado
             tipo="error"
@@ -56,6 +57,7 @@ export function App() {
             accion={{ texto: 'Cerrar sesión', alPulsar: salir }}
           />
         </main>
+        <Pie />
       </>
     );
   }
@@ -65,7 +67,7 @@ export function App() {
 
   return (
     <>
-      <Cabecera perfil={perfil} alSalir={salir} />
+      <Cabecera />
       <Routes>
         {/*
           El mostrador no elige cafetería: tiene la suya. Mandarlo al inicio

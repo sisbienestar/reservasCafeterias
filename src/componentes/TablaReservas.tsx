@@ -44,7 +44,10 @@ function MarcaPago({ pago }: { pago: string }) {
 export function TablaReservas({ reservas, idDestacado, alEditar, alVerTicket }: Props) {
   return (
     <div className="tabla-envoltorio">
-      <table className="tabla">
+      <table className="tabla tabla--mostrador">
+        <caption className="tabla__caption">
+          {reservas.length} {reservas.length === 1 ? 'reserva' : 'reservas'} para hoy
+        </caption>
         <thead>
           <tr>
             <th scope="col">N.º</th>

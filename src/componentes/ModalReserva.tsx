@@ -230,11 +230,7 @@ export function ModalReserva({
           </button>
         </header>
 
-        <p className="modal__nota">
-          {editando
-            ? 'Se puede cambiar el nombre, el móvil y el plato. Cada cambio queda en el historial.'
-            : 'Solo se registran reservas para el día de hoy.'}
-        </p>
+
 
         {/*
           El identificador entero —cafetería, fecha y consecutivo— y no solo el
@@ -244,41 +240,66 @@ export function ModalReserva({
         {editando && reserva.id && (
           <p className="modal__identificador">Reserva n.º {reserva.id}</p>
         )}
+        <p className="modal__nota">
+          {editando
+            ? 'Se puede cambiar el nombre, el móvil y el plato. Cada cambio queda en el historial.'
+            : 'Solo se registran reservas para el día de hoy.'}
+        </p>
+        {errorGeneral && (
+          <p className="modal__error" role="alert">{errorGeneral}</p>
+        )}
 
-        <label className="campo">
-          <span className="campo__etiqueta">Nombre completo</span>
+        <div className="campo">
+          <label className="campo__etiqueta" htmlFor="campo-nombre">
+            Nombre de quien reserva
+          </label>
           <input
             ref={refNombre}
+            id="campo-nombre"
+            name="nombre"
             className="campo__control"
             type="text"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
             disabled={bloqueado}
             aria-invalid={errores.nombre ? true : undefined}
+            /* autoComplete="off" a propósito: quien teclea es el personal, y
+               el autocompletado le ofrecería SUS datos, no los de quien
+               reserva. */
             autoComplete="off"
+            placeholder="Laura Camila Ardila"
           />
-          {errores.nombre && <span className="campo__error">{errores.nombre}</span>}
-        </label>
+          <p className="campo__error">{errores.nombre ?? ''}</p>
+        </div>
 
-        <label className="campo">
-          <span className="campo__etiqueta">Móvil</span>
+        <div className="campo">
+          <label className="campo__etiqueta" htmlFor="campo-telefono">
+            Móvil de contacto
+          </label>
           <input
             ref={refTelefono}
+            id="campo-telefono"
+            name="telefono"
             className="campo__control"
             type="tel"
-            inputMode="numeric"
+            /* inputMode="tel" saca el teclado numérico en el celular sin que
+               el navegador intente validar el formato por su cuenta. */
+            inputMode="tel"
             value={telefono}
             onChange={(e) => setTelefono(e.target.value)}
             disabled={bloqueado}
             aria-invalid={errores.telefono ? true : undefined}
             autoComplete="off"
+            placeholder="300 123 4567"
           />
-          {errores.telefono && <span className="campo__error">{errores.telefono}</span>}
-        </label>
+          <p className="campo__error">{errores.telefono ?? ''}</p>
+        </div>
 
-        <label className="campo">
-          <span className="campo__etiqueta">Menú del día</span>
+        <div className="campo">
+          <label className="campo__etiqueta" htmlFor="campo-menu">Menú del día</label>
           <select
+            id="campo-menu"
+            name="menu"
             className="campo__control"
             value={menuId}
             onChange={(e) => setMenuId(e.target.value)}
@@ -293,11 +314,11 @@ export function ModalReserva({
               <option key={opcion.id} value={opcion.id}>{opcion.nombre}</option>
             ))}
           </select>
-          {errores.menu && <span className="campo__error">{errores.menu}</span>}
-        </label>
+          <p className="campo__error">{errores.menu ?? ''}</p>
+        </div>
 
         <GrupoOpciones
-          leyenda="Medio de la reserva"
+          leyenda="Medio de reserva"
           nombre="medio"
           valor={medio}
           alCambiar={setMedio}
@@ -310,7 +331,7 @@ export function ModalReserva({
         />
 
         <GrupoOpciones
-          leyenda="Estado del pago"
+          leyenda="Pago"
           nombre="pago"
           valor={pago}
           alCambiar={setPago}
@@ -322,9 +343,6 @@ export function ModalReserva({
           ]}
         />
 
-        {errorGeneral && (
-          <p className="modal__error" role="alert">{errorGeneral}</p>
-        )}
 
         {editando && <Historial asientos={reserva.historial} />}
 
@@ -334,7 +352,7 @@ export function ModalReserva({
           {editando && alCancelar && (
             <button
               type="button"
-              className="boton boton--peligro"
+              className="boton boton--peligro-plano modal__pie-aparte"
               onClick={alPulsarCancelar}
               disabled={bloqueado}
               aria-busy={enviando === 'cancelar' || undefined}
@@ -379,10 +397,12 @@ function GrupoOpciones({ leyenda, nombre, valor, alCambiar, opciones, deshabilit
   return (
     <fieldset className="campo campo--opciones">
       <legend className="campo__etiqueta">{leyenda}</legend>
-      <div className="campo__radios">
+      <div className="opciones">
         {opciones.map((opcion) => (
-          <label className="radio" key={opcion.valor}>
+          <label className="opcion" key={opcion.valor} htmlFor={`campo-${nombre}-${opcion.valor}`}>
             <input
+              className="opcion__radio"
+              id={`campo-${nombre}-${opcion.valor}`}
               type="radio"
               name={nombre}
               value={opcion.valor}
@@ -391,11 +411,11 @@ function GrupoOpciones({ leyenda, nombre, valor, alCambiar, opciones, deshabilit
               disabled={deshabilitado}
               aria-invalid={error ? true : undefined}
             />
-            <span>{opcion.etiqueta}</span>
+            <span className="opcion__texto">{opcion.etiqueta}</span>
           </label>
         ))}
       </div>
-      {error && <span className="campo__error">{error}</span>}
+      <p className="campo__error">{error ?? ''}</p>
     </fieldset>
   );
 }
@@ -420,8 +440,8 @@ function Historial({ asientos }: { asientos: AsientoHistorial[] }) {
 
   return (
     <section className="historial">
-      <h3 className="historial__titulo">Historial</h3>
-      <ul className="historial__lista">
+      <h3 className="historial__titulo">Historial de la reserva</h3>
+      <ol className="historial__lista">
         {recientesPrimero.map((asiento, i) => (
           <li className="historial__asiento" key={`${asiento.timestamp}-${i}`}>
             <p className="historial__marca">
@@ -436,7 +456,7 @@ function Historial({ asientos }: { asientos: AsientoHistorial[] }) {
             )}
           </li>
         ))}
-      </ul>
+      </ol>
     </section>
   );
 }

@@ -33,6 +33,8 @@ import { ModalConfirmacion, type PeticionConfirmacion } from '../componentes/Mod
 import { TablaAdminReservas } from '../componentes/admin/TablaAdminReservas.js';
 import { Consolidado } from '../componentes/admin/Consolidado.js';
 import { Catalogo } from '../componentes/admin/Catalogo.js';
+import { BarraSesion } from '../componentes/BarraSesion.js';
+import { Pie } from '../componentes/Pie.js';
 
 const ETIQUETAS: Record<string, string> = {
   presencial: 'Presencial',
@@ -70,23 +72,28 @@ function rangoDePeriodo(periodo: string, hoy: string): [string, string] | null {
       const finMesPasado = sumarDias(primeroDelMes(hoy), -1);
       return [primeroDelMes(finMesPasado), finMesPasado];
     }
-    // No es «todo»: el servidor rechaza rangos de más de 366 días, así que un
-    // «todo» literal fallaría siempre. Seis meses cubre lo que se consulta.
-    case 'medio-anio': return [sumarDias(hoy, -180), hoy];
+    /**
+     * «Todo el histórico» son seis meses, no todo.
+     *
+     * El servidor rechaza rangos de más de 366 días con RANGO_INVALIDO, así
+     * que un «todo» literal fallaría siempre. Seis meses cubre cualquier
+     * consulta que se haga de verdad, y es lo que hacía el original.
+     */
+    case 'todo': return [sumarDias(hoy, -180), hoy];
     default: return null; // personalizado: mandan las fechas escritas
   }
 }
 
 export function Admin() {
-  const { contexto } = useSesion();
+  const { contexto, salir } = useSesion();
   const hoy = contexto?.hoy ?? '';
   const permitirFinDeSemana = contexto?.permitirFinDeSemana ?? false;
 
   const [pestana, setPestana] = useState<Pestana>('reservas');
 
-  const [periodo, setPeriodo] = useState('semana');
+  const [periodo, setPeriodo] = useState('30');
   const [filtros, setFiltros] = useState<Filtros>(() => {
-    const rango = rangoDePeriodo('semana', hoy) ?? [hoy, hoy];
+    const rango = rangoDePeriodo('30', hoy) ?? [hoy, hoy];
     return { desde: rango[0], hasta: rango[1], cafeteriaId: '', estado: '', texto: '' };
   });
   /** Los filtros que de verdad se consultaron. Separarlos de lo que hay
@@ -143,8 +150,8 @@ export function Admin() {
   }
 
   function limpiar() {
-    setPeriodo('semana');
-    const rango = rangoDePeriodo('semana', hoy) ?? [hoy, hoy];
+    setPeriodo('30');
+    const rango = rangoDePeriodo('30', hoy) ?? [hoy, hoy];
     const limpios: Filtros = {
       desde: rango[0], hasta: rango[1], cafeteriaId: '', estado: '', texto: '',
     };
@@ -260,12 +267,27 @@ export function Admin() {
   ], []);
 
   return (
+    <>
     <main className="contenedor pagina" id="contenido">
-      <div className="encabezado-admin">
-        <h1 className="encabezado-admin__titulo">Administración</h1>
-      </div>
+      {contexto && (
+        <BarraSesion
+          perfil={contexto.perfil}
+          alSalir={salir}
+          volver={{ a: '/', texto: '← Ir a la pantalla de mostrador' }}
+        />
+      )}
 
-      <nav className="pestanas" role="tablist" aria-label="Secciones de administración">
+      <section className="encabezado-admin">
+        <h1 className="encabezado-admin__titulo">Administración</h1>
+      </section>
+
+      {/*
+        El patrón nativo de ARIA: <nav> por fuera y role="tablist" en la lista
+        de dentro, no en el <nav>. No es decoración — es lo que hace que un
+        lector de pantalla anuncie cuántas pestañas hay y cuál está activa.
+      */}
+      <nav className="pestanas" aria-label="Secciones de administración">
+        <div className="pestanas__lista" role="tablist">
         {pestanas.map((p) => (
           <button
             key={p.id}
@@ -291,6 +313,7 @@ export function Admin() {
             {p.texto}
           </button>
         ))}
+        </div>
       </nav>
 
       {/* Los filtros mandan sobre las dos primeras pestañas y no pintan nada
@@ -300,9 +323,9 @@ export function Admin() {
           className="filtros"
           onSubmit={(e) => { e.preventDefault(); aplicar(); }}
         >
-          <label className="campo filtros__campo">
-            <span className="campo__etiqueta">Periodo</span>
-            <select className="campo__control" value={periodo}
+          <div className="filtros__campo filtros__campo--ancho">
+            <label className="campo__etiqueta" htmlFor="filtro-periodo">Periodo</label>
+            <select className="campo__control" id="filtro-periodo" value={periodo}
                     onChange={(e) => cambiarPeriodo(e.target.value)}>
               <option value="hoy">Hoy</option>
               <option value="semana">Esta semana</option>
@@ -310,56 +333,56 @@ export function Admin() {
               <option value="30">Últimos 30 días</option>
               <option value="mes">Este mes</option>
               <option value="mes-pasado">Mes pasado</option>
-              <option value="medio-anio">Últimos 6 meses</option>
+              <option value="todo">Todo el histórico</option>
               <option value="personalizado">Personalizado</option>
             </select>
-          </label>
+          </div>
 
-          <label className="campo filtros__campo">
-            <span className="campo__etiqueta">Desde</span>
-            <input className="campo__control" type="date" value={filtros.desde}
+          <div className="filtros__campo">
+            <label className="campo__etiqueta" htmlFor="filtro-desde">Desde</label>
+            <input className="campo__control" id="filtro-desde" type="date" value={filtros.desde}
                    onChange={(e) => {
                      setPeriodo('personalizado');
                      setFiltros({ ...filtros, desde: e.target.value });
                    }} />
-          </label>
+          </div>
 
-          <label className="campo filtros__campo">
-            <span className="campo__etiqueta">Hasta</span>
-            <input className="campo__control" type="date" value={filtros.hasta}
+          <div className="filtros__campo">
+            <label className="campo__etiqueta" htmlFor="filtro-hasta">Hasta</label>
+            <input className="campo__control" id="filtro-hasta" type="date" value={filtros.hasta}
                    onChange={(e) => {
                      setPeriodo('personalizado');
                      setFiltros({ ...filtros, hasta: e.target.value });
                    }} />
-          </label>
+          </div>
 
-          <label className="campo filtros__campo">
-            <span className="campo__etiqueta">Cafetería</span>
-            <select className="campo__control" value={filtros.cafeteriaId}
+          <div className="filtros__campo filtros__campo--ancho">
+            <label className="campo__etiqueta" htmlFor="filtro-cafeteria">Cafetería</label>
+            <select className="campo__control" id="filtro-cafeteria" value={filtros.cafeteriaId}
                     onChange={(e) => setFiltros({ ...filtros, cafeteriaId: e.target.value })}>
               <option value="">Todas</option>
               {cafeterias?.map((c) => (
                 <option key={c.id} value={c.id}>{c.nombre}</option>
               ))}
             </select>
-          </label>
+          </div>
 
-          <label className="campo filtros__campo">
-            <span className="campo__etiqueta">Estado</span>
-            <select className="campo__control" value={filtros.estado}
+          <div className="filtros__campo">
+            <label className="campo__etiqueta" htmlFor="filtro-estado">Estado</label>
+            <select className="campo__control" id="filtro-estado" value={filtros.estado}
                     onChange={(e) => setFiltros({ ...filtros, estado: e.target.value as EstadoReserva | '' })}>
               <option value="">Todos</option>
               <option value="activa">Activas</option>
               <option value="cancelada">Canceladas</option>
             </select>
-          </label>
+          </div>
 
-          <label className="campo filtros__campo">
-            <span className="campo__etiqueta">Nombre o móvil</span>
-            <input className="campo__control" type="search" value={filtros.texto}
-                   onChange={(e) => setFiltros({ ...filtros, texto: e.target.value })}
-                   placeholder="Ardila · 3001234567" />
-          </label>
+          <div className="filtros__campo filtros__campo--ancho">
+            <label className="campo__etiqueta" htmlFor="filtro-texto">Nombre o móvil</label>
+            <input className="campo__control" id="filtro-texto" type="search"
+                   autoComplete="off" placeholder="Buscar…" value={filtros.texto}
+                   onChange={(e) => setFiltros({ ...filtros, texto: e.target.value })} />
+          </div>
 
           <div className="filtros__acciones">
             <button className="boton boton--primario" type="submit">Aplicar</button>
@@ -439,5 +462,7 @@ export function Admin() {
 
       <ModalConfirmacion peticion={confirmacion} alCerrar={cerrarConfirmacion} />
     </main>
+    <Pie />
+    </>
   );
 }
