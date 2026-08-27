@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cafeterías · Reservas UIS</title>
+  <meta name="description" content="Registro interno de reservas de almuerzo para el personal de las cafeterías de la Universidad Industrial de Santander.">
+
+  <link rel="icon" href="assets/img/favicon.webp" type="image/webp">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/componentes.css">
+  <link rel="stylesheet" href="css/paginas.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <header class="cabecera">
+    <div class="contenedor cabecera__interior">
+      <a class="marca" href="index.html">
+        <img class="marca__logo" src="assets/img/logo-uis.webp"
+             alt="Universidad Industrial de Santander" data-logo>
+        <span class="marca__texto">
+          <span class="marca__institucion">Universidad Industrial de Santander</span>
+          <span class="marca__producto">Sistema de Reserva de Almuerzos Cafeterías UIS</span>
+        </span>
+      </a>
+    </div>
+  </header>
+
+  <main class="contenedor pagina">
+    <section class="portada">
+      <p class="portada__fecha" id="fecha-hoy"></p>
+      <h1 class="portada__titulo">Sistema de reservas Cafeterías UIS</h1>
+    </section>
+
+    <section aria-labelledby="titulo-cafeterias">
+      <h2 class="seccion__titulo" id="titulo-cafeterias">Cafeterías del campus</h2>
+      <div class="rejilla-tarjetas" id="lista-cafeterias" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor">
+      <p>
+        Bienestar Universitario · Universidad Industrial de Santander
+        <span class="separador" aria-hidden="true">·</span>
+        <a class="pie__enlace" href="admin.html">Admin</a>
+      </p>
+    </div>
+  </footer>
+
+  <script type="module" src="js/paginaInicio.js"></script>
+</body>
+</html>

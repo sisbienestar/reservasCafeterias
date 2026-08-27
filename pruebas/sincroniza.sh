@@ -14,20 +14,28 @@
 #
 # banco/ es contenido GENERADO: se borra y se rehace en cada ejecución, y no
 # debe editarse a mano. Lo que se edita es el proyecto.
+#
+# DE DÓNDE COPIA, DESDE LA MIGRACIÓN A REACT
+# La app vanilla vive ahora en ../legado/. Sigue en pie —y sigue siendo la que
+# está en producción— mientras la versión de React no alcance paridad, y estas
+# 603 comprobaciones son la única red que hay para decidir cuándo la alcanzó.
+# El día en que se apague legado/, estas suites se apagan con ella y hay que
+# haber escrito antes su equivalente contra React; borrarlas sin sustituirlas
+# sería quedarse sin forma de saber si la migración salió bien.
 set -e
 cd "$(dirname "$0")"
 
-if [ ! -f ../index.html ]; then
-  echo "No encuentro el proyecto en ..; ejecuta este script desde pruebas/." >&2
+if [ ! -f ../legado/index.html ]; then
+  echo "No encuentro la app vanilla en ../legado; ejecuta este script desde pruebas/." >&2
   exit 1
 fi
 
 rm -rf banco
 mkdir -p banco
-cp -r ../js banco/js
-cp -r ../assets banco/assets
-cp ../*.html banco/
-cp ../css banco/css -r
+cp -r ../legado/js banco/js
+cp -r ../public/assets banco/assets
+cp ../legado/*.html banco/
+cp ../legado/css banco/css -r
 
 # El interruptor: en el banco siempre se usa el mock.
 sed -i "s/export const FUENTE_DATOS = 'api';/export const FUENTE_DATOS = 'mock';/" banco/js/config.js

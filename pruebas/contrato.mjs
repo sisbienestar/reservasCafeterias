@@ -71,7 +71,7 @@ function titulo(texto) {
 
 async function crearTransporte() {
   if (!url) {
-    const { enviar } = await import('../js/mock/mockApi.js');
+    const { enviar } = await import('../legado/js/mock/mockApi.js');
     return enviar;
   }
 

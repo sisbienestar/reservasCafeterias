@@ -1,0 +1,197 @@
+/* ============================================================================
+   base.css · reset + sistema de diseño
+   ----------------------------------------------------------------------------
+   Todo lo ajustable vive aquí como custom property. Cambiar la dirección
+   visual del proyecto debería ser cambiar valores en :root, no reescribir
+   reglas repartidas por los otros dos archivos.
+   ========================================================================== */
+
+:root {
+  /* ── Tipografía ────────────────────────────────────────────────────────
+     Títulos en Segoe UI y cuerpo en Open Sans. Ambas como variable para
+     poder cambiarlas después en un solo sitio.
+
+     Segoe UI solo viene con Windows y no está en Google Fonts, así que no se
+     puede cargar: fuera de Windows el navegador se queda con lo que siga en
+     la pila. Por eso la cola es explícita en vez de saltar directo a
+     system-ui, que en Linux resuelve a DejaVu Sans y rompe la dirección
+     visual. Con esta pila cada sistema cae en su equivalente humanista:
+     SF Pro en macOS/iOS (-apple-system), Roboto en Android (system-ui) y
+     Helvetica Neue o Arial antes del genérico.
+
+     La cola va también en --fuente-texto por si Google Fonts no responde
+     —red del campus, uso sin conexión—: sin ella, perder Open Sans en un
+     equipo que no sea Windows dejaría el cuerpo en el sans-serif del
+     sistema.                                                               */
+  --fuente-titulo: 'Segoe UI', 'Segoe UI Variable Display', -apple-system,
+                   BlinkMacSystemFont, system-ui, 'Helvetica Neue', Arial, sans-serif;
+  --fuente-texto: 'Open Sans', 'Segoe UI', -apple-system,
+                  BlinkMacSystemFont, system-ui, 'Helvetica Neue', Arial, sans-serif;
+
+  /* Escala tipográfica. Los títulos usan clamp() para respirar en pantalla
+     grande sin romperse en móvil. */
+  --texto-xs: 0.75rem;
+  --texto-sm: 0.875rem;
+  --texto-base: 1rem;
+  --texto-lg: 1.125rem;
+  --texto-xl: clamp(1.375rem, 1.1rem + 1.1vw, 1.75rem);
+  --texto-2xl: clamp(1.75rem, 1.2rem + 2.2vw, 2.5rem);
+  --texto-3xl: clamp(2.25rem, 1.4rem + 3.4vw, 3.5rem);
+
+  --peso-normal: 400;
+  --peso-medio: 500;
+  --peso-fuerte: 600;
+
+  --interlinea-titulo: 1.12;
+  --interlinea-texto: 1.6;
+  --espaciado-titulo: -0.022em;  /* el tracking cerrado de los títulos Apple */
+
+  /* ── Color ─────────────────────────────────────────────────────────────
+     Neutros fríos, casi grises, y un único acento. El acento arranca en el
+     verde institucional de la UIS.                                          */
+  --c-fondo: #fbfbfd;
+  --c-superficie: #ffffff;
+  --c-superficie-2: #f5f5f7;
+  --c-borde: #e4e4e7;
+  --c-borde-fuerte: #d1d1d6;
+
+  --c-texto: #1d1d1f;
+  --c-texto-2: #55555c;
+  --c-texto-3: #86868b;
+
+  --c-acento: #00693c;
+  --c-acento-oscuro: #00512e;
+  --c-acento-suave: #e8f2ed;
+
+  --c-error: #b3261e;
+  --c-error-suave: #fdecea;
+  --c-exito: #0a6b3d;
+  --c-exito-suave: #e6f4ec;
+  --c-aviso: #8a5a00;
+  --c-aviso-suave: #fdf3e2;
+
+  /* ── Espaciado ─────────────────────────────────────────────────────── */
+  --e-1: 0.25rem;
+  --e-2: 0.5rem;
+  --e-3: 0.75rem;
+  --e-4: 1rem;
+  --e-5: 1.5rem;
+  --e-6: 2rem;
+  --e-7: 3rem;
+  --e-8: 4rem;
+  --e-9: 6rem;
+
+  /* ── Forma y profundidad ───────────────────────────────────────────── */
+  --radio-sm: 8px;
+  --radio-md: 12px;
+  --radio-lg: 18px;
+  --radio-xl: 24px;
+  --radio-pildora: 999px;
+
+  --sombra-sm: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.05);
+  --sombra-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --sombra-lg: 0 18px 40px rgba(0, 0, 0, 0.10), 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  --transicion: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  --ancho-contenedor: 1080px;
+}
+
+/* ── Reset acotado ───────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--c-fondo);
+  color: var(--c-texto);
+  font-family: var(--fuente-texto);
+  font-size: var(--texto-base);
+  font-weight: var(--peso-normal);
+  line-height: var(--interlinea-texto);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  font-family: var(--fuente-titulo);
+  font-weight: var(--peso-fuerte);
+  line-height: var(--interlinea-titulo);
+  letter-spacing: var(--espaciado-titulo);
+}
+
+p { margin: 0; }
+
+img { max-width: 100%; display: block; }
+
+/* `display: block` en img gana por especificidad a la regla [hidden] del
+   navegador, así que un img oculto por JS seguía ocupando su hueco (y en el
+   header se veía el texto alternativo del logo). Esto lo devuelve al orden. */
+[hidden] { display: none !important; }
+
+a { color: inherit; text-decoration: none; }
+
+button, input, select { font: inherit; color: inherit; }
+
+table { border-collapse: collapse; width: 100%; }
+
+/* Foco visible y consistente en todo lo interactivo. */
+:where(a, button, input, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--c-acento);
+  outline-offset: 2px;
+  border-radius: var(--radio-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Utilidades de layout ────────────────────────────────────────────── */
+
+.contenedor {
+  width: 100%;
+  max-width: var(--ancho-contenedor);
+  margin-inline: auto;
+  padding-inline: var(--e-5);
+}
+
+.pagina {
+  flex: 1;
+  padding-block: var(--e-7) var(--e-9);
+}
+
+/* Texto solo para lectores de pantalla: rotula cosas que en pantalla se
+   entienden por su contexto, como la columna de botones de la tabla.
+   No se usa `display: none` porque eso también lo oculta al lector. */
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.seccion__titulo {
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-fuerte);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-texto-3);
+  margin-bottom: var(--e-5);
+}
