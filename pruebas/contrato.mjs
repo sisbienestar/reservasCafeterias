@@ -37,6 +37,23 @@ const escribir = banderas.includes('--escribir') || !url;
  */
 const sinReglaFinDeSemana = banderas.includes('--sin-regla-fin-de-semana');
 
+/**
+ * El token de sesión con el que interrogar al backend.
+ *
+ * Apps Script no pedía ninguno: quien tuviera la URL podía todo, y por eso
+ * esta prueba nunca necesitó credenciales. El backend de Supabase sí las
+ * exige, así que hay que darle una sesión — y conviene que sea de un perfil
+ * con rol `admin`, porque el contrato ejercita acciones (cancelar, buscar,
+ * guardar la carta) que un perfil de mostrador tiene prohibidas y que
+ * fallarían con NO_AUTORIZADO sin que eso signifique un incumplimiento.
+ *
+ *   --token=<jwt>   ·   o la variable de entorno TOKEN_PRUEBAS
+ */
+const token =
+  (banderas.find((b) => b.startsWith('--token=')) ?? '').slice('--token='.length) ||
+  process.env.TOKEN_PRUEBAS ||
+  '';
+
 let fallos = 0;
 let comprobaciones = 0;
 
@@ -61,9 +78,13 @@ async function crearTransporte() {
   return async function enviarHttp(accion, params) {
     const respuesta = await fetch(url, {
       method: 'POST',
-      // text/plain a propósito: evita el preflight de CORS, que Apps Script
-      // no responde. Es lo mismo que hace js/services/httpClient.js.
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      headers: {
+        // text/plain sigue valiendo con los dos backends: Apps Script lo
+        // necesitaba para no disparar el preflight de CORS —que no sabía
+        // responder—, y una función de Vercel lee el cuerpo igual.
+        'Content-Type': 'text/plain;charset=utf-8',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
       body: JSON.stringify({ accion, params }),
       redirect: 'follow',
     });
