@@ -37,6 +37,8 @@
    cuenta se trabaja es lo que evita registrar toda una mañana con la sesión
    de otra sede. */
 
+.barra-sesion { max-width: 100%; }
+
 .barra-sesion__quien {
   display: flex;
   flex-direction: column;
@@ -63,10 +65,25 @@
   white-space: nowrap;
 }
 
+/*
+ * La sede no se recorta, pero SÍ se parte en varias líneas.
+ *
+ * Esto último faltaba, y no era un detalle: «Mostrador · Cafetería
+ * Administración 3» en una sola línea que no puede partirse hace la franja
+ * más ancha que la pantalla, y con ella el documento entero. El síntoma no
+ * apunta aquí en absoluto — se ve toda la página corrida hacia un lado, con
+ * los títulos y hasta los diálogos cortados por la izquierda—, así que
+ * conviene dejar dicho de dónde salía.
+ *
+ * `anywhere` y no `break-word`: un nombre de sede sin espacios —o el correo
+ * de alguien— tiene que poder partirse igual.
+ */
 .barra-sesion__rol {
   font-size: var(--texto-xs);
   font-weight: var(--peso-normal);
   color: var(--c-texto-3);
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 /*
