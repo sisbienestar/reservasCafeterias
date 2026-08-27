@@ -76,6 +76,52 @@ for (const r of reservas) {
 }
 
 /**
+ * Dos reservas con el MISMO identificador.
+ *
+ * `reserva.id` es la clave primaria, así que Postgres rechazaría la segunda.
+ * Que pueda pasar no es teórico: la hoja no tenía clave primaria, y
+ * `migrarAIdentificadorNuevo()` —la función que convirtió los identificadores
+ * viejos al formato nuevo— pudo asignar a una reserva la fecha equivocada y
+ * dejarla pisando a otra.
+ *
+ * Se avisa aquí, con los dos casos delante, porque el error de Postgres solo
+ * nombraría el identificador y habría que ir a buscar a mano cuál era la otra.
+ */
+const porId = new Map();
+for (const r of reservas) {
+  if (!porId.has(r.id)) porId.set(r.id, []);
+  porId.get(r.id).push(r);
+}
+for (const [id, grupo] of porId) {
+  if (grupo.length < 2) continue;
+  problemas.push(
+    `Identificador repetido: ${grupo.length} reservas comparten «${id}» ` +
+    `(fechas ${grupo.map((r) => r.fecha).join(' y ')}). ` +
+    'La clave primaria no lo admite: corrige el de una de ellas en la hoja.',
+  );
+}
+
+/**
+ * El identificador dice una fecha y la fila dice otra.
+ *
+ * No rompe nada por sí solo —el identificador es una cadena y la fecha es una
+ * columna aparte—, pero es la señal de que algo asignó mal ese identificador,
+ * y de ahí salen los repetidos de arriba. Además vuelve inútil lo que hace
+ * legible al identificador: si «02-260823-001» no es del 23 de agosto, deja de
+ * poder dictarse por teléfono y buscarse.
+ *
+ * Se avisa sin bloquear: el histórico es el que es, y a estas alturas cambiar
+ * un identificador que ya se imprimió en un ticket tiene su propio coste.
+ */
+const incoherentes = [];
+for (const r of reservas) {
+  const m = FORMATO_ID.exec(String(r.id));
+  if (!m) continue;
+  const delId = `20${m[2].slice(0, 2)}-${m[2].slice(2, 4)}-${m[2].slice(4, 6)}`;
+  if (delId !== String(r.fecha)) incoherentes.push({ id: r.id, fila: r.fecha, delId });
+}
+
+/**
  * El índice `reserva_sin_duplicado` no admite dos reservas ACTIVAS del mismo
  * móvil el mismo día y sede. Apps Script aplicaba la regla, pero la hoja se
  * editaba a veces a mano, así que puede haber parejas que la incumplan. Si las
@@ -94,6 +140,15 @@ for (const r of reservas) {
   } else {
     vistos.set(clave, r.id);
   }
+}
+
+if (incoherentes.length) {
+  console.log(`
+Aviso · ${incoherentes.length} identificador(es) con una fecha que no es la de su fila:`);
+  for (const i of incoherentes) {
+    console.log(`  · ${i.id} — la fila dice ${i.fila}, el identificador dice ${i.delId}`);
+  }
+  console.log('  No impide importar. Se conserva el identificador tal cual: puede estar impreso en un ticket.');
 }
 
 if (problemas.length) {
