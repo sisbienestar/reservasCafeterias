@@ -1453,3 +1453,56 @@ function hoyDelServidor() {
     'yyyy-MM-dd'
   );
 }
+
+/**
+ * El volcado completo, en un archivo de Google Drive.
+ *
+ * Es la alternativa a `exportarTodo()`, y para la migración es la buena.
+ * El registro del editor RECORTA los mensajes largos, así que aquella
+ * función tiene que trocear la salida y hay que pegar los trozos a mano, en
+ * orden y sin colarse. Un JSON al que le falta el final no da un error
+ * claro: da «Unexpected end of JSON input», que no dice por dónde se cortó.
+ *
+ * Esto lo escribe entero en un archivo y no hay nada que pegar.
+ *
+ * CÓMO SE USA
+ *  1. Guarda este archivo (Ctrl+S). NO hace falta crear una versión nueva de
+ *     la implementación: eso solo importa para lo que se sirve por la URL
+ *     /exec, y esta función se ejecuta desde el editor.
+ *  2. Elige `exportarADrive` en el desplegable de funciones y pulsa Ejecutar.
+ *     La primera vez pedirá permiso para acceder a Drive.
+ *  3. El registro dirá el nombre del archivo y su enlace. Ábrelo en Drive y
+ *     descárgalo como `volcado.json`.
+ */
+function exportarADrive() {
+  empezarMantenimiento();
+
+  const volcado = {
+    exportado: new Date().toISOString(),
+    cafeterias: leerTabla('cafeterias').map(limpiar),
+    menuSemanal: leerTabla('menu').map(limpiar),
+    reservas: leerTabla('reservas').map(limpiar),
+  };
+
+  const marca = Utilities.formatDate(
+    new Date(),
+    SpreadsheetApp.getActive().getSpreadsheetTimeZone(),
+    'yyyy-MM-dd_HHmm'
+  );
+  const nombre = 'volcado_reservas_' + marca + '.json';
+
+  const archivo = DriveApp.createFile(
+    nombre,
+    JSON.stringify(volcado, null, 2),
+    MimeType.PLAIN_TEXT
+  );
+
+  Logger.log('Cafeterías: ' + volcado.cafeterias.length +
+             ' · Cartas: ' + volcado.menuSemanal.length +
+             ' · Reservas: ' + volcado.reservas.length);
+  Logger.log('Archivo: ' + nombre);
+  Logger.log('Enlace:  ' + archivo.getUrl());
+  Logger.log('Descárgalo de Drive y guárdalo como volcado.json en la raíz del repositorio.');
+
+  return archivo.getUrl();
+}

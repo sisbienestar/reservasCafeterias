@@ -75,19 +75,29 @@ select table_name from information_schema.tables
 
 ## 3. Sacar los datos de la hoja
 
-En el editor de Apps Script, ejecuta `exportarTodo()`. No exportes las
-pestañas a CSV a mano — `opciones` e `historial` llevan comas dentro y se
-rompen.
+No exportes las pestañas a CSV a mano — `opciones` e `historial` llevan comas
+dentro y se rompen.
 
-**Guarda el JSON en un archivo llamado `volcado.json`, en la raíz de este
-repositorio** (al lado de `package.json`). Está en `.gitignore`: lleva nombres
-y móviles de personas reales y no puede acabar en un commit.
+En el editor de Apps Script, guarda el archivo (`Ctrl+S`), elige
+**`exportarADrive`** en el desplegable de funciones y pulsa Ejecutar. La
+primera vez pedirá permiso para acceder a Drive. El registro dirá el nombre del
+archivo y su enlace: ábrelo, descárgalo y **guárdalo como `volcado.json` en la
+raíz de este repositorio** (al lado de `package.json`).
 
-El registro de Apps Script **corta los mensajes largos, así que el volcado sale
-troceado**: hay que pegar los trozos seguidos y en orden. Cuando esté completo,
-el archivo empieza por `{` y termina por `}`, y dentro se ven las tres claves
-`cafeterias`, `menuSemanal` y `reservas`. Si al pegarlo aparece un
-`--- volcado 2 ---` en medio, esa línea sobra: es del registro, no del JSON.
+> No hace falta crear una versión nueva de la implementación para esto. Esa
+> regla vale para lo que se sirve por la URL `/exec`; una función ejecutada
+> desde el editor usa el código guardado.
+
+`volcado.json` está en `.gitignore`: lleva nombres y móviles de personas
+reales y no puede acabar en un commit.
+
+**Por qué a Drive y no copiando del registro.** También existe
+`exportarTodo()`, que escribe el volcado en el registro del editor. El
+problema es que ese registro **recorta los mensajes largos**, así que la
+función tiene que trocear la salida y hay que pegar los trozos a mano, en orden
+y sin colarse. Un JSON al que le falta el final no avisa de forma útil: dice
+`Unexpected end of JSON input` y no dice por dónde se cortó. Con el archivo de
+Drive no hay nada que pegar.
 
 ```bash
 npm run importar volcado.json              # ensayo: comprueba y no escribe nada
