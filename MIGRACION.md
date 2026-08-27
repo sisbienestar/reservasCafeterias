@@ -210,6 +210,23 @@ Sin `--escribir`: contra producción solo se lee.
 **No antes de que el paso 7 esté en verde y alguien haya usado la aplicación
 nueva un día entero de servicio.**
 
+> ### Pendiente en la hoja, para antes de este paso
+>
+> El primer volcado traía dos reservas con el identificador `02-260823-001`:
+> la del 23 de agosto, correcta, y una **cancelada del 19 de agosto** a la que
+> `migrarAIdentificadorNuevo()` le puso la fecha en que se ejecutó la
+> migración. `reserva.id` es clave primaria, así que Postgres rechaza la
+> segunda.
+>
+> Se corrigió **en `volcado.json`, no en la hoja**, para no bloquear las
+> pruebas: se le puso `02-260819-001`, que estaba libre y es el que le tocaba.
+>
+> **Antes de reexportar aquí hay que arreglarlo en la hoja también**, o el
+> volcado nuevo traerá otra vez el identificador repetido — y lo hará en el
+> peor momento, en mitad del cambio. Es una celda: en la pestaña Reservas,
+> la fila con `02-260823-001` cuya fecha sea `2026-08-19` pasa a
+> `02-260819-001`.
+
 1. Retirar el acceso al despliegue de Apps Script (`Implementar → Gestionar
    implementaciones → Archivar`). No borrar el proyecto ni la hoja: son la
    copia de seguridad de los datos hasta que Supabase tenga historia propia.

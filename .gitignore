@@ -9,3 +9,4 @@ dist/
 # Nunca al repositorio.
 volcado.json
 volcado*.json
+volcado.json.original
