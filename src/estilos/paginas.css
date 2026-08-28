@@ -145,13 +145,35 @@
 
   .marca__institucion { display: none; }
 
-  /* Dos líneas a la derecha suben demasiado la cabecera en un móvil; en una
-     sola caben porque la marca ya perdió su primera línea. */
+  /* En móvil la versión baja a su propia línea, debajo de la marca, y pasa a
+     una sola: al lado del logo apretaba el nombre del sistema hasta romper la
+     cabecera.
+
+     Y ahí va pegada a la izquierda, no a la derecha. A la derecha no se alinea
+     con nada —el nombre del sistema termina donde lo deja el salto de línea—,
+     y una línea suelta que no coincide con ningún borde se lee como un
+     descuadre. A la izquierda comparte margen con el logo y con todo lo que
+     viene debajo en la página. */
+  .cabecera__interior {
+    flex-wrap: wrap;
+    row-gap: var(--e-1);
+  }
+
   .cabecera__version {
+    width: 100%;
     flex-direction: row;
     align-items: baseline;
+    justify-content: flex-start;
+    text-align: left;
     gap: var(--e-2);
-    margin-left: var(--e-3);
+    margin-left: 0;
+  }
+
+  /* El punto solo existe cuando las dos partes comparten línea. */
+  .cabecera__version-fecha::before {
+    content: '·';
+    margin-right: var(--e-2);
+    color: var(--c-borde-fuerte);
   }
 
   .encabezado-reserva {
