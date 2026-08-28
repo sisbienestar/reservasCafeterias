@@ -93,12 +93,18 @@ export function ModalAcceso({ abierto, alCerrar, alEntrar }: Props) {
     >
       <form className="modal__panel" onSubmit={alEnviar} noValidate>
         <header className="modal__cabecera">
-          <h2 className="modal__titulo" id="titulo-acceso">Entrar</h2>
+          <h2 className="modal__titulo" id="titulo-acceso">Ingresar</h2>
           <button type="button" className="modal__cerrar" onClick={alCerrar}
                   disabled={enviando} aria-label="Cerrar">
             ×
           </button>
         </header>
+
+        {/* Dice de dónde salen las credenciales, que es lo único que no se
+            deduce del formulario: aquí no hay registro, las cuentas se dan. */}
+        <p className="modal__nota">
+          Ingresa tus datos de acceso. Si no los tienes solicita al administrador.
+        </p>
 
         {error && <p className="modal__error" role="alert">{error}</p>}
 
@@ -140,7 +146,7 @@ export function ModalAcceso({ abierto, alCerrar, alEntrar }: Props) {
           <button type="submit" className="boton boton--primario"
                   disabled={enviando} aria-busy={enviando || undefined}>
             {enviando && <span className="boton__girador" aria-hidden="true" />}
-            {enviando ? 'Entrando…' : 'Entrar'}
+            {enviando ? 'Ingresando…' : 'Ingresar'}
           </button>
         </footer>
       </form>
