@@ -14,6 +14,9 @@ interface ImportMetaEnv {
   readonly VITE_SUPABASE_URL: string;
   readonly VITE_SUPABASE_ANON_KEY: string;
   readonly VITE_API_URL: string;
+  /** El dominio que completa los nombres de usuario. No es un secreto: es la
+   *  parte que le falta a «gloria» para ser el correo con el que entra. */
+  readonly VITE_DOMINIO_USUARIOS: string;
 }
 
 interface ImportMeta {

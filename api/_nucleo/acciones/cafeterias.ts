@@ -42,11 +42,22 @@ function aContrato(fila: FilaCafeteria): CafeteriaContrato {
   };
 }
 
-/** Sin `incluir_inactivas`, solo las que están en servicio. El mostrador nunca
- *  debe ver una sede cerrada; administración sí, para reabrirla. */
-export async function listar(params: Record<string, unknown>) {
+/**
+ * Sin `incluir_inactivas`, solo las que están en servicio. El mostrador nunca
+ * debe ver una sede cerrada; administración sí, para reabrirla.
+ *
+ * Es la única acción de datos que se sirve SIN sesión, porque la portada
+ * enseña las sedes del campus antes de entrar. Y de ahí la comprobación de
+ * abajo: sin sesión, `incluir_inactivas` se ignora. Una sede archivada es una
+ * decisión de administración —que se cerró, y cuándo— y no tiene por qué
+ * saberla quien todavía no ha entrado. Fiarse del parámetro habría bastado
+ * para sacarla.
+ */
+export async function listar(params: Record<string, unknown>, sesion: Sesion | null) {
+  const puedeVerInactivas = sesion?.rol === 'admin' && Boolean(params.incluir_inactivas);
+
   let consulta = servicio().from('cafeteria').select(COLUMNAS).order('codigo');
-  if (!params.incluir_inactivas) consulta = consulta.eq('activa', true);
+  if (!puedeVerInactivas) consulta = consulta.eq('activa', true);
   return desempaquetar<FilaCafeteria[]>(await consulta).map(aContrato);
 }
 

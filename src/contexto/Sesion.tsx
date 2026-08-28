@@ -36,7 +36,15 @@ interface Contexto {
   hoy: string;
   /** El interruptor de pruebas, que ahora vive solo en el backend. */
   permitirFinDeSemana: boolean;
-  perfil: Perfil;
+  /**
+   * `null` cuando no hay sesión.
+   *
+   * La portada es pública, así que `app.contexto` responde igual a un
+   * visitante: da la fecha y el interruptor, y deja el perfil vacío. Eso
+   * significa que tener contexto ya NO implica estar dentro — lo que decide
+   * es este campo.
+   */
+  perfil: Perfil | null;
 }
 
 interface ValorSesion {
@@ -46,7 +54,8 @@ interface ValorSesion {
   contexto: Contexto | null;
   /** Un fallo al traer el contexto con sesión válida: cuenta sin perfil, red… */
   error: string | null;
-  entrar: (correo: string, clave: string) => Promise<void>;
+  /** Admite el correo entero o un nombre de usuario de una palabra. */
+  entrar: (identificador: string, clave: string) => Promise<void>;
   salir: () => Promise<void>;
   /** Vuelve a pedir `app.contexto`. Útil tras un cambio de permisos. */
   refrescar: () => Promise<void>;
@@ -72,13 +81,13 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
       const datos = await pedir<{
         hoy: string;
         permitir_fin_de_semana: boolean;
-        perfil: { nombre: string; rol: Rol; cafeteria_id: string | null };
+        perfil: { nombre: string; rol: Rol; cafeteria_id: string | null } | null;
       }>('app.contexto');
 
       setContexto({
         hoy: datos.hoy,
         permitirFinDeSemana: datos.permitir_fin_de_semana,
-        perfil: {
+        perfil: datos.perfil && {
           nombre: datos.perfil.nombre,
           rol: datos.perfil.rol,
           cafeteriaId: datos.perfil.cafeteria_id,
@@ -101,24 +110,25 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(async ({ data }) => {
       if (!vigente) return;
       setSesion(data.session);
-      if (data.session) await traerContexto();
+      await traerContexto();
       if (vigente) setCargando(false);
     });
 
     // Cubre el cierre de sesión desde otra pestaña y la caducidad del token.
     const { data: suscripcion } = supabase.auth.onAuthStateChange(async (_evento, nueva) => {
       if (!vigente) return;
+      // También al salir: el contexto sigue haciendo falta para la portada,
+      // solo que ahora vuelve con el perfil vacío.
       setSesion(nueva);
-      if (nueva) await traerContexto();
-      else { setContexto(null); setError(null); }
+      await traerContexto();
     });
 
     return () => { vigente = false; suscripcion.subscription.unsubscribe(); };
   }, [traerContexto]);
 
-  const entrar = useCallback(async (correo: string, clave: string) => {
+  const entrar = useCallback(async (identificador: string, clave: string) => {
     const { error: fallo } = await supabase.auth.signInWithPassword({
-      email: correo.trim(), password: clave,
+      email: aCorreo(identificador), password: clave,
     });
     // Se lanza en vez de guardarse en el estado: quien llama es el formulario,
     // que necesita saber si puede dejar de mostrar el girador.
@@ -135,12 +145,49 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
 }
 
 /**
+ * El dominio con el que se completan los nombres de usuario.
+ *
+ * No se ve en ninguna pantalla: es solo la parte que le falta a «gloria» para
+ * ser el correo con el que Supabase la conoce.
+ */
+const DOMINIO_USUARIOS = import.meta.env.VITE_DOMINIO_USUARIOS || 'cafeterias.uis';
+
+/** Un nombre de usuario: una sola palabra, sin espacios ni arroba. */
+export const ES_USUARIO = /^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?$/i;
+
+/**
+ * Convierte lo que se escribió en el correo con el que entrar.
+ *
+ * Se admiten las dos cosas: el correo entero de quien tenga uno, y un nombre
+ * de usuario de una palabra para quien no. Un usuario se completa con el
+ * dominio interno, así que «gloria» entra como
+ * «gloria@cafeterias.uis» — la cuenta se crea con ese correo desde el
+ * principio y quien atiende nunca lo teclea entero.
+ *
+ * POR QUÉ ASÍ Y NO CON UNA BÚSQUEDA
+ * La alternativa era guardar el usuario en `perfil` y preguntarle al servidor
+ * a qué correo corresponde. Se descartó por dos razones. La primera es que
+ * esa consulta tendría que ser pública —hace falta ANTES de tener sesión— y
+ * eso deja una puerta para averiguar qué usuarios existen probando nombres.
+ * La segunda es que resolverlo aquí mantiene el inicio de sesión entero
+ * dentro de Supabase, que es quien limita los intentos por dirección; si
+ * pasara por nuestra función, todos los intentos llegarían desde la misma IP
+ * de Vercel y ese límite dejaría de proteger a nadie.
+ */
+export function aCorreo(identificador: string): string {
+  const limpio = identificador.trim();
+  // Con arroba, es un correo y se manda tal cual: no hay nada que completar.
+  if (limpio.includes('@')) return limpio;
+  return `${limpio.toLowerCase()}@${DOMINIO_USUARIOS}`;
+}
+
+/**
  * Los mensajes de Supabase llegan en inglés y en su propia jerga. Quien
  * atiende un mostrador no tiene por qué leer «Invalid login credentials».
  */
 function traducirFalloDeAcceso(mensaje: string): string {
   if (/invalid login credentials/i.test(mensaje)) {
-    return 'El correo o la contraseña no son correctos.';
+    return 'El usuario o la contraseña no son correctos.';
   }
   if (/email not confirmed/i.test(mensaje)) {
     return 'Esa cuenta todavía no está confirmada. Habla con administración.';

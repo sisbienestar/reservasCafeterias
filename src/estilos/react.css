@@ -155,3 +155,11 @@
    para que el envoltorio no colapse el margen del primero. */
 
 .catalogo { display: block; }
+
+/* ── La portada sin sesión ──────────────────────────────────────────────
+   `.barra-sesion` reparte con `space-between`; con un solo hijo lo dejaría a
+   la izquierda, donde en las demás pantallas va el enlace de vuelta. El
+   botón de entrar tiene que caer donde cae «Cerrar sesión», que es donde la
+   vista lo va a buscar. */
+
+.barra-sesion__entrar { margin-left: auto; }

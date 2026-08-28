@@ -13,29 +13,57 @@
  * crea administración y llevan asociado un perfil con su sede.
  */
 
-import { useState, type FormEvent } from 'react';
-import { useSesion } from '../contexto/Sesion.js';
+import { useEffect, useState, type FormEvent } from 'react';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { ES_USUARIO, useSesion } from '../contexto/Sesion.js';
 import { Cabecera } from '../componentes/Cabecera.js';
 import { Pie } from '../componentes/Pie.js';
 
 export function Entrar() {
-  const { entrar } = useSesion();
-  const [correo, setCorreo] = useState('');
+  const { entrar, contexto } = useSesion();
+  const donde = useLocation();
+  const navegar = useNavigate();
+
+  const [identificador, setIdentificador] = useState('');
   const [clave, setClave] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+
+  /**
+   * A dónde volver al entrar.
+   *
+   * Lo deja `ExigeSesion` al desviar aquí. Sin esto, quien pulsa una
+   * cafetería y tiene que identificarse aparecería después en la portada y
+   * tendría que volver a buscarla — un paso de más cada mañana.
+   */
+  const volverA = (donde.state as { volverA?: string } | null)?.volverA ?? '/';
+
+  // Con sesión ya abierta esta pantalla no pinta nada. Pasa al recargar con
+  // la sesión guardada, o al llegar con el botón de atrás.
+  useEffect(() => {
+    if (contexto?.perfil) navegar(volverA, { replace: true });
+  }, [contexto, navegar, volverA]);
+
+  if (contexto?.perfil) return <Navigate to={volverA} replace />;
 
   async function alEnviar(evento: FormEvent) {
     evento.preventDefault();
     if (enviando) return;
 
+    const limpio = identificador.trim();
+    // Una sola palabra o un correo: cualquier otra cosa —dos palabras, un
+    // espacio en medio— se avisa aquí y no se manda, porque el servidor solo
+    // podría contestar «credenciales incorrectas» y eso no explica nada.
+    if (!limpio.includes('@') && !ES_USUARIO.test(limpio)) {
+      setError('El usuario es una sola palabra, sin espacios. O escribe tu correo completo.');
+      return;
+    }
+
     setError(null);
     setEnviando(true);
     try {
-      await entrar(correo, clave);
-      // No se navega a ninguna parte: al cambiar la sesión, `App` deja de
-      // pintar esta pantalla por su cuenta. Redirigir aquí sería decidir dos
-      // veces lo mismo, y las dos podrían discrepar.
+      await entrar(limpio, clave);
+      navegar(volverA, { replace: true });
     } catch (e) {
       setError((e as Error).message);
       setEnviando(false);
@@ -59,21 +87,34 @@ export function Entrar() {
           {error && <p className="acceso__error" role="alert">{error}</p>}
 
           <div className="campo">
-            <label className="campo__etiqueta" htmlFor="campo-correo">Correo</label>
+            <label className="campo__etiqueta" htmlFor="campo-usuario">
+              Usuario o correo
+            </label>
             <input
               className="campo__control"
-              id="campo-correo"
-              type="email"
-              name="correo"
-              value={correo}
-              onChange={(e) => setCorreo(e.target.value)}
+              id="campo-usuario"
+              /* `text` y no `email`: con `email` el navegador rechaza «gloria»
+                 por su cuenta, antes de que llegue aquí, y con un mensaje suyo
+                 que dice que falta una arroba. */
+              type="text"
+              name="usuario"
+              value={identificador}
+              onChange={(e) => setIdentificador(e.target.value)}
               autoComplete="username"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               required
               disabled={enviando}
+              placeholder="gloria"
               /* El foco arranca aquí: es el primer campo y quien llega a esta
                  pantalla siempre viene a escribir. */
               autoFocus
             />
+            <span className="campo__ayuda">
+              Tu nombre de usuario, en una sola palabra. También sirve el
+              correo completo.
+            </span>
           </div>
 
           <div className="campo">
@@ -101,6 +142,9 @@ export function Entrar() {
             {enviando && <span className="boton__girador" aria-hidden="true" />}
             {enviando ? 'Entrando…' : 'Entrar'}
           </button>
+
+          {/* La portada es pública: se puede mirar el campus sin entrar. */}
+          <Link className="acceso__salida" to="/">← Ver las cafeterías</Link>
         </form>
       </main>
       <Pie />

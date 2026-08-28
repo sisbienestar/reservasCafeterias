@@ -17,7 +17,7 @@
  */
 
 import { publico, servicio, desempaquetar } from './supabase.js';
-import { romper } from './sobre.js';
+import { ErrorNegocio, romper } from './sobre.js';
 
 export type Rol = 'mostrador' | 'admin';
 
@@ -88,6 +88,55 @@ const PERMISOS: Record<Rol, readonly string[]> = {
 export function tokenDe(autorizacion: string | undefined | null): string {
   const bruto = String(autorizacion ?? '').trim();
   return /^Bearer\s+/i.test(bruto) ? bruto.replace(/^Bearer\s+/i, '').trim() : '';
+}
+
+/**
+ * Las acciones que se pueden hacer SIN sesión.
+ *
+ * Son dos y ninguna toca datos de nadie:
+ *
+ *  · `cafeterias.listar` — la portada enseña las sedes del campus antes de
+ *    entrar, que es lo que hace que la aplicación tenga una puerta y no un
+ *    muro. Sin sesión devuelve solo las ACTIVAS: `incluir_inactivas` se
+ *    ignora, porque una sede archivada es información de administración.
+ *  · `app.contexto` — la fecha de trabajo y el interruptor de fin de semana.
+ *    Sin sesión el `perfil` viene en `null`, y eso es justo lo que le dice a
+ *    la pantalla que hay que ofrecer el acceso.
+ *
+ * Nada más entra aquí sin pensarlo dos veces. Todo lo demás toca reservas, y
+ * una reserva lleva el nombre y el móvil de una persona.
+ */
+export const ACCIONES_PUBLICAS = new Set(['cafeterias.listar', 'app.contexto']);
+
+/**
+ * Como `identificar`, pero devuelve `null` en vez de fallar.
+ *
+ * Es para las acciones públicas: si la sesión caducó mientras alguien tenía
+ * la portada abierta, lo correcto es enseñarle la portada como a cualquier
+ * visitante, no un error. Quien necesite sesión ya la exigirá.
+ */
+export async function identificarSiHay(
+  autorizacion: string | undefined | null,
+): Promise<Sesion | null> {
+  if (!tokenDe(autorizacion)) return null;
+  try {
+    return await identificar(autorizacion);
+  } catch (error) {
+    /*
+     * NO_AUTORIZADO SÍ sube: es una cuenta válida a la que le falta la fila
+     * en `perfil`, y eso hay que decirlo con esas palabras.
+     *
+     * Tratarlo como «no hay sesión» mandaría a esa persona a identificarse
+     * otra vez, entraría con las mismas credenciales —que son buenas— y
+     * volvería al mismo sitio. Un bucle en el que nada de lo que haga ayuda,
+     * porque lo que falta se lo tiene que dar administración.
+     *
+     * Lo que sí se convierte en «visitante» es un token caducado o inválido:
+     * ahí volver a entrar es exactamente la salida.
+     */
+    if (error instanceof ErrorNegocio && error.codigo === 'NO_AUTORIZADO') throw error;
+    return null;
+  }
 }
 
 /**

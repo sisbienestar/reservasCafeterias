@@ -62,14 +62,35 @@ async function pedir(accion, params, token) {
 
 /* ── 1 · Sin sesion ──────────────────────────────────────────────────── */
 
-titulo('Sin sesion no se hace nada');
-for (const accion of ['cafeterias.listar', 'reservas.buscar', 'reservas.crear', 'app.contexto']) {
+titulo('Sin sesion: lo publico se sirve');
+// La portada enseña las sedes del campus antes de entrar. Es la unica accion
+// de datos que se sirve sin sesion, y no lleva nada de nadie.
+const portada = await pedir('cafeterias.listar', {}, null);
+ok(portada.ok === true, `cafeterias.listar → ${portada.ok ? 'sirve' : portada.error.codigo}`);
+ok(Array.isArray(portada.data) && portada.data.every((c) => c.activa),
+   `y SOLO las activas (${(portada.data ?? []).length})`);
+
+// Aunque se pida lo contrario: una sede archivada es informacion de
+// administracion, y fiarse del parametro habria bastado para sacarla.
+const conInactivas = await pedir('cafeterias.listar', { incluir_inactivas: true }, null);
+ok(conInactivas.ok === true && conInactivas.data.length === portada.data.length,
+   `incluir_inactivas se IGNORA sin sesion (${conInactivas.data?.length} = ${portada.data.length})`);
+
+const ctxAnonimo = await pedir('app.contexto', {}, null);
+ok(ctxAnonimo.ok === true, 'app.contexto se sirve sin sesion');
+ok(ctxAnonimo.data?.perfil === null, `y el perfil viene vacio → ${JSON.stringify(ctxAnonimo.data?.perfil)}`);
+ok(/^\d{4}-\d{2}-\d{2}$/.test(ctxAnonimo.data?.hoy ?? ''),
+   `con la fecha del servidor → ${ctxAnonimo.data?.hoy}`);
+
+titulo('Sin sesion: lo demas, cerrado');
+for (const accion of ['reservas.buscar', 'reservas.crear', 'reservas.delDia',
+                      'reservas.cancelar', 'menu.semana', 'cafeterias.crear']) {
   const s = await pedir(accion, {}, null);
   ok(s.ok === false && s.error.codigo === 'NO_AUTENTICADO',
      `${accion} → ${s.ok ? 'DEJO PASAR' : s.error.codigo}`);
 }
 
-const basura = await pedir('cafeterias.listar', {}, 'esto-no-es-un-token');
+const basura = await pedir('reservas.buscar', {}, 'esto-no-es-un-token');
 ok(basura.ok === false && basura.error.codigo === 'NO_AUTENTICADO',
    `un token inventado → ${basura.ok ? 'DEJO PASAR' : basura.error.codigo}`);
 
@@ -98,9 +119,13 @@ const token = sesion.session.access_token;
 
 titulo('Una cuenta valida SIN perfil tampoco pasa');
 await admin.from('perfil').delete().eq('usuario_id', usuario.id);
-const sinPerfil = await pedir('cafeterias.listar', {}, token);
+const sinPerfil = await pedir('reservas.delDia', {}, token);
 ok(sinPerfil.ok === false && sinPerfil.error.codigo === 'NO_AUTORIZADO',
    `token bueno, sin fila en perfil → ${sinPerfil.ok ? 'DEJO PASAR' : sinPerfil.error.codigo}`);
+// Y NO_AUTENTICADO seria peor que un error: mandaria a identificarse otra vez
+// a quien ya lo hizo con credenciales buenas, en un bucle sin salida.
+ok(sinPerfil.error?.codigo !== 'NO_AUTENTICADO',
+   'y no se confunde con «no hay sesion», que la hay');
 // Se le devuelve el perfil para el resto de las pruebas.
 await admin.from('perfil').upsert({
   usuario_id: usuario.id, nombre: 'Mostrador (temporal)', rol: 'mostrador', cafeteria_id: SEDE,

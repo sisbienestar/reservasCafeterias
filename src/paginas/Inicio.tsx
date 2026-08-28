@@ -12,6 +12,7 @@ import { usePeticion } from '../utiles/usePeticion.js';
 import { TarjetaCafeteria } from '../componentes/TarjetaCafeteria.js';
 import { BloqueEstado } from '../componentes/BloqueEstado.js';
 import { BarraSesion } from '../componentes/BarraSesion.js';
+import { Link } from 'react-router-dom';
 import { Pie } from '../componentes/Pie.js';
 import { useHoy, useSesion } from '../contexto/Sesion.js';
 import { formatearFechaLarga } from '../utiles/fechas.js';
@@ -25,7 +26,21 @@ export function Inicio() {
   return (
     <>
       <main className="contenedor pagina">
-        {contexto && <BarraSesion perfil={contexto.perfil} alSalir={salir} />}
+        {/*
+          La portada es pública. Con sesión enseña quién ha entrado y por
+          dónde salir; sin ella, la puerta. Y sin ella no falta nada más: las
+          tarjetas se ven igual, porque saber qué cafeterías hay en el campus
+          no es un dato de nadie.
+        */}
+        {contexto?.perfil
+          ? <BarraSesion perfil={contexto.perfil} alSalir={salir} />
+          : (
+            <div className="barra-sesion">
+              <Link className="boton boton--secundario boton--sm barra-sesion__entrar" to="/entrar">
+                Entrar
+              </Link>
+            </div>
+          )}
 
         {/* La fecha ANTES del título, como en el original: es el sobretítulo
             que sitúa, no un dato al pie. */}
@@ -77,7 +92,7 @@ export function Inicio() {
         </section>
       </main>
 
-      <Pie conEnlaceAdmin={contexto?.perfil.rol === 'admin'} />
+      <Pie conEnlaceAdmin={contexto?.perfil?.rol === 'admin'} />
     </>
   );
 }

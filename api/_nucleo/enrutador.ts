@@ -10,13 +10,22 @@
 
 import { exito, fallo, ErrorNegocio, type Sobre } from './sobre.js';
 import { traducirError } from './supabase.js';
-import { identificar, autorizar, type Sesion } from './sesion.js';
+import {
+  ACCIONES_PUBLICAS, autorizar, identificarSiHay, type Sesion,
+} from './sesion.js';
 import { PERMITIR_FIN_DE_SEMANA } from './dominio.js';
 import * as cafeterias from './acciones/cafeterias.js';
 import * as menu from './acciones/menu.js';
 import * as reservas from './acciones/reservas.js';
 
-type Manejador = (params: Record<string, unknown>, sesion: Sesion) => Promise<unknown>;
+/**
+ * Los manejadores reciben `Sesion | null`.
+ *
+ * A los privados nunca les llega nula —el enrutador lo garantiza antes de
+ * llamarlos— pero el tipo lo dice igualmente, para que una acción nueva no
+ * dé por hecho lo contrario y se entere al añadirla a las públicas.
+ */
+type Manejador = (params: Record<string, unknown>, sesion: Sesion | null) => Promise<unknown>;
 
 /**
  * La fecha de HOY según el servidor, en la zona de Colombia.
@@ -48,11 +57,15 @@ function hoyEnColombia(): string {
  * desincronizarían todavía más fácil, así que la única de verdad es la del
  * servidor y la pantalla pregunta por ella.
  */
-async function contexto(_params: Record<string, unknown>, sesion: Sesion) {
+async function contexto(_params: Record<string, unknown>, sesion: Sesion | null) {
   return {
     hoy: hoyEnColombia(),
     permitir_fin_de_semana: PERMITIR_FIN_DE_SEMANA,
-    perfil: {
+    // Sin sesión viene en null, y eso es información y no un hueco: es lo que
+    // le dice a la pantalla que hay que ofrecer el acceso en vez de la
+    // aplicación. Se sirve igualmente la fecha y el interruptor, que la
+    // portada necesita y no son de nadie.
+    perfil: sesion && {
       nombre: sesion.nombre,
       rol: sesion.rol,
       cafeteria_id: sesion.cafeteriaId,
@@ -60,11 +73,31 @@ async function contexto(_params: Record<string, unknown>, sesion: Sesion) {
   };
 }
 
+/**
+ * Envuelve un manejador que EXIGE sesión.
+ *
+ * El enrutador ya ha cortado antes de llegar aquí, así que esta comprobación
+ * no debería saltar nunca. Se hace igual, y no con un `as Sesion`: un día
+ * alguien añadirá una acción a `ACCIONES_PUBLICAS` sin mirar qué hace por
+ * dentro, y la diferencia entre un fallo limpio y leer las reservas de todo
+ * el campus sin sesión está exactamente aquí.
+ */
+const conSesion = (
+  f: (p: Record<string, unknown>, s: Sesion) => Promise<unknown>,
+): Manejador => (p, s) => {
+  if (!s) {
+    return Promise.reject(
+      new ErrorNegocio('NO_AUTENTICADO', 'Hay que iniciar sesión para usar la aplicación.'),
+    );
+  }
+  return f(p, s);
+};
+
 /** Las 15 acciones. Lo que no esté aquí es ACCION_DESCONOCIDA. */
 const ACCIONES: Record<string, Manejador> = {
   'app.contexto': contexto,
 
-  'cafeterias.listar': (p) => cafeterias.listar(p),
+  'cafeterias.listar': (p, s) => cafeterias.listar(p, s),
   'cafeterias.obtener': (p) => cafeterias.obtener(p),
   'cafeterias.crear': (p) => cafeterias.crear(p),
   'cafeterias.actualizar': (p) => cafeterias.actualizar(p),
@@ -75,11 +108,11 @@ const ACCIONES: Record<string, Manejador> = {
   'menu.semana': (p) => menu.semana(p),
   'menu.guardarSemana': (p) => menu.guardarSemana(p),
 
-  'reservas.delDia': reservas.delDia,
-  'reservas.crear': reservas.crear,
-  'reservas.actualizar': reservas.actualizar,
-  'reservas.cancelar': reservas.cancelar,
-  'reservas.buscar': reservas.buscar,
+  'reservas.delDia': conSesion(reservas.delDia),
+  'reservas.crear': conSesion(reservas.crear),
+  'reservas.actualizar': conSesion(reservas.actualizar),
+  'reservas.cancelar': conSesion(reservas.cancelar),
+  'reservas.buscar': conSesion(reservas.buscar),
 };
 
 /**
@@ -102,8 +135,22 @@ export async function manejar(
   }
 
   try {
-    const sesion = await identificar(autorizacion);
-    autorizar(sesion, accion);
+    /*
+     * Se intenta identificar SIEMPRE, también en las acciones públicas: la
+     * portada abierta con sesión no es lo mismo que abierta sin ella —una
+     * enseña quién eres y por dónde salir—, y esa diferencia se decide aquí.
+     *
+     * Lo que cambia es qué pasa cuando no hay sesión: en una acción pública
+     * se sigue como visitante; en el resto, se corta aquí mismo.
+     */
+    const publica = ACCIONES_PUBLICAS.has(accion);
+    const sesion = await identificarSiHay(autorizacion);
+
+    if (!sesion && !publica) {
+      return fallo('NO_AUTENTICADO', 'Hay que iniciar sesión para usar la aplicación.');
+    }
+    if (sesion) autorizar(sesion, accion);
+
     return exito(await manejador(params ?? {}, sesion));
   } catch (error) {
     if (error instanceof ErrorNegocio) {

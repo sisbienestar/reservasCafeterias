@@ -24,6 +24,31 @@ Esto es nuevo: el backend de Apps Script no pedía nada, y por eso quien tuviera
 la URL leía y escribía todo el campus. Un backend que no exija sesión **no
 cumple este contrato**.
 
+### Las dos excepciones
+
+`cafeterias.listar` y `app.contexto` se sirven **sin sesión**. La portada
+enseña las cafeterías del campus antes de entrar, y para eso necesita las dos:
+la lista y la fecha de trabajo.
+
+Ninguna devuelve datos de nadie, y las dos cambian de forma sin sesión:
+
+| Acción | Con sesión | Sin sesión |
+|---|---|---|
+| `cafeterias.listar` | respeta `incluir_inactivas` si el rol es `admin` | **ignora** `incluir_inactivas`: solo las activas |
+| `app.contexto` | `perfil` con nombre, rol y sede | `perfil: null` |
+
+Una sede archivada es una decisión de administración, así que fiarse del
+parámetro habría bastado para sacarla. Y `perfil: null` no es un hueco: es lo
+que le dice a la pantalla que hay que ofrecer el acceso.
+
+**Lo demás sigue cerrado.** Toda otra acción toca reservas, y una reserva
+lleva el nombre y el móvil de una persona.
+
+Una cuenta válida SIN fila en `perfil` recibe `NO_AUTORIZADO`, nunca
+`NO_AUTENTICADO`. La diferencia no es cosmética: lo segundo la mandaría a
+identificarse otra vez con unas credenciales que son buenas, en un bucle del
+que no puede salir sola.
+
 ```jsonc
 // petición
 { "accion": "reservas.crear", "params": { … } }
@@ -179,7 +204,7 @@ no es cosmético:
 
 | Acción | Params | Devuelve |
 |---|---|---|
-| `app.contexto` | — | `{hoy, permitir_fin_de_semana, perfil{nombre, rol, cafeteria_id}}` |
+| `app.contexto` | — | `{hoy, permitir_fin_de_semana, perfil{nombre, rol, cafeteria_id} | null}` |
 
 La acción que el backend anterior no podía tener. `hoy` es la fecha **según el
 servidor**, en la zona de Colombia: sacarla del reloj del navegador hacía que
@@ -194,7 +219,7 @@ nunca qué permitir: eso lo vuelve a comprobar el servidor en cada acción.
 
 | Acción | Params | Devuelve |
 |---|---|---|
-| `cafeterias.listar` | `incluir_inactivas?` | `Cafeteria[]` — sin el flag, solo las activas |
+| `cafeterias.listar` | `incluir_inactivas?` | `Cafeteria[]` — sin el flag, solo las activas. **Pública**; ver §1 |
 | `cafeterias.obtener` | `id` | `Cafeteria` |
 | `cafeterias.crear` | `nombre`, `ubicacion?`, `platos_fijos?` | `Cafeteria` — el `id` y el `codigo` los asigna el servidor |
 | `cafeterias.actualizar` | `id`, `nombre`, `ubicacion`, `platos_fijos` | `Cafeteria` |

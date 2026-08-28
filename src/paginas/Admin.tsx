@@ -271,7 +271,7 @@ export function Admin() {
   return (
     <>
     <main className="contenedor pagina" id="contenido">
-      {contexto && (
+      {contexto?.perfil && (
         <BarraSesion
           perfil={contexto.perfil}
           alSalir={salir}
