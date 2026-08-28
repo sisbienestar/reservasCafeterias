@@ -15,6 +15,7 @@
 import { servicio, desempaquetar } from '../supabase.js';
 import { romper } from '../sobre.js';
 import { aSlug, esDiaDeServicio, sumarDias, rangoDias, ES_FECHA } from '../dominio.js';
+import { ajusteSiNo } from './aplicacion.js';
 import { filaDe } from './cafeterias.js';
 
 export interface OpcionContrato { id: string; nombre: string; fijo?: boolean }
@@ -47,7 +48,7 @@ async function cartaComun(fecha: string): Promise<OpcionContrato[]> {
  * cuál de las dos apunta.
  */
 export async function ofertaDelDia(cafeteriaId: string, fecha: string): Promise<OpcionContrato[]> {
-  if (!esDiaDeServicio(fecha)) return [];
+  if (!esDiaDeServicio(fecha, await ajusteSiNo('permitir_fin_de_semana'))) return [];
 
   const [opciones, cafeteria] = await Promise.all([cartaComun(fecha), filaDe(cafeteriaId)]);
   const resultado: OpcionContrato[] = [...opciones];
@@ -97,6 +98,10 @@ export async function guardarSemana(params: Record<string, unknown>) {
   const validas = new Set(rangoDias(lunes, sumarDias(lunes, 6)));
   const preparados: { fecha: string; opciones: OpcionContrato[] }[] = [];
 
+  // Una sola lectura para los siete días: el interruptor no cambia a mitad de
+  // guardar una semana.
+  const permitirFinDeSemana = await ajusteSiNo('permitir_fin_de_semana');
+
   for (const dia of params.dias as { fecha?: string; platos?: unknown[] }[]) {
     const fecha = String(dia?.fecha ?? '');
     if (!validas.has(fecha)) {
@@ -108,7 +113,7 @@ export async function guardarSemana(params: Record<string, unknown>) {
 
     // Un fin de semana con platos es un descuido de quien edita, no una
     // excepción que conceder: la cocina no abre y esa carta no la vería nadie.
-    if (!esDiaDeServicio(fecha) && conTexto.length > 0) {
+    if (!esDiaDeServicio(fecha, permitirFinDeSemana) && conTexto.length > 0) {
       romper('SIN_SERVICIO', 'Los sábados y domingos no hay servicio: no llevan carta.');
     }
 

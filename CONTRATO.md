@@ -198,13 +198,13 @@ no es cosmético:
 
 ---
 
-## 3. Las 15 acciones
+## 3. Las 43 acciones
 
 ### Sesión
 
 | Acción | Params | Devuelve |
 |---|---|---|
-| `app.contexto` | — | `{hoy, permitir_fin_de_semana, perfil{nombre, rol, cafeteria_id} | null}` |
+| `app.contexto` | — | `{hoy, permitir_fin_de_semana, aplicacion{nombre, version, fecha_version}, modulos[], perfil | null}` |
 
 La acción que el backend anterior no podía tener. `hoy` es la fecha **según el
 servidor**, en la zona de Colombia: sacarla del reloj del navegador hacía que
@@ -247,6 +247,124 @@ nunca qué permitir: eso lo vuelve a comprobar el servidor en cada acción.
 `reservas.actualizar` **no recibe `cafeteria_id` ni `fecha`**: no son editables,
 y dejarlas fuera de la firma evita que una pantalla futura las cambie por
 descuido.
+
+### Proveedores · módulo de pedidos
+
+| Acción | Params | Devuelve |
+|---|---|---|
+| `proveedores.listar` | `incluir_inactivos?` | `Proveedor[]` — sin el flag, solo los activos |
+| `proveedores.obtener` | `id` | `Proveedor` **con `productos[]`** |
+
+Ninguna de las dos es pública, al revés que `cafeterias.listar`. Las sedes del
+campus están en la señalización de la Universidad; a quién le compra Bienestar,
+no. Ver §1.
+
+`proveedores.obtener` devuelve el catálogo **dentro** del proveedor, no en una
+llamada aparte: la pantalla de pedido necesita las dos cosas para dibujar el
+formulario, y es la misma disciplina de un viaje por gesto que sigue
+`reservas.buscar`. Los productos vienen en el orden de la PLANTILLA, no
+alfabético: quien pide recorre la hoja con el dedo en el orden de siempre.
+
+`tipo_documento` decide qué columnas tiene el formulario y el documento
+impreso: `FBE.04` para los almacenes internos —solicitada, devuelta, adicional
+y total de salida— y `FBE.34` para los proveedores externos, que solo llevan
+cantidad pedida.
+
+### Pedidos
+
+| Acción | Params | Devuelve |
+|---|---|---|
+| `pedidos.crear` | `proveedor_id`, `cafeteria_id`, `fecha_elaboracion`, `fecha_entrega?`, `hora_entrega?`, `lugar_entrega?`, `lineas[]` | `Pedido` con sus `lineas[]` |
+| `pedidos.obtener` | `id` | `Pedido` con sus `lineas[]` |
+| `pedidos.buscar` | `desde`, `hasta`, `proveedor_id?`, `cafeteria_id?`, `estado?`, `limite?` | `{total, pedidos[]}` — la FICHA de cada uno, sin sus líneas |
+| `pedidos.actualizar` | `id`, `fecha_entrega?`, `hora_entrega?`, `lugar_entrega?`, `lineas[]` | `Pedido` — solo si es `borrador` |
+| `pedidos.confirmar` | `id` | `Pedido` en `confirmado`, y avisa a administración |
+| `pedidos.anular` | `id` | `Pedido` en `anulado` |
+
+### El panel del módulo · solo `admin`
+
+| Acción | Params | Devuelve |
+|---|---|---|
+| `proveedores.crear` | `nombre`, `tipo_documento`, `categoria_fija?` | `Proveedor` — el `id` sale del nombre |
+| `proveedores.actualizar` | `id`, `nombre`, `tipo_documento`, `categoria_fija?` | `Proveedor` |
+| `proveedores.archivar` / `.reactivar` | `id` | `Proveedor` con `activo` cambiado |
+| `productos.listar` | `proveedor_id` | `Producto[]` — **incluye los archivados** |
+| `productos.crear` | `proveedor_id`, `productos[]` | `Producto[]` — se añaden al final |
+| `productos.actualizar` | `id`, `nombre`, `unidad_medida`, `categoria?`, `codigo?` | `Producto` |
+| `productos.archivar` / `.reactivar` | `id` | `Producto` |
+| `productos.mover` | `id`, `direccion` (`subir`|`bajar`) | `Producto` |
+| `cuentas.listar` | — | `{nombre, rol, cafeteria_id, cafeteria_nombre}[]` |
+
+`productos.listar` se diferencia de `proveedores.obtener` en una cosa: aquella
+sirve el formulario de pedido y solo puede enseñar lo que se puede pedir; esta
+sirve el panel, donde hay que ver lo archivado para poder reactivarlo.
+
+**Nunca se borra, siempre se archiva.** Los pedidos apuntan al proveedor con
+una clave foránea, así que borrarlo dejaría documentos sin emisor; y el nombre
+del producto está copiado en cada línea, así que archivarlo no altera ni un
+pedido viejo.
+
+`productos.crear` acepta uno o muchos porque son la misma operación con
+distinto número de filas. El `orden` lo asigna el SERVIDOR —`MAX(orden) + 1`,
+dentro de `crear_productos`— y no llega en los parámetros: calcularlo en el
+cliente deja una ventana en la que otra alta se lleva el mismo número.
+
+`productos.mover` con el producto ya en un extremo **no es un error**: devuelve
+el producto sin tocarlo. Así la pantalla no tiene que llevar la cuenta de dónde
+empieza y acaba la lista.
+
+`cuentas.listar` **no devuelve correos**. Se podrían sacar de `auth.users` con
+la clave de servicio —`notificaciones.ts` lo hace para poder enviar— pero no
+hacen falta para responder «quién tiene acceso», y un dato personal que no hace
+falta no se sirve.
+
+`pedidos.crear` **no recibe `tipo_documento`**: lo dice el proveedor. Mandarlo
+habría permitido pedirle a Coca-Cola con la plantilla del almacén.
+
+Cada línea es `{producto_id, cantidad_solicitada, cantidad_devuelta?,
+cantidad_adicional?}`. Las dos últimas **solo cuentan en un FBE.04**; en un
+FBE.34 se descartan aunque lleguen, porque la plantilla no tiene dónde
+imprimirlas. Y **no se manda `cantidad_total_salida`**: es una columna
+generada, la calcula Postgres como `solicitada − devuelta + adicional`.
+
+El texto que se imprime —nombre, código y unidad de cada producto— **no viaja
+en los parámetros**: lo copia `crear_pedido` desde el catálogo. El cliente dice
+qué producto y cuánto; qué dice el papel lo decide la base de datos.
+
+`pedidos.buscar` devuelve la **ficha** de cada pedido —fecha, proveedor, sede,
+estado y cuántos renglones lleva—, no sus líneas: un listado de treinta pedidos
+con todos sus productos dentro sería un cuarto de megabyte para pintar treinta
+filas. Las líneas se piden con `pedidos.obtener` al abrir uno.
+
+`total` es el del RANGO y puede ser mayor que `pedidos.length` si se topó el
+límite. Es lo que permite decir «se muestran los 500 más recientes» en vez de
+cortar la lista en silencio.
+
+En `pedidos.crear` y en `pedidos.buscar`, **`cafeteria_id` solo lo obedece un
+`admin`**: a un mostrador se le impone la suya, mande lo que mande. Es la misma
+regla de `sedePermitida` que ya usan las reservas.
+
+#### El ciclo de un pedido
+
+```
+borrador ──confirmar──► confirmado ──► administración imprime y firma
+   │  ▲                     │
+   │  └── actualizar        └── anular (solo admin)
+   └── anular
+```
+
+Un pedido nace **`borrador`**: quien lo elabora lo revisa como documento y lo
+corrige antes de que exista para nadie más. `pedidos.actualizar` **solo acepta
+borradores**, y no recibe `proveedor_id` ni `cafeteria_id` —cambiar el proveedor
+invalidaría todos los renglones—.
+
+Al confirmar deja de ser editable y se avisa a las cuentas con rol `admin`. **El
+aviso no puede tumbar la confirmación**: se manda después de cambiar el estado y
+sus fallos se registran sin deshacer nada.
+
+No hay camino de vuelta: un confirmado no regresa a borrador, porque a esas
+alturas puede haber un papel impreso circulando. Se anula y se elabora otro. Un
+borrador lo anula quien lo hizo; uno confirmado, solo administración.
 
 #### El resumen de `reservas.buscar`
 
@@ -298,6 +416,14 @@ datos que el resto del sistema da por imposibles.
 | Faltan campos obligatorios | `DATOS_INCOMPLETOS` |
 | `medio` o `pago` ausentes, o con un valor fuera de la lista | `DATOS_INCOMPLETOS` |
 | No existe la cafetería / la reserva | `CAFETERIA_NO_ENCONTRADA`, `RESERVA_NO_ENCONTRADA` |
+| No existe el proveedor / el pedido | `PROVEEDOR_NO_ENCONTRADO`, `PEDIDO_NO_ENCONTRADO` |
+| Pedido sin productos, producto ajeno al proveedor, sede cerrada o proveedor de baja | `PEDIDO_INVALIDO` |
+| En `pedidos.buscar`: `desde` posterior a `hasta`, o rango de más de un año | `RANGO_INVALIDO` |
+| Editar o confirmar un pedido que ya no es borrador | `PEDIDO_INVALIDO` |
+| Tocar un pedido de otra cafetería, o anular un confirmado sin ser `admin` | `NO_AUTORIZADO` |
+| El nombre de un proveedor nuevo ya existe | `PROVEEDOR_DUPLICADO` |
+| No existe el producto | `PRODUCTO_NO_ENCONTRADO` |
+| Un FBE.34 con categoría, o una categoría fuera de las tres del FBE.04 | `DATOS_INCOMPLETOS` |
 | Acción no reconocida | `ACCION_DESCONOCIDA` |
 | Falta el token de sesión, o caducó | `NO_AUTENTICADO` |
 | La sesión es válida pero su perfil no puede hacer eso | `NO_AUTORIZADO` |

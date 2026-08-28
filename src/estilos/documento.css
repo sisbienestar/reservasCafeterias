@@ -1,0 +1,456 @@
+/* ==========================================================================
+   documento.css · el pedido tal como se imprime
+   ==========================================================================
+
+   Se carga LA ÚLTIMA, después de react.css.
+
+   Esta hoja es la excepción a la regla de buscar el nombre en las otras
+   cinco: aquí NO se reutiliza `.tabla` ni `.campo`, y es a propósito. Todo lo
+   demás del proyecto está diseñado para una pantalla —bordes redondeados,
+   sombras, gris sobre casi blanco, aire de sobra—. Esto es un formato
+   institucional que va a salir por una impresora en blanco y negro y que
+   tiene que parecerse a la plantilla de Excel que sustituye, no a la
+   aplicación. Mezclar los dos sistemas habría estropeado los dos.
+
+   Por eso todas las clases empiezan por `documento__`: no colisionan con
+   nada, y se ve de un vistazo que lo que se toca aquí no afecta a ninguna
+   otra pantalla.
+   ========================================================================== */
+
+/*
+ * Columna flexible, y no un bloque normal, por una sola razón: las firmas
+ * llevan `margin-top: auto` y así se van al pie de la hoja en vez de quedarse
+ * pegadas debajo de la tabla. Un pedido de seis renglones dejaría si no las
+ * firmas a media página.
+ */
+.documento {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  color: #000;
+  /* El ancho de una carta menos los márgenes. Fijo a propósito: lo que se ve
+     en pantalla tiene que ser lo que sale por la impresora. */
+  max-width: 820px;
+  /* Y el alto de una carta menos sus márgenes, para que en PANTALLA se vea
+     ya dónde va a caer el pie. En impresión lo sustituye `100vh`. */
+  min-height: 1000px;
+  margin: 0 auto var(--e-7);
+  padding: var(--e-5);
+  border: 1px solid var(--c-borde);
+  border-radius: var(--radio-md);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+/* ── El membrete ─────────────────────────────────────────────────────── */
+
+/*
+ * Tres celdas: logo, proceso, código. Es una tabla y no una rejilla porque
+ * en la plantilla original ES una tabla con bordes, y esos bordes tienen que
+ * salir impresos.
+ */
+.documento__membrete {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--e-4);
+}
+
+.documento__membrete td {
+  border: 1px solid #000;
+  padding: var(--e-2) var(--e-3);
+  vertical-align: middle;
+}
+
+.documento__logo-celda { width: 110px; text-align: center; }
+
+.documento__logo {
+  width: 92px;
+  height: auto;
+}
+
+.documento__proceso { text-align: center; }
+
+.documento__institucion {
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.documento__titulo {
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.documento__codigo-celda {
+  width: 150px;
+  font-size: 11px;
+}
+
+.documento__codigo-celda p { margin: 0; }
+
+/* ── Fecha y categoría, uno a cada lado ──────────────────────────────── */
+
+.documento__encabezado {
+  display: flex;
+  gap: var(--e-4);
+  align-items: flex-start;
+  margin-bottom: var(--e-3);
+}
+
+.documento__fecha,
+.documento__categoria {
+  border-collapse: collapse;
+}
+
+/* En el FBE.04 la fecha ocupa lo justo y la categoría se lleva el resto hasta
+   el margen derecho. En el FBE.34 las dos fechas llenan su columna. */
+.documento__fecha { width: 250px; }
+.documento__categoria { flex: 1; }
+
+.documento__encabezado--unido .documento__fecha { width: 100%; }
+
+.documento__fecha th,
+.documento__fecha td,
+.documento__categoria th,
+.documento__categoria td {
+  border: 1px solid #000;
+  padding: 2px var(--e-2);
+  font-size: 11px;
+  text-align: center;
+}
+
+.documento__fecha thead th,
+.documento__categoria thead th {
+  background: #f2f2f2;
+  font-weight: 700;
+}
+
+/*
+ * ── La casilla de fecha ─────────────────────────────────────────────────
+ *
+ * El negro encierra el BLOQUE y nada más. Todo lo de dentro va en gris claro:
+ * son divisiones de una misma caja, no fronteras entre cosas distintas, y
+ * dibujarlas con el mismo peso que el marco convertía la casilla en una
+ * parrilla donde las seis celdas pesaban igual.
+ *
+ * El marco se dibuja CELDA A CELDA, con los cuatro selectores de borde de
+ * abajo, y no con un `border` en la tabla. Parece más rodeo del necesario y no
+ * lo es: en `border-collapse`, cuando dos bordes coinciden en grosor y estilo,
+ * el desempate va de la celda hacia fuera —celda, fila, grupo, tabla—, así que
+ * el gris de las celdas se come el negro de la tabla. Se probó, y el marco no
+ * aparecía.
+ */
+.documento__fecha th,
+.documento__fecha td { border-color: #b0b0b0; }
+
+/* Las cuatro orillas del bloque. */
+.documento__fecha thead tr:first-child > * { border-top-color: #000; }
+.documento__fecha tbody tr:last-child > * { border-bottom-color: #000; }
+.documento__fecha tr > *:first-child { border-left-color: #000; }
+.documento__fecha tr > *:last-child { border-right-color: #000; }
+
+/*
+ * La casilla en línea del FBE.34: «Día 28 Mes 08 Año 2026» en una sola fila,
+ * cada rótulo pegado a su número.
+ *
+ * Apilados —el rótulo arriba y el dato abajo— la caja gastaba tres filas y
+ * había que subir y bajar la vista para saber cuál de los tres números era el
+ * año. Frente a frente se lee de un tirón y la caja baja a dos filas.
+ *
+ * El rótulo va en `<th>` dentro del `<tbody>`: es el encabezado de SU celda,
+ * no el de una columna, y esa es justo la diferencia que marca `scope="row"`.
+ */
+.documento__fecha tbody th {
+  /* «Año» y «Mes» miden más que «aaaa» y «mm» a este cuerpo, pero el ancho lo
+     manda la palabra más larga y no el número: los tres rótulos igual de
+     anchos hacen que las tres parejas se lean como una fila regular. */
+  width: 46px;
+  background: #f7f7f7;
+  font-weight: 600;
+  font-size: 10px;
+  color: #333;
+  /*
+   * Sin línea entre el rótulo y su número: son la misma cosa, y una raya en
+   * medio los partía en dos celdas. Lo que los distingue es el fondo, que ya
+   * basta.
+   *
+   * `hidden` y no `none`: en `border-collapse`, `none` es el estilo de menor
+   * prioridad y el borde izquierdo de la celda vecina lo pintaría igual.
+   * `hidden` gana a todos, que es la única forma de quitar el segmento.
+   */
+  border-right-style: hidden;
+}
+
+/* Más bajas que las del rótulo: el número no necesita el aire de una cabecera
+   y la caja entera gana al apretarlo. */
+.documento__fecha tbody td { padding-block: 1px; }
+
+/* Las tres filas de la categoría van alineadas a la izquierda, y solo la
+   columna de la X va centrada. */
+.documento__categoria td:first-child {
+  text-align: left;
+  font-style: italic;
+}
+
+/* La marcada lleva una X y nada más: esto se imprime en blanco y negro, y un
+   relleno gris claro no se distingue de otro. */
+.documento__equis {
+  width: 60px;
+  font-weight: 700;
+}
+
+/* Mismo criterio que en la casilla de fecha, y por el mismo motivo el marco va
+   celda a celda: el negro encierra el bloque y lo de dentro va claro. */
+.documento__categoria th,
+.documento__categoria td { border-color: #b0b0b0; }
+
+.documento__categoria thead tr:first-child > * { border-top-color: #000; }
+.documento__categoria tbody tr:last-child > * { border-bottom-color: #000; }
+.documento__categoria tr > *:first-child { border-left-color: #000; }
+.documento__categoria tr > *:last-child { border-right-color: #000; }
+
+/* Las tres cajas apiladas de la izquierda del FBE.34 —proveedor, lugar, hora—
+   y las dos fechas de su derecha. */
+.documento__columna {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/*
+ * El encabezado del FBE.34 va UNIDO, no en bloques sueltos.
+ *
+ * En la plantilla original es una sola rejilla: las cajas de la izquierda y
+ * las de la derecha comparten líneas, sin aire entre medias. Con huecos se
+ * lee como cinco cuadros sueltos en vez de como un encabezado, que es
+ * exactamente la diferencia que se veía al compararlo con el Excel.
+ *
+ * Los `-1px` son para que dos bordes contiguos no dibujen una línea doble.
+ */
+.documento__encabezado--unido {
+  gap: 0;
+  /*
+   * `stretch` y no `flex-start`: con el valor de arriba, cada columna medía
+   * solo lo que ocupaba su contenido y la derecha acababa más arriba que la
+   * izquierda. Es lo que hacía que se vieran dos bloques y no uno.
+   */
+  align-items: stretch;
+}
+
+.documento__encabezado--unido .documento__columna + .documento__columna {
+  margin-left: -1px;
+  flex: 0 0 370px;
+}
+
+.documento__encabezado--unido .documento__columna > * + * { margin-top: -1px; }
+
+/*
+ * Las cajas se quedan en su alto natural y SOLO la del medio se estira.
+ *
+ * Antes se repartían el alto a partes iguales, y como «Lugar de entrega»
+ * ocupa dos líneas, esa altura se la llevaban también «Proveedor» y «Hora»,
+ * que son una sola. El bloque entero salía inflado.
+ *
+ * Ahora el sobrante se lo come la del medio —la que ya era la más alta, así
+ * que ahí no se nota— y las columnas siguen terminando en la misma línea.
+ */
+.documento__encabezado--unido .documento__columna > * { flex: 0 0 auto; }
+
+.documento__encabezado--unido .documento__columna > *:nth-child(2) {
+  flex: 1 1 auto;
+}
+
+/* Una fila de rótulo y valor es una línea de texto, no una cabecera: con el
+   espaciado de las demás cajas del documento quedaba el doble de alta de lo
+   que necesita. */
+.documento__encabezado--unido .documento__dato th,
+.documento__encabezado--unido .documento__dato td {
+  padding-block: 3px;
+  /* Al estirarse la caja del medio, el texto pegado arriba dejaría el rótulo
+     flotando sobre un hueco. Centrado se lee como una fila, que es lo que es. */
+  vertical-align: middle;
+}
+
+/* ── Filas de rótulo + valor ─────────────────────────────────────────── */
+
+/*
+ * `.documento__solicita` es el FBE.04 y `.documento__dato` el FBE.34, pero
+ * son la misma forma: el rótulo en su columna y el valor en la suya. Antes
+ * era un párrafo corrido con dos puntos, y la sede se leía como el final de
+ * una frase en vez de como un dato.
+ */
+.documento__solicita,
+.documento__dato {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--e-3);
+}
+
+.documento__dato { margin-bottom: 0; }
+
+/* Una línea suelta encima de la tabla, sin recuadro: es una atribución, no un
+   dato del encabezado. El hueco de debajo lo pone el margen de la tabla. */
+.documento__elaborado {
+  margin: var(--e-2) 0 0;
+  font-size: 11px;
+}
+
+.documento__solicita th,
+.documento__solicita td,
+.documento__dato th,
+.documento__dato td {
+  border: 1px solid #000;
+  padding: var(--e-2) var(--e-3);
+  font-size: 11px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.documento__solicita th,
+.documento__dato th {
+  width: 220px;
+  font-weight: 700;
+  background: #f2f2f2;
+}
+
+.documento__unidad { font-weight: 700; }
+
+/* La nota de los servicios: es texto impreso de la plantilla, no un dato, y
+   por eso va en cursiva y más pequeña, como en el original. Ocupa las dos
+   columnas, en su propia fila debajo de la sede. */
+.documento__nota {
+  font-style: italic;
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+/* ── La tabla de productos ───────────────────────────────────────────── */
+
+.documento__tabla {
+  width: 100%;
+  border-collapse: collapse;
+  /* Separada del encabezado. Pegada a él, el documento se leía como un solo
+     bloque continuo y no se veía dónde acababan los datos del pedido y
+     empezaba lo que se pide. */
+  margin-top: var(--e-5);
+}
+
+.documento__tabla th,
+.documento__tabla td {
+  border: 1px solid #000;
+  padding: 3px var(--e-2);
+  font-size: 11px;
+  text-align: left;
+}
+
+.documento__tabla thead th {
+  background: #f2f2f2;
+  font-weight: 700;
+  text-align: center;
+}
+
+.documento__num { width: 34px; text-align: center; }
+.documento__cod { width: 92px; }
+.documento__und { width: 76px; }
+.documento__cant { width: 78px; text-align: right; }
+
+/* El encabezado de sección de la plantilla: GALLETAS, CHOCOLATINAS… */
+.documento__seccion th {
+  background: #e6e6e6;
+  font-weight: 700;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+/* ── Observaciones y firmas ──────────────────────────────────────────── */
+
+/*
+ * Vacío a propósito: es el hueco donde se escribe a mano al recibir la
+ * mercancía, y ese momento pasa fuera de la aplicación.
+ *
+ * Va SEPARADO de la tabla —recuadro propio y aire por encima— y no pegado a
+ * su último renglón: unido parecía una fila más del pedido. Y alto de sobra,
+ * porque lo que se escribe ahí se escribe con bolígrafo y a mano hacen falta
+ * bastantes más milímetros que a una fuente de once puntos.
+ */
+.documento__observaciones {
+  border: 1px solid #000;
+  margin-top: var(--e-5);
+  padding: var(--e-2) var(--e-3);
+  min-height: 110px;
+  font-size: 11px;
+}
+
+/*
+ * `margin-top: auto` es lo que las lleva al pie de la hoja: dentro de la
+ * columna flexible de `.documento` se come todo el espacio que sobra. Con un
+ * pedido largo no sobra nada y quedan justo detrás de la tabla, que también
+ * es lo correcto.
+ */
+.documento__firmas {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: auto;
+  padding-top: var(--e-5);
+}
+
+.documento__firmas th,
+.documento__firmas td {
+  border: 1px solid #000;
+  width: 50%;
+  font-size: 11px;
+  text-align: center;
+}
+
+.documento__firmas th {
+  background: #f2f2f2;
+  font-weight: 700;
+  padding: 3px var(--e-2);
+}
+
+/* El hueco de la firma. Se rellena con bolígrafo. */
+.documento__firmas td { height: 56px; }
+
+/* ── Impresión ───────────────────────────────────────────────────────── */
+
+@media print {
+  /*
+   * Fuera todo lo que es aplicación y no documento: la cabecera con la marca,
+   * el pie institucional, la barra de sesión y los botones. En papel, un
+   * botón de «Imprimir» impreso es exactamente lo que sobra.
+   */
+  .cabecera,
+  .pie,
+  .barra-sesion,
+  .no-imprimir { display: none !important; }
+
+  /* El navegador no imprime fondos por defecto, y las cabeceras de la tabla
+     los llevan. Sin esto, el documento sale sin sus franjas grises. */
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  body { background: #fff; }
+
+  .pagina { padding: 0 !important; }
+
+  .documento {
+    max-width: none;
+    /* El alto de la PÁGINA, para que el `margin-top: auto` de las firmas las
+       lleve al pie del papel y no al de una caja de mil píxeles. */
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+  }
+
+  /* Un renglón partido entre dos hojas se lee como dos pedidos distintos. */
+  .documento__tabla tr { break-inside: avoid; }
+
+  /* Y la cabecera de la tabla se repite en cada hoja: sin esto, la segunda
+     página son columnas de números sin decir de qué son. */
+  .documento__tabla thead { display: table-header-group; }
+
+  @page { margin: 14mm; }
+}

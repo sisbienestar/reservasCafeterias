@@ -1,26 +1,12 @@
-/** Tarjeta de cafetería de la página de inicio. */
+/** Tarjeta de cafetería de la portada del módulo de reservas. */
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Cafeteria } from '../servicios/cafeteriasServicio.js';
+import { iniciales } from '../utiles/iniciales.js';
 
-/** Palabras que no aportan identidad y no deben dar la inicial. */
-const VACIAS = /^(de|del|la|las|el|los|y|cafetería|cafeteria|comedor|autoservicio)$/i;
-
-/**
- * Iniciales para el marcador de posición: hasta dos, de las dos primeras
- * palabras con contenido.
- *
- * Dos y no una porque con una sola letra «Bienestar Pro» y «Bienestar
- * Universitario» darían las dos una «B», y sus tarjetas se verían idénticas
- * mientras no haya fotos. «Administración 3» sale como «A3», que es como la
- * llama todo el mundo.
- */
-function iniciales(nombre: string): string {
-  const palabras = nombre.split(/\s+/).filter((p) => p && !VACIAS.test(p));
-  const letras = palabras.slice(0, 2).map((p) => p.charAt(0).toUpperCase());
-  return letras.join('') || nombre.charAt(0).toUpperCase();
-}
+/** Lo que en el nombre de una sede no la distingue de las demás. */
+const GENERICAS = /^(cafetería|cafeteria|comedor|autoservicio)$/i;
 
 /**
  * La tarjeta entera es un enlace: navegar a la reserva es la única acción que
@@ -33,7 +19,7 @@ export function TarjetaCafeteria({ cafeteria }: { cafeteria: Cafeteria }) {
   const hayFoto = Boolean(cafeteria.imagen) && !fotoRota;
 
   return (
-    <Link className="tarjeta" to={`/reserva/${cafeteria.id}`}>
+    <Link className="tarjeta" to={`/reservas/${cafeteria.id}`}>
       <div className="tarjeta__medio">
         {hayFoto ? (
           <img
@@ -48,7 +34,7 @@ export function TarjetaCafeteria({ cafeteria }: { cafeteria: Cafeteria }) {
           />
         ) : (
           <span className="tarjeta__inicial" aria-hidden="true">
-            {iniciales(cafeteria.nombre)}
+            {iniciales(cafeteria.nombre, GENERICAS)}
           </span>
         )}
       </div>

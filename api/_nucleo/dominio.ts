@@ -27,6 +27,17 @@ const DIAS_SIN_SERVICIO = [5, 6];
  * duplicada en dos archivos se desincroniza sola. La pantalla de mostrador
  * pregunta por su estado al arrancar en vez de tener su propia copia.
  */
+/**
+ * El valor de arranque del interruptor, SOLO para una base recién creada.
+ *
+ * El interruptor de verdad vive en la tabla `ajuste` desde que existe el panel
+ * de administración: antes era esta variable de entorno, y cambiarla obligaba
+ * a redesplegar. Se conserva para que `09-admin-general.sql` tenga de dónde
+ * copiar el valor la primera vez.
+ *
+ * `esDiaDeServicio` ya NO la lee: recibe el permiso como argumento, porque
+ * ahora sale de la base y una función pura no puede consultarla.
+ */
 export const PERMITIR_FIN_DE_SEMANA = process.env.PERMITIR_FIN_DE_SEMANA === 'true';
 
 /** Tope del detalle de `reservas.buscar` cuando no se pide otro. */
@@ -87,8 +98,8 @@ export function indiceDiaSemana(fechaISO: string): number {
   return dia === 0 ? 6 : dia - 1;
 }
 
-export function esDiaDeServicio(fechaISO: string): boolean {
-  if (PERMITIR_FIN_DE_SEMANA) return true;
+export function esDiaDeServicio(fechaISO: string, permitirFinDeSemana = false): boolean {
+  if (permitirFinDeSemana) return true;
   return !DIAS_SIN_SERVICIO.includes(indiceDiaSemana(fechaISO));
 }
 

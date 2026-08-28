@@ -18,24 +18,24 @@ import { useCallback, useMemo, useState } from 'react';
 import {
   actualizarReserva, buscarReservas, cancelarReserva,
   type EstadoReserva, type Reserva, type ResumenReservas,
-} from '../servicios/reservasServicio.js';
-import { getCafeterias } from '../servicios/cafeteriasServicio.js';
-import { getMenuDelDia, type OpcionMenu } from '../servicios/menuServicio.js';
-import { usePeticion } from '../utiles/usePeticion.js';
-import { useSesion } from '../contexto/Sesion.js';
-import { aCSV, descargarTexto } from '../utiles/csv.js';
-import { formatearTelefono } from '../utiles/telefono.js';
-import { lunesDeSemana, sumarDias } from '../utiles/fechas.js';
+} from '../../servicios/reservasServicio.js';
+import { getCafeterias } from '../../servicios/cafeteriasServicio.js';
+import { getMenuDelDia, type OpcionMenu } from '../../servicios/menuServicio.js';
+import { usePeticion } from '../../utiles/usePeticion.js';
+import { useSesion } from '../../contexto/Sesion.js';
+import { aCSV, descargarTexto } from '../../utiles/csv.js';
+import { formatearTelefono } from '../../utiles/telefono.js';
+import { lunesDeSemana, sumarDias } from '../../utiles/fechas.js';
 
-import { BloqueEstado } from '../componentes/BloqueEstado.js';
-import { ModalReserva, type DatosReserva } from '../componentes/ModalReserva.js';
-import { ModalConfirmacion, type PeticionConfirmacion } from '../componentes/ModalConfirmacion.js';
-import { ModalTicket } from '../componentes/ModalTicket.js';
-import { TablaAdminReservas } from '../componentes/admin/TablaAdminReservas.js';
-import { Consolidado } from '../componentes/admin/Consolidado.js';
-import { Catalogo } from '../componentes/admin/Catalogo.js';
-import { BarraSesion } from '../componentes/BarraSesion.js';
-import { Pie } from '../componentes/Pie.js';
+import { BloqueEstado } from '../../componentes/BloqueEstado.js';
+import { ModalReserva, type DatosReserva } from '../../componentes/ModalReserva.js';
+import { ModalConfirmacion, type PeticionConfirmacion } from '../../componentes/ModalConfirmacion.js';
+import { ModalTicket } from '../../componentes/ModalTicket.js';
+import { TablaAdminReservas } from '../../componentes/admin/TablaAdminReservas.js';
+import { Consolidado } from '../../componentes/admin/Consolidado.js';
+import { Catalogo } from '../../componentes/admin/Catalogo.js';
+import { BarraSesion } from '../../componentes/BarraSesion.js';
+import { Pie } from '../../componentes/Pie.js';
 
 const ETIQUETAS: Record<string, string> = {
   presencial: 'Presencial',
@@ -275,7 +275,7 @@ export function Admin() {
         <BarraSesion
           perfil={contexto.perfil}
           alSalir={salir}
-          volver={{ a: '/', texto: '← Ir a la pantalla de mostrador' }}
+          volver={{ a: '/reservas', texto: '← Ir a la pantalla de mostrador' }}
         />
       )}
 

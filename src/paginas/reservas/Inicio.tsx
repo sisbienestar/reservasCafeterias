@@ -1,8 +1,10 @@
 /**
- * La portada: las cafeterías del campus.
+ * La portada del módulo de reservas: las cafeterías del campus.
  *
  * Es pública. Y es también donde vive el acceso: quien pulsa una sede o
  * «Admin» sin sesión acaba aquí, con el modal delante y el destino guardado.
+ * El acceso es de cada módulo, no de la aplicación; `ExigeSesion` sabe a qué
+ * portada devolver porque cada ruta se lo dice.
  *
  * No hay ningún botón de «Entrar» suelto. La sesión se pide cuando hace
  * falta, no antes: un botón de entrar en una pantalla que no lo necesita solo
@@ -11,15 +13,15 @@
 
 import { useCallback, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getCafeterias } from '../servicios/cafeteriasServicio.js';
-import { usePeticion } from '../utiles/usePeticion.js';
-import { TarjetaCafeteria } from '../componentes/TarjetaCafeteria.js';
-import { BloqueEstado } from '../componentes/BloqueEstado.js';
-import { BarraSesion } from '../componentes/BarraSesion.js';
-import { ModalAcceso } from '../componentes/ModalAcceso.js';
-import { Pie } from '../componentes/Pie.js';
-import { useHoy, useSesion } from '../contexto/Sesion.js';
-import { formatearFechaLarga } from '../utiles/fechas.js';
+import { getCafeterias } from '../../servicios/cafeteriasServicio.js';
+import { usePeticion } from '../../utiles/usePeticion.js';
+import { TarjetaCafeteria } from '../../componentes/TarjetaCafeteria.js';
+import { BloqueEstado } from '../../componentes/BloqueEstado.js';
+import { BarraSesion } from '../../componentes/BarraSesion.js';
+import { ModalAcceso } from '../../componentes/ModalAcceso.js';
+import { Pie } from '../../componentes/Pie.js';
+import { useHoy, useSesion } from '../../contexto/Sesion.js';
+import { formatearFechaLarga } from '../../utiles/fechas.js';
 
 export function Inicio() {
   const hoy = useHoy();
@@ -41,26 +43,35 @@ export function Inicio() {
 
   const alEntrar = useCallback(() => {
     setPidiendoAcceso(false);
-    navegar(destino ?? '/', { replace: true });
+    navegar(destino ?? '/reservas', { replace: true });
   }, [destino, navegar]);
 
   const alCerrar = useCallback(() => {
     setPidiendoAcceso(false);
     // Se limpia el destino del historial: si no, volver aquí con el botón de
     // atrás reabriría el formulario que se acaba de cerrar.
-    navegar('/', { replace: true });
+    navegar('/reservas', { replace: true });
   }, [navegar]);
 
   return (
     <>
       <main className="contenedor pagina">
-        {contexto?.perfil && <BarraSesion perfil={contexto.perfil} alSalir={salir} />}
+        {/* Sin sesión la vuelta a los módulos es el logo de la cabecera, que
+            está en todas las pantallas. Con sesión hay barra, y ahí cabe
+            decirlo con palabras. */}
+        {contexto?.perfil && (
+          <BarraSesion
+            perfil={contexto.perfil}
+            alSalir={salir}
+            volver={{ a: '/', texto: '← Módulos' }}
+          />
+        )}
 
         {/* La fecha ANTES del título, como en el original: es el sobretítulo
             que sitúa, no un dato al pie. */}
         <section className="portada">
           <p className="portada__fecha">{formatearFechaLarga(hoy)}</p>
-          <h1 className="portada__titulo">Sistema de reservas Cafeterías UIS</h1>
+          <h1 className="portada__titulo">Reservas de almuerzos</h1>
         </section>
 
         <section aria-labelledby="titulo-cafeterias">

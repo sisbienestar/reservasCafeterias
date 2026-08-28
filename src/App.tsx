@@ -1,9 +1,10 @@
 /**
  * Las rutas, y la puerta.
  *
- * La portada es PÚBLICA: enseña las cafeterías del campus sin pedir nada. La
- * sesión se pide al entrar en una sede o en administración, que es donde
- * empiezan a verse nombres y móviles de personas.
+ * La aplicación se divide en MÓDULOS y cada uno cuelga de su propio prefijo:
+ * reservas de `/reservas`, y el que venga del suyo. La portada es la lista de
+ * módulos, y es PÚBLICA: enseña qué hay sin pedir nada. La sesión se pide al
+ * entrar donde empiezan a verse nombres y móviles de personas.
  *
  * Antes eran tres archivos HTML sueltos, y la división la imponía el enlace
  * por el que se llegaba. Ahora la decide `rol`, y el servidor la vuelve a
@@ -16,9 +17,16 @@ import { useSesion } from './contexto/Sesion.js';
 import { Cabecera } from './componentes/Cabecera.js';
 import { Pie } from './componentes/Pie.js';
 import { BloqueEstado } from './componentes/BloqueEstado.js';
-import { Inicio } from './paginas/Inicio.js';
-import { Reserva } from './paginas/Reserva.js';
-import { Admin } from './paginas/Admin.js';
+import { Modulos } from './paginas/Modulos.js';
+import { Inicio } from './paginas/reservas/Inicio.js';
+import { Reserva } from './paginas/reservas/Reserva.js';
+import { Admin } from './paginas/reservas/Admin.js';
+import { Inicio as PedidosInicio } from './paginas/pedidos/Inicio.js';
+import { Pedido } from './paginas/pedidos/Pedido.js';
+import { Documento } from './paginas/pedidos/Documento.js';
+import { Historial } from './paginas/pedidos/Historial.js';
+import { Admin as PedidosAdmin } from './paginas/pedidos/Admin.js';
+import { AdminGeneral } from './paginas/AdminGeneral.js';
 
 export function App() {
   const { cargando, contexto, error, salir } = useSesion();
@@ -64,14 +72,111 @@ export function App() {
       <Cabecera />
       <Routes>
         {/* Pública. Es la puerta de la aplicación, no una pantalla más. */}
-        <Route path="/" element={<Inicio />} />
+        <Route path="/" element={<Modulos />} />
 
+        {/* La administración de la APLICACIÓN, no la de un módulo. Por eso
+            cuelga de la raíz y no de ningún prefijo. */}
         <Route
-          path="/reserva/:cafeteriaId"
-          element={<ExigeSesion><SoloSuSede><Reserva /></SoloSuSede></ExigeSesion>}
+          path="/admin"
+          element={<ExigeSesion rol="admin"><AdminGeneral /></ExigeSesion>}
         />
 
-        <Route path="/admin" element={<ExigeSesion rol="admin"><Admin /></ExigeSesion>} />
+        {/* ── Módulo: reservas de almuerzos ──────────────────────────── */}
+
+        {/* También pública: la lista de cafeterías no dice nada de nadie. */}
+        <Route path="/reservas" element={<ExigeModulo modulo="reservas"><Inicio /></ExigeModulo>} />
+
+        {/*
+          `/reservas/admin` va ANTES por orden de lectura, pero no por eso
+          gana: React Router ordena por especificidad y un tramo literal pesa
+          más que uno con parámetro. La consecuencia a recordar es que una
+          cafetería cuyo identificador fuera «admin» quedaría inalcanzable.
+        */}
+        <Route
+          path="/reservas/admin"
+          element={<ExigeModulo modulo="reservas"><ExigeSesion rol="admin" portada="/reservas"><Admin /></ExigeSesion></ExigeModulo>}
+        />
+
+        <Route
+          path="/reservas/:cafeteriaId"
+          element={
+            <ExigeModulo modulo="reservas">
+              <ExigeSesion portada="/reservas">
+                <SoloSuSede><Reserva /></SoloSuSede>
+              </ExigeSesion>
+            </ExigeModulo>
+          }
+        />
+
+        {/* ── Módulo: pedidos a proveedores ──────────────────────────── */}
+
+        {/*
+          Esta portada SÍ exige sesión, al revés que la de reservas. La
+          diferencia no es de gusto: `proveedores.listar` no está en
+          ACCIONES_PUBLICAS, así que sin sesión esta pantalla solo podría
+          enseñar un error. `portada="/"` porque el acceso de este módulo vive
+          en la lista de módulos — ver el comentario de `Modulos`.
+        */}
+        <Route
+          path="/pedidos"
+          element={<ExigeModulo modulo="pedidos"><ExigeSesion portada="/"><PedidosInicio /></ExigeSesion></ExigeModulo>}
+        />
+
+        {/*
+          `historial` es un tramo LITERAL y `:proveedorId` uno con parámetro,
+          así que React Router se queda con el primero aunque los dos midan lo
+          mismo. La consecuencia a recordar es la de siempre: un proveedor cuyo
+          identificador fuera «historial» quedaría inalcanzable.
+        */}
+        <Route
+          path="/pedidos/historial"
+          element={<ExigeModulo modulo="pedidos"><ExigeSesion portada="/"><Historial /></ExigeSesion></ExigeModulo>}
+        />
+
+        {/* Como `historial`: tramo literal, gana a `:proveedorId`. */}
+        <Route
+          path="/pedidos/admin"
+          element={
+            <ExigeModulo modulo="pedidos">
+              <ExigeSesion rol="admin" portada="/"><PedidosAdmin /></ExigeSesion>
+            </ExigeModulo>
+          }
+        />
+
+        {/*
+          Tres tramos, así que no compite con `/pedidos/:proveedorId`, que
+          tiene dos. Un proveedor llamado «documento» tampoco chocaría.
+        */}
+        <Route
+          path="/pedidos/documento/:pedidoId"
+          element={<ExigeModulo modulo="pedidos"><ExigeSesion portada="/"><Documento /></ExigeSesion></ExigeModulo>}
+        />
+
+        {/* El mismo formulario que `/pedidos/:proveedorId`, con un borrador
+            cargado dentro. Ver el comentario de `Pedido`. */}
+        <Route
+          path="/pedidos/editar/:pedidoId"
+          element={<ExigeModulo modulo="pedidos"><ExigeSesion portada="/"><Pedido /></ExigeSesion></ExigeModulo>}
+        />
+
+        <Route
+          path="/pedidos/:proveedorId"
+          element={<ExigeModulo modulo="pedidos"><ExigeSesion portada="/"><Pedido /></ExigeSesion></ExigeModulo>}
+        />
+
+        {/*
+          La dirección de antes de que reservas fuera un módulo.
+
+          `/admin` YA NO redirige aquí: desde que existe el panel de la
+          aplicación, esa dirección es suya. Un enlace guardado del prototipo
+          aterriza ahora en el panel general, que es un sitio razonable — y a
+          quien no sea admin lo devuelve a la portada.
+
+          Se quedan porque el mostrador tiene la suya guardada en el navegador
+          y perderla significa una llamada preguntando por qué no abre. No
+          cuestan nada: redirigen y no pintan pantalla.
+        */}
+        <Route path="/reserva/:cafeteriaId" element={<ReservaAntigua />} />
 
         {/* Cualquier otra cosa, a la portada: no hay nada que buscar aquí. */}
         <Route path="*" element={<Navigate to="/" replace />} />
@@ -87,8 +192,20 @@ export function App() {
  * recordando a dónde se iba, para volver ahí al entrar. Perder el destino
  * obliga a repetir la navegación entera después de teclear la contraseña, y
  * eso en un mostrador se nota todos los días.
+ *
+ * `portada` es la del MÓDULO, no la de la aplicación: el acceso vive en la
+ * portada de cada módulo, y devolver a quien iba a una sede hasta la lista de
+ * módulos le haría recorrer dos pantallas para volver donde estaba.
  */
-function ExigeSesion({ rol, children }: { rol?: 'admin'; children: React.ReactNode }) {
+function ExigeSesion({
+  rol,
+  portada = '/',
+  children,
+}: {
+  rol?: 'admin';
+  portada?: string;
+  children: React.ReactNode;
+}) {
   const { contexto } = useSesion();
   const donde = useLocation();
   const perfil = contexto?.perfil ?? null;
@@ -101,7 +218,7 @@ function ExigeSesion({ rol, children }: { rol?: 'admin'; children: React.ReactNo
      * el destino: quien pulsó una cafetería o «Admin» sin sesión aparece en
      * la portada con el formulario delante, y al entrar va donde iba.
      */
-    return <Navigate to="/" replace state={{ pedirAcceso: donde.pathname + donde.search }} />;
+    return <Navigate to={portada} replace state={{ pedirAcceso: donde.pathname + donde.search }} />;
   }
 
   /**
@@ -112,7 +229,7 @@ function ExigeSesion({ rol, children }: { rol?: 'admin'; children: React.ReactNo
    * administración tiene que pedir el permiso, no volver a teclear.
    */
   if (rol === 'admin' && perfil.rol !== 'admin') {
-    return <Navigate to="/" replace />;
+    return <Navigate to={portada} replace />;
   }
 
   return <>{children}</>;
@@ -134,6 +251,26 @@ function ExigeSesion({ rol, children }: { rol?: 'admin'; children: React.ReactNo
  *
  * Administración no pasa por aquí: elige sede y las ve todas.
  */
+/**
+ * Cierra las rutas de un módulo apagado.
+ *
+ * El contexto trae los módulos YA FILTRADOS por el servidor: administración
+ * recibe también los apagados —para poder probarlos— y los demás solo los
+ * activos. Así que «no está en la lista» significa exactamente «este módulo no
+ * es para ti», sin que la pantalla tenga que saber por qué.
+ *
+ * Esto NO es la protección: la de verdad está en `api/_nucleo/enrutador.ts`,
+ * que rechaza las acciones del módulo apagado. Esto es no ofrecer lo que no se
+ * puede usar, que es otra cosa.
+ */
+function ExigeModulo({ modulo, children }: { modulo: string; children: React.ReactNode }) {
+  const { contexto } = useSesion();
+  const abierto = (contexto?.modulos ?? []).some((m) => m.id === modulo);
+
+  if (!abierto) return <Navigate to="/" replace />;
+  return <>{children}</>;
+}
+
 function SoloSuSede({ children }: { children: React.ReactNode }) {
   const { contexto } = useSesion();
   const { cafeteriaId = '' } = useParams();
@@ -143,10 +280,21 @@ function SoloSuSede({ children }: { children: React.ReactNode }) {
 
   // El `&&` no es defensivo de más: un mostrador sin sede no puede existir
   // —lo impide un CHECK de la tabla— pero si alguna vez existiera, redirigir
-  // a `/reserva/` daría vueltas para siempre en vez de fallar.
+  // a `/reservas/` daría vueltas para siempre en vez de fallar.
   if (perfil.cafeteriaId && perfil.cafeteriaId !== cafeteriaId) {
-    return <Navigate to={`/reserva/${perfil.cafeteriaId}`} replace />;
+    return <Navigate to={`/reservas/${perfil.cafeteriaId}`} replace />;
   }
 
   return <>{children}</>;
+}
+
+/**
+ * La dirección de antes, `/reserva/:cafeteriaId`, llevada a la de ahora.
+ *
+ * `replace` para que el atrás del navegador no devuelva a la vieja y vuelva a
+ * rebotar; y conservando la sede, que es lo único que la dirección traía.
+ */
+function ReservaAntigua() {
+  const { cafeteriaId = '' } = useParams();
+  return <Navigate to={`/reservas/${cafeteriaId}`} replace />;
 }

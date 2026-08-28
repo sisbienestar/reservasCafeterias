@@ -57,6 +57,14 @@ const PERMISOS: Record<Rol, readonly string[]> = {
     'reservas.delDia',
     'reservas.crear',
     'reservas.actualizar',
+    'proveedores.listar',
+    'proveedores.obtener',
+    'pedidos.crear',
+    'pedidos.obtener',
+    'pedidos.buscar',
+    'pedidos.actualizar',
+    'pedidos.confirmar',
+    'pedidos.anular',
   ],
   admin: [
     'app.contexto',
@@ -74,6 +82,34 @@ const PERMISOS: Record<Rol, readonly string[]> = {
     'reservas.actualizar',
     'reservas.cancelar',
     'reservas.buscar',
+    'proveedores.listar',
+    'proveedores.obtener',
+    'pedidos.crear',
+    'pedidos.obtener',
+    'pedidos.buscar',
+    'pedidos.actualizar',
+    'pedidos.confirmar',
+    'pedidos.anular',
+    'proveedores.crear',
+    'proveedores.actualizar',
+    'proveedores.archivar',
+    'proveedores.reactivar',
+    'productos.listar',
+    'productos.crear',
+    'productos.actualizar',
+    'productos.archivar',
+    'productos.reactivar',
+    'productos.mover',
+    'cuentas.listar',
+    'modulos.actualizar',
+    'ajustes.listar',
+    'ajustes.guardar',
+    'registro.listar',
+    'usuarios.listar',
+    'usuarios.crear',
+    'usuarios.actualizar',
+    'usuarios.contrasena',
+    'usuarios.eliminar',
   ],
 };
 
@@ -105,6 +141,13 @@ export function tokenDe(autorizacion: string | undefined | null): string {
  *
  * Nada más entra aquí sin pensarlo dos veces. Todo lo demás toca reservas, y
  * una reserva lleva el nombre y el móvil de una persona.
+ *
+ * `proveedores.listar` se pensó dos veces y se quedó FUERA, aunque su pantalla
+ * sea la portada de su módulo igual que la de cafeterías lo es del suyo. La
+ * diferencia: las sedes del campus están en la señalización de la Universidad,
+ * y a quién le compra Bienestar no. Sacarlo del muro no habría enseñado
+ * nombres de personas, pero sí la lista de proveedores de la Universidad a
+ * cualquiera con la URL, y eso no hay ninguna pantalla que lo necesite.
  */
 export const ACCIONES_PUBLICAS = new Set(['cafeterias.listar', 'app.contexto']);
 

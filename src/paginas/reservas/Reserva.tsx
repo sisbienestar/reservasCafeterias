@@ -24,21 +24,21 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
-import { getCafeteria, type Cafeteria } from '../servicios/cafeteriasServicio.js';
-import { getMenuDelDia, type OpcionMenu } from '../servicios/menuServicio.js';
+import { getCafeteria, type Cafeteria } from '../../servicios/cafeteriasServicio.js';
+import { getMenuDelDia, type OpcionMenu } from '../../servicios/menuServicio.js';
 import {
   actualizarReserva, crearReserva, getReservasDelDia, type Reserva,
-} from '../servicios/reservasServicio.js';
+} from '../../servicios/reservasServicio.js';
 
-import { useSesion } from '../contexto/Sesion.js';
-import { esDiaDeServicio, formatearFechaLarga } from '../utiles/fechas.js';
-import { BloqueEstado } from '../componentes/BloqueEstado.js';
-import { ResumenDelDia } from '../componentes/ResumenDelDia.js';
-import { TablaReservas } from '../componentes/TablaReservas.js';
-import { ModalReserva, type DatosReserva } from '../componentes/ModalReserva.js';
-import { ModalTicket } from '../componentes/ModalTicket.js';
-import { BarraSesion } from '../componentes/BarraSesion.js';
-import { Pie } from '../componentes/Pie.js';
+import { useSesion } from '../../contexto/Sesion.js';
+import { esDiaDeServicio, formatearFechaLarga } from '../../utiles/fechas.js';
+import { BloqueEstado } from '../../componentes/BloqueEstado.js';
+import { ResumenDelDia } from '../../componentes/ResumenDelDia.js';
+import { TablaReservas } from '../../componentes/TablaReservas.js';
+import { ModalReserva, type DatosReserva } from '../../componentes/ModalReserva.js';
+import { ModalTicket } from '../../componentes/ModalTicket.js';
+import { BarraSesion } from '../../componentes/BarraSesion.js';
+import { Pie } from '../../componentes/Pie.js';
 
 interface Aviso {
   tipo: 'exito' | 'aviso';
@@ -228,7 +228,7 @@ export function Reserva() {
       <>
         <main className="contenedor pagina" id="contenido">
           <BloqueEstado tipo="error" titulo="No se encontró esa cafetería" detalle={falloDePagina}>
-            <Link className="boton boton--secundario boton--sm" to="/">Volver al inicio</Link>
+            <Link className="boton boton--secundario boton--sm" to="/reservas">Volver al inicio</Link>
           </BloqueEstado>
         </main>
         <Pie />
@@ -247,7 +247,7 @@ export function Reserva() {
           alSalir={salir}
           sede={cafeteria?.nombre}
           volver={contexto.perfil.rol === 'admin'
-            ? { a: '/', texto: '← Todas las cafeterías' }
+            ? { a: '/reservas', texto: '← Todas las cafeterías' }
             : undefined}
         />
       )}

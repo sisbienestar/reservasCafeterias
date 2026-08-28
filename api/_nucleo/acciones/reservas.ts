@@ -19,6 +19,7 @@
  */
 
 import { servicio, desempaquetar } from '../supabase.js';
+import { ajusteSiNo } from './aplicacion.js';
 import { romper } from '../sobre.js';
 import {
   ES_FECHA, LIMITE_DETALLE, MAX_DIAS_RANGO, VALORES_MEDIO, VALORES_PAGO,
@@ -107,7 +108,9 @@ export async function crear(params: Record<string, unknown>, sesion: Sesion) {
 
   const { medio, pago } = exigirOpciones(params.medio, params.pago);
 
-  if (!esDiaDeServicio(fecha)) {
+  // El interruptor sale de la base, no del entorno: administración lo cambia
+  // desde el panel y la regla obedece sin redesplegar.
+  if (!esDiaDeServicio(fecha, await ajusteSiNo('permitir_fin_de_semana'))) {
     romper('SIN_SERVICIO', 'Los sábados y domingos no hay servicio de almuerzo.');
   }
 

@@ -197,3 +197,42 @@
 
   .modal__panel { padding: var(--e-5); }
 }
+
+/* ── Formulario de pedido ────────────────────────────────────────────── */
+
+/* Ocho columnas en el FBE.04. Se desplaza dentro de `.tabla-envoltorio` en
+   vez de apretar los nombres a tres líneas, igual que la del administrador. */
+.tabla--pedido { min-width: 900px; }
+
+/* El encabezado de sección de la plantilla —GALLETAS, CHOCOLATINAS—, como
+   fila y no como título aparte: fuera de la tabla se despegaría de sus
+   productos en cuanto la tabla se desplazara de lado. */
+.tabla__fila--seccion th {
+  background: var(--c-superficie-2);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-fuerte);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--c-texto-2);
+  text-align: left;
+}
+
+/* La casilla de cantidad. Estrecha a propósito: son hasta tres por renglón y
+   con el ancho de un campo normal la tabla no cabría en ninguna pantalla.
+   Reutiliza `.campo__control`, así que aquí solo va lo que cambia. */
+.cantidad {
+  width: 96px;
+  min-height: 38px;
+  padding: var(--e-2) var(--e-3);
+  text-align: right;
+}
+
+/* Las flechas de incremento roban la mitad del ancho útil, y en una hoja que
+   se rellena a teclado no las usa nadie. */
+.cantidad::-webkit-outer-spin-button,
+.cantidad::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.cantidad { appearance: textfield; }

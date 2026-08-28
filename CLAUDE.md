@@ -1,8 +1,13 @@
 # reservasCafeterias · UIS
 
-Reserva de almuerzos para las cafeterías de la Universidad Industrial de
-Santander. **Herramienta interna del personal de cafetería**, no una página
-para los comensales: quien la usa anota la reserva a nombre de otra persona.
+**Servicios Cafeterías Bienestar UIS.** Herramienta interna del personal de
+las cafeterías de la Universidad Industrial de Santander, no una página para
+los comensales.
+
+La aplicación se divide en **módulos**, y el repositorio todavía se llama como
+el primero de ellos. Hoy hay uno en servicio —reservas de almuerzos, donde
+quien la usa anota la reserva a nombre de otra persona— y uno anunciado sin
+construir, pedidos a proveedores.
 
 ## Dónde está esto hoy (27 de agosto de 2026)
 
@@ -22,6 +27,85 @@ identificador repetido que sigue mal en la hoja—.
 
 Apps Script y `legado/` **siguen en pie** hasta entonces. Son la copia de
 seguridad, no código muerto.
+
+## Los módulos
+
+La portada `/` es la lista de módulos y es **pública**: enseña qué hay sin
+pedir nada. Cada módulo cuelga de su propio prefijo y se lleva dentro todo lo
+suyo, incluida su administración.
+
+| Ruta | Qué es | Quién entra |
+|---|---|---|
+| `/` | Los módulos | cualquiera |
+| `/admin` | Usuarios, módulos, ajustes y registro | rol `admin` |
+| `/reservas` | Las cafeterías del campus | cualquiera |
+| `/reservas/:cafeteriaId` | La pantalla de mostrador | con sesión, y solo a su sede |
+| `/reservas/admin` | Administración de reservas | rol `admin` |
+| `/pedidos` | Almacenes y proveedores | con sesión |
+| `/pedidos/:proveedorId` | El formulario de pedido | con sesión, y con sede |
+| `/pedidos/editar/:pedidoId` | El mismo formulario, con un borrador dentro | con sesión, y solo su sede |
+| `/pedidos/historial` | Los pedidos hechos, filtrables | con sesión; el mostrador solo ve su sede |
+| `/pedidos/admin` | Proveedores, productos y cuentas | rol `admin` |
+| `/pedidos/documento/:pedidoId` | El pedido, listo para imprimir | con sesión |
+
+`/reserva/:cafeteriaId` y `/admin` son las direcciones de antes y siguen
+redirigiendo: el mostrador tiene la suya guardada en el navegador.
+
+**Añadir un módulo son tres sitios**: una fila en la tabla `modulo`, sus rutas
+en `src/App.tsx` envueltas en `<ExigeModulo>`, y su prefijo en `MODULO_DE` de
+`api/_nucleo/enrutador.ts`. La portada no se toca: lee los módulos de
+`app.contexto`. Sus páginas van en `src/paginas/<módulo>/`.
+
+### Apagar un módulo lo cierra de verdad
+
+No es esconder la tarjeta. `enrutador.ts` rechaza sus acciones con
+`MODULO_INACTIVO` y `<ExigeModulo>` cierra sus rutas. Administración pasa por
+las dos, para poder probarlo antes de publicarlo.
+
+`cafeterias.*` NO está atado a ningún módulo, y es deliberado: las sedes las
+usan los dos, y atarlas habría hecho que apagar reservas rompiera pedidos. La
+administración tampoco, o apagar un módulo cerraría la puerta para encenderlo.
+
+### Lo que ya no está en el código
+
+| Antes | Ahora |
+|---|---|
+| `src/modulos.ts` | tabla `modulo` |
+| `PERMITIR_FIN_DE_SEMANA` en Vercel | `ajuste.permitir_fin_de_semana` |
+| Nombre y versión en `Cabecera.tsx` | `ajuste.nombre_aplicacion`, `version`, `fecha_version` |
+
+Los tres llegan dentro de `app.contexto`, que la aplicación ya espera antes de
+pintar nada. **Si esas tablas no existen, NO ARRANCA**: ver `09-admin-general.sql`.
+
+### El ciclo de un pedido
+
+`borrador` → `confirmado` → (`anulado`). Se elabora, se revisa impreso, se
+corrige si hace falta y se confirma; al confirmar deja de ser editable y se
+avisa por correo a las cuentas `admin`, que son quienes imprimen y firman.
+
+Dos cosas que no se deshacen: **un confirmado no vuelve a borrador** —puede
+haber papel circulando— y **el aviso nunca tumba la confirmación**. Ver
+`api/_nucleo/notificaciones.ts`: no lanza jamás, y añadir Slack o Telegram es
+otra función en su lista `CANALES`.
+
+El correo sale por la API HTTPS de Resend, sin dependencias. Necesita
+`RESEND_API_KEY` y `RESEND_REMITENTE` en el entorno; sin ellas no envía y **no
+falla**, que es lo correcto en un despliegue donde todavía no se ha configurado.
+
+Tres cosas que conviene no deshacer:
+
+- **El acceso se pide en la última pantalla PÚBLICA del camino.** `ExigeSesion`
+  recibe `portada` y devuelve ahí con el destino guardado. En reservas es
+  `/reservas`, que es pública; en pedidos es `/`, porque su portada ya exige
+  sesión y quien no ha entrado no llega a verla. Mandar a `/` a quien iba a una
+  sede le haría recorrer dos pantallas para volver donde estaba.
+- **La cabecera lleva el nombre de la APLICACIÓN**, nunca el del módulo. Es
+  idéntica en todas las pantallas; quién dice dónde estás es el `<h1>` de cada
+  portada.
+- **Un tramo literal gana a uno con parámetro** en React Router: en
+  `/reservas`, `admin` gana a `:cafeteriaId`, y en `/pedidos`, `historial` gana
+  a `:proveedorId`. La consecuencia a recordar es que una cafetería llamada
+  `admin` o un proveedor llamado `historial` quedarían inalcanzables.
 
 ## Las dos aplicaciones que conviven
 
@@ -182,7 +266,7 @@ saber si salió bien.
 | `MIGRACION.md` | Los ocho pasos, qué está verificado y qué queda. El 8 sigue abierto. |
 | `CONTRATO.md` | Las 15 acciones, sus formas exactas y las reglas de negocio. Incluye qué se sirve sin sesión y por qué. |
 | `README.md` | La documentación larga. **Describe todavía la app de `legado/`**: las decisiones de producto siguen valiendo, la parte técnica no. |
-| `supabase/*.sql` | El esquema, numerado por orden de ejecución. Los comentarios dicen qué regla impone cada restricción. |
+| `supabase/*.sql` | El esquema, numerado por orden de ejecución. Los comentarios dicen qué regla impone cada restricción. El 05 y el 06 son del módulo de pedidos. |
 | `pruebas/contrato.mjs` | El contrato ejecutable. Es lo que dice si un backend cumple. |
 
 ## Dos cosas que conviene recordar

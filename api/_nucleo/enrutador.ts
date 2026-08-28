@@ -13,10 +13,18 @@ import { traducirError } from './supabase.js';
 import {
   ACCIONES_PUBLICAS, autorizar, identificarSiHay, type Sesion,
 } from './sesion.js';
-import { PERMITIR_FIN_DE_SEMANA } from './dominio.js';
+
 import * as cafeterias from './acciones/cafeterias.js';
 import * as menu from './acciones/menu.js';
 import * as reservas from './acciones/reservas.js';
+import * as proveedores from './acciones/proveedores.js';
+import * as pedidos from './acciones/pedidos.js';
+import * as cuentas from './acciones/cuentas.js';
+import * as usuarios from './acciones/usuarios.js';
+import {
+  ajuste, ajusteSiNo, modulos as listarModulos,
+} from './acciones/aplicacion.js';
+import * as aplicacion from './acciones/aplicacion.js';
 
 /**
  * Los manejadores reciben `Sesion | null`.
@@ -58,9 +66,30 @@ function hoyEnColombia(): string {
  * servidor y la pantalla pregunta por ella.
  */
 async function contexto(_params: Record<string, unknown>, sesion: Sesion | null) {
+  /*
+   * El interruptor y los textos salen de `ajuste`, no del entorno ni del
+   * código. Antes `PERMITIR_FIN_DE_SEMANA` era una variable de Vercel y
+   * cambiarla obligaba a redesplegar; el nombre y la versión eran constantes
+   * dentro de `Cabecera.tsx`.
+   *
+   * Se piden a la vez que los módulos porque la portada necesita las dos cosas
+   * para pintarse: son consultas dentro de la misma función, no viajes desde
+   * el navegador, que es lo que cuesta caro.
+   */
+  const [finDeSemana, nombre, version, fechaVersion, modulos] = await Promise.all([
+    ajusteSiNo('permitir_fin_de_semana'),
+    ajuste('nombre_aplicacion', 'Servicios Cafeterías Bienestar UIS'),
+    ajuste('version', ''),
+    ajuste('fecha_version', ''),
+    listarModulos(sesion),
+  ]);
+
   return {
     hoy: hoyEnColombia(),
-    permitir_fin_de_semana: PERMITIR_FIN_DE_SEMANA,
+    permitir_fin_de_semana: finDeSemana,
+    aplicacion: { nombre, version, fecha_version: fechaVersion },
+    // Administración los ve todos, incluidos los apagados. Ver `aplicacion.ts`.
+    modulos,
     // Sin sesión viene en null, y eso es información y no un hueco: es lo que
     // le dice a la pantalla que hay que ofrecer el acceso en vez de la
     // aplicación. Se sirve igualmente la fecha y el interruptor, que la
@@ -93,7 +122,7 @@ const conSesion = (
   return f(p, s);
 };
 
-/** Las 15 acciones. Lo que no esté aquí es ACCION_DESCONOCIDA. */
+/** Las 43 acciones. Lo que no esté aquí es ACCION_DESCONOCIDA. */
 const ACCIONES: Record<string, Manejador> = {
   'app.contexto': contexto,
 
@@ -113,7 +142,93 @@ const ACCIONES: Record<string, Manejador> = {
   'reservas.actualizar': conSesion(reservas.actualizar),
   'reservas.cancelar': conSesion(reservas.cancelar),
   'reservas.buscar': conSesion(reservas.buscar),
+
+  // Módulo de pedidos. Ninguna es pública: ver ACCIONES_PUBLICAS en sesion.ts.
+  'proveedores.listar': conSesion((p, s) => proveedores.listar(p, s)),
+  'proveedores.obtener': conSesion((p) => proveedores.obtener(p)),
+  'pedidos.crear': conSesion(pedidos.crear),
+  'pedidos.obtener': conSesion((p) => pedidos.obtener(p)),
+  'pedidos.buscar': conSesion(pedidos.buscar),
+  'pedidos.actualizar': conSesion(pedidos.actualizar),
+  'pedidos.confirmar': conSesion(pedidos.confirmar),
+  'pedidos.anular': conSesion(pedidos.anular),
+
+  // El panel del módulo. Todas son solo para `admin`: ver PERMISOS.
+  'proveedores.crear': conSesion((p) => proveedores.crear(p)),
+  'proveedores.actualizar': conSesion((p) => proveedores.actualizar(p)),
+  'proveedores.archivar': conSesion((p) => proveedores.archivar(p)),
+  'proveedores.reactivar': conSesion((p) => proveedores.reactivar(p)),
+
+  'productos.listar': conSesion((p) => proveedores.listarProductos(p)),
+  'productos.crear': conSesion((p) => proveedores.crearProductos(p)),
+  'productos.actualizar': conSesion((p) => proveedores.actualizarProducto(p)),
+  'productos.archivar': conSesion((p) => proveedores.archivarProducto(p)),
+  'productos.reactivar': conSesion((p) => proveedores.reactivarProducto(p)),
+  'productos.mover': conSesion((p) => proveedores.moverProducto(p)),
+
+  'cuentas.listar': conSesion(() => cuentas.listar()),
+
+  // ── El administrador de la APLICACIÓN ─────────────────────────────
+  'modulos.actualizar': conSesion(aplicacion.actualizarModulo),
+  'ajustes.listar': conSesion(() => aplicacion.ajustes()),
+  'ajustes.guardar': conSesion(aplicacion.guardarAjuste),
+  'registro.listar': conSesion((p) => aplicacion.listarRegistro(p)),
+
+  'usuarios.listar': conSesion(() => usuarios.listar()),
+  'usuarios.crear': conSesion(usuarios.crear),
+  'usuarios.actualizar': conSesion(usuarios.actualizar),
+  'usuarios.contrasena': conSesion(usuarios.cambiarContrasena),
+  'usuarios.eliminar': conSesion(usuarios.eliminar),
 };
+
+/**
+ * De qué módulo es cada acción.
+ *
+ * Se mapea por PREFIJO y no acción por acción: así una acción nueva de un
+ * módulo queda cubierta el día que se escribe, sin acordarse de darla de alta
+ * en ningún sitio.
+ *
+ * Lo que NO está aquí queda siempre abierto, y es deliberado:
+ *
+ *   · `app.*` — la portada tiene que poder pintarse aunque no haya un solo
+ *     módulo en servicio, aunque solo sea para decirlo.
+ *   · `cafeterias.*` — las sedes del campus no son de reservas: pedidos las
+ *     usa para saber quién pide. Atarlas a un módulo habría hecho que apagar
+ *     reservas rompiera pedidos.
+ *   · `usuarios.*`, `modulos.*`, `ajustes.*`, `registro.*`, `cuentas.*` — son
+ *     la administración de la aplicación. Si apagar un módulo pudiera cerrar
+ *     la puerta para volver a encenderlo, no habría vuelta atrás.
+ */
+const MODULO_DE: Record<string, string> = {
+  reservas: 'reservas',
+  menu: 'reservas',
+  pedidos: 'pedidos',
+  proveedores: 'pedidos',
+  productos: 'pedidos',
+};
+
+/**
+ * ¿Está cerrado el módulo de esta acción? Devuelve el motivo, o `null`.
+ *
+ * Solo consulta la base cuando la acción PERTENECE a un módulo, así que
+ * `app.contexto` y la administración no pagan un viaje por esto.
+ */
+async function moduloCerrado(accion: string, sesion: Sesion | null): Promise<string | null> {
+  if (sesion?.rol === 'admin') return null;
+
+  const moduloId = MODULO_DE[accion.split('.')[0] ?? ''];
+  if (!moduloId) return null;
+
+  const activos = await listarModulos(sesion);
+  const modulo = activos.find((m) => m.id === moduloId);
+
+  // Ausente de la lista significa apagado: a quien no es admin solo se le
+  // sirven los activos.
+  if (!modulo) {
+    return 'Ese módulo está fuera de servicio ahora mismo.';
+  }
+  return null;
+}
 
 /**
  * Ejecuta una acción y devuelve SIEMPRE el sobre, pase lo que pase.
@@ -150,6 +265,18 @@ export async function manejar(
       return fallo('NO_AUTENTICADO', 'Hay que iniciar sesión para usar la aplicación.');
     }
     if (sesion) autorizar(sesion, accion);
+
+    /*
+     * Y la puerta del módulo. Un módulo apagado no solo desaparece de la
+     * portada: sus acciones dejan de responder.
+     *
+     * Sin esto, desactivarlo sería cosmético —bastaría con conocer la URL— y
+     * eso es exactamente lo que dice la regla 3 que no vale. Administración
+     * pasa igualmente, porque tiene que poder probar un módulo antes de
+     * publicarlo.
+     */
+    const impedimento = await moduloCerrado(accion, sesion);
+    if (impedimento) return fallo('MODULO_INACTIVO', impedimento);
 
     return exito(await manejador(params ?? {}, sesion));
   } catch (error) {

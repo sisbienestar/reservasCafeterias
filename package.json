@@ -15,7 +15,8 @@
     "importar": "node --env-file=.env.local supabase/importar.mjs",
     "verificar": "node --env-file=.env.local supabase/verificar.mjs",
     "permisos": "node --env-file=.env.local pruebas/permisos.mjs",
-    "local": "node pruebas/local.mjs"
+    "local": "node pruebas/local.mjs",
+    "sembrar-pedidos": "node --env-file=.env.local supabase/sembrar-pedidos.mjs"
   },
   "devDependencies": {
     "@types/node": "^26.4.0",

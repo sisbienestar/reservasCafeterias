@@ -52,6 +52,11 @@ REVOKE ALL ON cafeteria, carta_opcion, reserva, reserva_asiento,
               reserva_cambio, perfil
   FROM anon, authenticated;
 
+-- Las tablas del módulo de pedidos NO están en las listas de arriba: nacieron
+-- después y se cierran en su propio archivo, 05-pedidos.sql, al final. Si
+-- añades una tabla, ciérrala donde la creas — una tabla nueva sin RLS es una
+-- tabla pública, y aquí ya no se vería que falta.
+
 -- Las funciones de 03-funciones.sql tampoco se exponen por REST: se invocan
 -- desde la API con la clave de servicio. `crear_reserva` sin comprobar el rol
 -- de quien llama sería un agujero exactamente igual de grande.

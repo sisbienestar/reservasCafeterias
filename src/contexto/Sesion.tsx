@@ -24,6 +24,17 @@ import { hoyISO } from '../utiles/fechas.js';
 
 export type Rol = 'mostrador' | 'admin';
 
+/** Un módulo de la aplicación, tal como lo sirve el servidor. */
+export interface Modulo {
+  id: string;
+  nombre: string;
+  etiqueta: string;
+  inicial: string;
+  /** A dónde lleva. Vacía en un módulo anunciado que todavía no existe. */
+  ruta: string;
+  activo: boolean;
+}
+
 export interface Perfil {
   nombre: string;
   rol: Rol;
@@ -34,8 +45,16 @@ export interface Perfil {
 interface Contexto {
   /** La fecha de trabajo, según el SERVIDOR y en la zona de Colombia. */
   hoy: string;
-  /** El interruptor de pruebas, que ahora vive solo en el backend. */
+  /** El interruptor de pruebas. Vive en la tabla `ajuste`, no en el código. */
   permitirFinDeSemana: boolean;
+  /** Nombre y versión, que administración cambia desde el panel. */
+  aplicacion: { nombre: string; version: string; fechaVersion: string };
+  /**
+   * Los módulos, ya filtrados por el SERVIDOR: administración recibe también
+   * los apagados —para poder probarlos— y los demás solo los que están en
+   * servicio. La pantalla no decide eso; solo pinta lo que le llega.
+   */
+  modulos: Modulo[];
   /**
    * `null` cuando no hay sesión.
    *
@@ -81,12 +100,20 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
       const datos = await pedir<{
         hoy: string;
         permitir_fin_de_semana: boolean;
+        aplicacion?: { nombre: string; version: string; fecha_version: string };
+        modulos?: { id: string; nombre: string; etiqueta: string; inicial: string; ruta: string; activo: boolean }[];
         perfil: { nombre: string; rol: Rol; cafeteria_id: string | null } | null;
       }>('app.contexto');
 
       setContexto({
         hoy: datos.hoy,
         permitirFinDeSemana: datos.permitir_fin_de_semana,
+        aplicacion: {
+          nombre: datos.aplicacion?.nombre ?? '',
+          version: datos.aplicacion?.version ?? '',
+          fechaVersion: datos.aplicacion?.fecha_version ?? '',
+        },
+        modulos: datos.modulos ?? [],
         perfil: datos.perfil && {
           nombre: datos.perfil.nombre,
           rol: datos.perfil.rol,

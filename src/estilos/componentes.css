@@ -220,6 +220,28 @@
   transform: translateX(0);
 }
 
+/* El módulo anunciado que todavía no existe. Se apaga y se le quita el
+   levantamiento del `:hover`: la tarjeta tiene que decir «aquí no hay nada
+   que pulsar» antes de que nadie lo intente, no después. */
+.tarjeta--proximamente {
+  box-shadow: none;
+  background: var(--c-superficie-2);
+}
+
+.tarjeta--proximamente:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--c-borde);
+}
+
+.tarjeta--proximamente .tarjeta__medio {
+  background: linear-gradient(140deg, var(--c-superficie-2), var(--c-superficie));
+}
+
+.tarjeta--proximamente .tarjeta__inicial { color: var(--c-texto-3); }
+
+.tarjeta--proximamente .tarjeta__nombre { color: var(--c-texto-2); }
+
 /* ── Tabla de reservas ───────────────────────────────────────────────── */
 
 .tabla {

@@ -1,0 +1,272 @@
+/**
+ * Servicio de pedidos.
+ *
+ * Misma frontera que en los demás: la API habla snake_case y la interfaz
+ * camelCase.
+ *
+ * Las cantidades llegan de Postgres como NUMERIC, que supabase-js entrega
+ * como CADENA para no perder precisión. Se convierten aquí una vez: si no,
+ * `'2' + '3'` daría `'23'` en cualquier suma de la pantalla.
+ */
+
+import { pedir } from './api.js';
+import type { TipoDocumento } from './proveedoresServicio.js';
+
+export interface LineaPedido {
+  productoId: number;
+  codigo: string;
+  nombre: string;
+  categoria: string;
+  unidadMedida: string;
+  cantidadSolicitada: number;
+  /** Solo FBE.04, y las rellena el almacén al despachar. */
+  cantidadDevuelta: number | null;
+  cantidadAdicional: number | null;
+  /** Calculada por la base de datos. No se manda nunca. */
+  cantidadTotalSalida: number | null;
+}
+
+export interface Pedido {
+  id: number;
+  proveedorId: string;
+  proveedorNombre: string;
+  cafeteriaId: string;
+  cafeteriaNombre: string;
+  /** El sitio, para el «Unidad de Servicio que solicita» del FBE.04. */
+  cafeteriaUbicacion: string;
+  tipoDocumento: TipoDocumento;
+  categoriaMarcada: string;
+  fechaElaboracion: string;
+  fechaEntrega: string | null;
+  horaEntrega: string | null;
+  lugarEntrega: string;
+  /** El nombre de quien lo elaboró. Vacío si su cuenta ya no existe. */
+  elaboradoPor: string;
+  /** `borrador` | `confirmado` | `anulado`. */
+  estado: string;
+  /** Cuándo pasó a administración. Vacío mientras sea borrador. */
+  confirmadoEn: string | null;
+  lineas: LineaPedido[];
+}
+
+/** Lo que la pantalla manda por cada renglón que tiene cantidad. */
+export interface LineaNueva {
+  productoId: number;
+  cantidadSolicitada: number;
+  cantidadDevuelta?: number | null;
+  cantidadAdicional?: number | null;
+}
+
+export interface PedidoNuevo {
+  proveedorId: string;
+  cafeteriaId: string;
+  fechaElaboracion: string;
+  /** Solo FBE.34. En un FBE.04 el servidor las descarta. */
+  fechaEntrega?: string | null;
+  horaEntrega?: string | null;
+  lugarEntrega?: string;
+  lineas: LineaNueva[];
+}
+
+interface FilaLinea {
+  producto_id: number; codigo?: string; nombre: string; categoria?: string;
+  unidad_medida: string;
+  cantidad_solicitada: string | number;
+  cantidad_devuelta?: string | number | null;
+  cantidad_adicional?: string | number | null;
+  cantidad_total_salida?: string | number | null;
+}
+
+interface FilaPedido {
+  id: number; proveedor_id: string; proveedor_nombre: string;
+  cafeteria_id: string; cafeteria_nombre: string; cafeteria_ubicacion?: string;
+  tipo_documento?: string; categoria_marcada?: string;
+  fecha_elaboracion: string; fecha_entrega?: string | null;
+  hora_entrega?: string | null; lugar_entrega?: string;
+  elaborado_por?: string;
+  estado?: string; confirmado_en?: string | null;
+  lineas?: FilaLinea[];
+}
+
+/** NUMERIC llega como cadena. Vacío se queda vacío: no es cero. */
+function aNumero(valor: string | number | null | undefined): number | null {
+  if (valor === null || valor === undefined || valor === '') return null;
+  const numero = Number(valor);
+  return Number.isFinite(numero) ? numero : null;
+}
+
+function normalizarLinea(fila: FilaLinea): LineaPedido {
+  return {
+    productoId: fila.producto_id,
+    codigo: fila.codigo ?? '',
+    nombre: fila.nombre,
+    categoria: fila.categoria ?? '',
+    unidadMedida: fila.unidad_medida,
+    // La solicitada siempre existe: sin ella el renglón no se habría guardado.
+    cantidadSolicitada: aNumero(fila.cantidad_solicitada) ?? 0,
+    cantidadDevuelta: aNumero(fila.cantidad_devuelta),
+    cantidadAdicional: aNumero(fila.cantidad_adicional),
+    cantidadTotalSalida: aNumero(fila.cantidad_total_salida),
+  };
+}
+
+function normalizar(fila: FilaPedido): Pedido {
+  return {
+    id: fila.id,
+    proveedorId: fila.proveedor_id,
+    proveedorNombre: fila.proveedor_nombre,
+    cafeteriaId: fila.cafeteria_id,
+    cafeteriaNombre: fila.cafeteria_nombre,
+    cafeteriaUbicacion: fila.cafeteria_ubicacion ?? '',
+    tipoDocumento: fila.tipo_documento === 'FBE.04' ? 'FBE.04' : 'FBE.34',
+    categoriaMarcada: fila.categoria_marcada ?? '',
+    fechaElaboracion: fila.fecha_elaboracion,
+    fechaEntrega: fila.fecha_entrega ?? null,
+    // Postgres devuelve TIME como 'HH:MM:SS'. El documento y el formulario
+    // trabajan en HH:MM: los segundos de una hora de entrega no significan nada.
+    horaEntrega: fila.hora_entrega ? fila.hora_entrega.slice(0, 5) : null,
+    lugarEntrega: fila.lugar_entrega ?? '',
+    elaboradoPor: fila.elaborado_por ?? '',
+    estado: fila.estado ?? 'borrador',
+    confirmadoEn: fila.confirmado_en ?? null,
+    lineas: (fila.lineas ?? []).map(normalizarLinea),
+  };
+}
+
+/**
+ * Guarda un pedido con sus líneas.
+ *
+ * Solo se mandan los renglones CON cantidad: el catálogo más grande tiene 55
+ * productos y un pedido normal lleva ocho. El servidor vuelve a filtrar por
+ * si acaso, pero mandar doscientos ceros por el cable no tendría sentido.
+ */
+export async function crearPedido(datos: PedidoNuevo): Promise<Pedido> {
+  const fila = await pedir<FilaPedido>('pedidos.crear', {
+    proveedor_id: datos.proveedorId,
+    cafeteria_id: datos.cafeteriaId,
+    fecha_elaboracion: datos.fechaElaboracion,
+    fecha_entrega: datos.fechaEntrega ?? null,
+    hora_entrega: datos.horaEntrega ?? null,
+    lugar_entrega: datos.lugarEntrega ?? '',
+    lineas: datos.lineas.map((l) => ({
+      producto_id: l.productoId,
+      cantidad_solicitada: l.cantidadSolicitada,
+      cantidad_devuelta: l.cantidadDevuelta ?? null,
+      cantidad_adicional: l.cantidadAdicional ?? null,
+    })),
+  });
+  return normalizar(fila);
+}
+
+/** Un pedido con sus líneas. Lanza ErrorServicio con PEDIDO_NO_ENCONTRADO. */
+export async function getPedido(id: number): Promise<Pedido> {
+  return normalizar(await pedir<FilaPedido>('pedidos.obtener', { id }));
+}
+
+/** La ficha de un pedido en el historial: lo justo para pintar una fila. */
+export interface FichaPedido {
+  id: number;
+  fechaElaboracion: string;
+  fechaEntrega: string | null;
+  estado: string;
+  tipoDocumento: TipoDocumento;
+  proveedorId: string;
+  proveedorNombre: string;
+  cafeteriaId: string;
+  cafeteriaNombre: string;
+  /** Cuántos productos lleva. No los productos: eso es `getPedido`. */
+  renglones: number;
+}
+
+export interface Historial {
+  /** Los del RANGO, que pueden ser más que los devueltos si se topó el límite. */
+  total: number;
+  pedidos: FichaPedido[];
+}
+
+interface FilaFicha {
+  id: number; fecha_elaboracion: string; fecha_entrega?: string | null;
+  estado?: string; tipo_documento?: string;
+  proveedor_id: string; proveedor_nombre?: string;
+  cafeteria_id: string; cafeteria_nombre?: string;
+  renglones?: number;
+}
+
+/**
+ * El historial, filtrable por sede, proveedor, estado y rango de fechas.
+ *
+ * `cafeteriaId` solo lo obedece administración: a un mostrador el servidor le
+ * impone la suya, mande lo que mande.
+ */
+export async function buscarPedidos(filtros: {
+  desde: string;
+  hasta: string;
+  cafeteriaId?: string;
+  proveedorId?: string;
+  estado?: string;
+}): Promise<Historial> {
+  const respuesta = await pedir<{ total: number; pedidos: FilaFicha[] }>('pedidos.buscar', {
+    desde: filtros.desde,
+    hasta: filtros.hasta,
+    cafeteria_id: filtros.cafeteriaId ?? '',
+    proveedor_id: filtros.proveedorId ?? '',
+    estado: filtros.estado ?? '',
+  });
+
+  return {
+    total: respuesta.total ?? 0,
+    pedidos: (respuesta.pedidos ?? []).map((fila) => ({
+      id: fila.id,
+      fechaElaboracion: fila.fecha_elaboracion,
+      fechaEntrega: fila.fecha_entrega ?? null,
+      estado: fila.estado ?? 'borrador',
+      tipoDocumento: fila.tipo_documento === 'FBE.04' ? 'FBE.04' : 'FBE.34',
+      proveedorId: fila.proveedor_id,
+      proveedorNombre: fila.proveedor_nombre ?? '',
+      cafeteriaId: fila.cafeteria_id,
+      cafeteriaNombre: fila.cafeteria_nombre ?? '',
+      renglones: fila.renglones ?? 0,
+    })),
+  };
+}
+
+/**
+ * Corrige un borrador.
+ *
+ * No lleva proveedor ni cafetería: no son editables, y dejarlos fuera de la
+ * firma evita que una pantalla futura los cambie por descuido. Es la misma
+ * decisión que en `reservas.actualizar`.
+ */
+export async function actualizarPedido(id: number, datos: {
+  fechaEntrega?: string | null;
+  horaEntrega?: string | null;
+  lugarEntrega?: string;
+  lineas: LineaNueva[];
+}): Promise<Pedido> {
+  const fila = await pedir<FilaPedido>('pedidos.actualizar', {
+    id,
+    fecha_entrega: datos.fechaEntrega ?? null,
+    hora_entrega: datos.horaEntrega ?? null,
+    lugar_entrega: datos.lugarEntrega ?? '',
+    lineas: datos.lineas.map((l) => ({
+      producto_id: l.productoId,
+      cantidad_solicitada: l.cantidadSolicitada,
+      cantidad_devuelta: l.cantidadDevuelta ?? null,
+      cantidad_adicional: l.cantidadAdicional ?? null,
+    })),
+  });
+  return normalizar(fila);
+}
+
+/** Pasa un borrador a administración. El aviso lo manda el servidor. */
+export async function confirmarPedido(id: number): Promise<Pedido> {
+  return normalizar(await pedir<FilaPedido>('pedidos.confirmar', { id }));
+}
+
+/**
+ * Anula un pedido. Un borrador lo anula quien lo elabora; uno confirmado,
+ * solo administración.
+ */
+export async function anularPedido(id: number): Promise<Pedido> {
+  return normalizar(await pedir<FilaPedido>('pedidos.anular', { id }));
+}
