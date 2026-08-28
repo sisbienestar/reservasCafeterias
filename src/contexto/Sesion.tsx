@@ -150,7 +150,7 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
  * No se ve en ninguna pantalla: es solo la parte que le falta a «gloria» para
  * ser el correo con el que Supabase la conoce.
  */
-const DOMINIO_USUARIOS = import.meta.env.VITE_DOMINIO_USUARIOS || 'cafeterias.uis';
+const DOMINIO_USUARIOS = import.meta.env.VITE_DOMINIO_USUARIOS || 'reservas.uis';
 
 /** Un nombre de usuario: una sola palabra, sin espacios ni arroba. */
 export const ES_USUARIO = /^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?$/i;
@@ -161,7 +161,7 @@ export const ES_USUARIO = /^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?$/i;
  * Se admiten las dos cosas: el correo entero de quien tenga uno, y un nombre
  * de usuario de una palabra para quien no. Un usuario se completa con el
  * dominio interno, así que «gloria» entra como
- * «gloria@cafeterias.uis» — la cuenta se crea con ese correo desde el
+ * «gloria@reservas.uis» — la cuenta se crea con ese correo desde el
  * principio y quien atiende nunca lo teclea entero.
  *
  * POR QUÉ ASÍ Y NO CON UNA BÚSQUEDA
