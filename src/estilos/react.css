@@ -1,0 +1,157 @@
+/* ==========================================================================
+   Lo poco que la app de React añadió y el CSS heredado no tenía.
+   ==========================================================================
+
+   Se carga DESPUÉS de base, componentes, páginas y admin.
+
+   Este archivo llegó a tener cincuenta reglas y casi todas sobraban: eran
+   nombres paralelos para cosas que el proyecto ya tenía con otro nombre
+   —`.tabla__envoltorio` por `.tabla-envoltorio`, `.radio` por `.opcion`,
+   `.barras` por las gráficas SVG de `.grafica`—. El resultado era una
+   interfaz con dos sistemas de diseño discutiendo, y se notaba.
+
+   Lo que queda es lo que de verdad no existía, y es poco porque el
+   prototipo estaba bien resuelto: nueve reglas, casi todas de la sesión, que
+   es lo único que la migración añadió a la interfaz.
+
+   ANTES DE AÑADIR NADA AQUÍ, buscar el nombre en los otros cuatro archivos.
+   Lo más probable es que ya esté.
+   ========================================================================== */
+
+/* ── Estados que faltaban ────────────────────────────────────────────────
+   `.estado--error` ya existía. Estas dos no, y la diferencia entre ellas
+   importa: «cargando» es transitorio y «vacío» es una respuesta. */
+
+.estado--cargando { color: var(--c-texto-2); }
+
+.estado--vacio {
+  background: var(--c-superficie-2);
+  border-style: dashed;
+}
+
+/* ── La sesión ──────────────────────────────────────────────────────────
+   `.barra-sesion` ya existía —la usaba administración para «← Ir a la
+   pantalla de mostrador» y «Cerrar sesión»— y es una fila con
+   `space-between`. Solo hace falta vestir el bloque de en medio, que es lo
+   nuevo: en una herramienta que comparten varios turnos, saber con qué
+   cuenta se trabaja es lo que evita registrar toda una mañana con la sesión
+   de otra sede. */
+
+.barra-sesion { max-width: 100%; }
+
+.barra-sesion__quien {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  text-align: right;
+  /* Empuja la identidad a la derecha haya enlace de vuelta o no, así que la
+     franja se ve igual en las tres pantallas. */
+  margin-left: auto;
+  /* Puede encogerse hasta cero antes que desbordar: es lo que permite que en
+     un móvil estrecho siga cabiendo junto al botón. */
+  min-width: 0;
+}
+
+/* El nombre se recorta con puntos suspensivos si no cabe; el rol y la sede,
+   NO. Un nombre a medias sigue identificando a la persona —quien lo lee ya
+   sabe cómo se llama—, pero media sede no sirve para nada, y comprobar la
+   sede es justo para lo que se mira esta franja. */
+.barra-sesion__nombre {
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--c-texto);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/*
+ * La sede no se recorta, pero SÍ se parte en varias líneas.
+ *
+ * Esto último faltaba, y no era un detalle: «Mostrador · Cafetería
+ * Administración 3» en una sola línea que no puede partirse hace la franja
+ * más ancha que la pantalla, y con ella el documento entero. El síntoma no
+ * apunta aquí en absoluto — se ve toda la página corrida hacia un lado, con
+ * los títulos y hasta los diálogos cortados por la izquierda—, así que
+ * conviene dejar dicho de dónde salía.
+ *
+ * `anywhere` y no `break-word`: un nombre de sede sin espacios —o el correo
+ * de alguien— tiene que poder partirse igual.
+ */
+.barra-sesion__rol {
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-normal);
+  color: var(--c-texto-3);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/*
+ * En móvil la identidad NO se esconde.
+ *
+ * Aquí había un `display: none` por debajo de 640 px, para ganar sitio. Era
+ * un error: el móvil es justo donde va a estar el mostrador, y esta franja
+ * existe para que nadie registre una mañana entera con la sesión de otra
+ * sede. Esconderla ahí la deja sin ninguna utilidad.
+ *
+ * Lo que se hace en su lugar es dejar que la fila se parta: el enlace de
+ * vuelta baja a su propia línea y la identidad se queda arriba con el botón.
+ */
+@media (max-width: 640px) {
+  .barra-sesion { gap: var(--e-2); }
+
+  .barra-sesion .enlace-volver {
+    order: 1;
+    flex-basis: 100%;
+  }
+
+  /* Sin el `auto` la identidad se pegaría al botón; con `space-between` y dos
+     elementos, queda repartida a los lados, que es lo legible. */
+  .barra-sesion__quien { margin-left: 0; text-align: left; }
+}
+
+/* ── Dos huecos del marcado heredado ────────────────────────────────────
+   `.encabezado-reserva` es una fila con el texto a un lado y el botón al
+   otro; este bloque agrupa el texto. `.opcion__texto` es la etiqueta dentro
+   de cada pastilla de radio. Los dos existían en el HTML original y no
+   tenían regla propia porque no la necesitaban. */
+
+.encabezado-reserva__texto { min-width: 0; }
+
+.opcion__texto { user-select: none; }
+
+/* ── Ayuda bajo un campo ────────────────────────────────────────────────
+   El original no tenía ninguna. Aquí explica por qué el identificador y el
+   código de una cafetería no se pueden editar. */
+
+.campo__ayuda {
+  display: block;
+  margin-top: var(--e-1);
+  font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+  line-height: var(--interlinea-texto);
+}
+
+.campo__ayuda code {
+  padding: 0 var(--e-1);
+  background: var(--c-superficie-2);
+  border-radius: var(--radio-sm);
+  font-size: 0.95em;
+}
+
+/* ── Un botón que no lo es ──────────────────────────────────────────────
+   El enlace de WhatsApp se sustituye por esto cuando el móvil no sirve. Se
+   deja a la vista y apagado, en vez de desaparecer: que falte explica más
+   que un hueco donde antes había algo. */
+
+.boton--inerte {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Catálogo ───────────────────────────────────────────────────────────
+   Sus dos bloques ya se separan solos con `.bloque-admin`; esto solo existe
+   para que el envoltorio no colapse el margen del primero. */
+
+.catalogo { display: block; }

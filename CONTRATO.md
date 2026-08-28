@@ -15,6 +15,40 @@ No describe cómo guardar los datos —eso es libre— sino **qué entra y qué 
 
 **Un único endpoint.** Todo va por `POST` a la misma URL.
 
+**Y con sesión.** Toda petición lleva `Authorization: Bearer <token>`. Una
+sin token, o con uno caducado, responde `NO_AUTENTICADO`; una cuyo perfil no
+tenga permiso para esa acción responde `NO_AUTORIZADO`. Las dos con HTTP 200
+y el sobre de siempre, como cualquier otro error de negocio.
+
+Esto es nuevo: el backend de Apps Script no pedía nada, y por eso quien tuviera
+la URL leía y escribía todo el campus. Un backend que no exija sesión **no
+cumple este contrato**.
+
+### Las dos excepciones
+
+`cafeterias.listar` y `app.contexto` se sirven **sin sesión**. La portada
+enseña las cafeterías del campus antes de entrar, y para eso necesita las dos:
+la lista y la fecha de trabajo.
+
+Ninguna devuelve datos de nadie, y las dos cambian de forma sin sesión:
+
+| Acción | Con sesión | Sin sesión |
+|---|---|---|
+| `cafeterias.listar` | respeta `incluir_inactivas` si el rol es `admin` | **ignora** `incluir_inactivas`: solo las activas |
+| `app.contexto` | `perfil` con nombre, rol y sede | `perfil: null` |
+
+Una sede archivada es una decisión de administración, así que fiarse del
+parámetro habría bastado para sacarla. Y `perfil: null` no es un hueco: es lo
+que le dice a la pantalla que hay que ofrecer el acceso.
+
+**Lo demás sigue cerrado.** Toda otra acción toca reservas, y una reserva
+lleva el nombre y el móvil de una persona.
+
+Una cuenta válida SIN fila en `perfil` recibe `NO_AUTORIZADO`, nunca
+`NO_AUTENTICADO`. La diferencia no es cosmética: lo segundo la mandaría a
+identificarse otra vez con unas credenciales que son buenas, en un bucle del
+que no puede salir sola.
+
 ```jsonc
 // petición
 { "accion": "reservas.crear", "params": { … } }
@@ -61,9 +95,14 @@ cada servicio en su función `normalizar`, así que el backend habla siempre en
   "nombre": "Bienestar Pro",
   "ubicacion": "Campus central",
   "imagen": "assets/img/bienestar-pro.jpg",
-  "activa": true                  // booleano de verdad, no "TRUE"
+  "activa": true,                 // booleano de verdad, no "TRUE"
+  "platos_fijos": ["Mini Lunch"]  // arreglo; productos permanentes de la sede
 }
 ```
+
+`platos_fijos` son los productos que esa sede ofrece **todos los días con
+servicio**, haya carta publicada o no. No dependen del día, y por eso viven en
+la cafetería y no en la carta.
 
 ### Carta de un día
 
@@ -74,7 +113,9 @@ cada servicio en su función `normalizar`, así que el backend habla siempre en
 }
 ```
 
-La carta se indexa **solo por fecha**: las cuatro sedes sirven lo mismo.
+La carta se indexa **solo por fecha**: todas las sedes sirven lo mismo. Lo que
+varía por sede son los `platos_fijos` de arriba, que `menu.delDia` añade a la
+carta cuando se le pasa `cafeteria_id`.
 
 ### Reserva
 
@@ -157,16 +198,31 @@ no es cosmético:
 
 ---
 
-## 3. Las 14 acciones
+## 3. Las 15 acciones
+
+### Sesión
+
+| Acción | Params | Devuelve |
+|---|---|---|
+| `app.contexto` | — | `{hoy, permitir_fin_de_semana, perfil{nombre, rol, cafeteria_id} | null}` |
+
+La acción que el backend anterior no podía tener. `hoy` es la fecha **según el
+servidor**, en la zona de Colombia: sacarla del reloj del navegador hacía que
+un equipo con la hora mal puesta registrara el día equivocado sin avisar.
+`permitir_fin_de_semana` estaba duplicado en el frontend y en el backend y
+había que acordarse de apagar los dos; ahora solo existe el del servidor.
+
+`rol` es `"mostrador"` o `"admin"`. Es información para decidir **qué pintar**,
+nunca qué permitir: eso lo vuelve a comprobar el servidor en cada acción.
 
 ### Cafeterías
 
 | Acción | Params | Devuelve |
 |---|---|---|
-| `cafeterias.listar` | `incluir_inactivas?` | `Cafeteria[]` — sin el flag, solo las activas |
+| `cafeterias.listar` | `incluir_inactivas?` | `Cafeteria[]` — sin el flag, solo las activas. **Pública**; ver §1 |
 | `cafeterias.obtener` | `id` | `Cafeteria` |
-| `cafeterias.crear` | `nombre`, `ubicacion?` | `Cafeteria` — el `id` y el `codigo` los asigna el servidor |
-| `cafeterias.actualizar` | `id`, `nombre`, `ubicacion` | `Cafeteria` |
+| `cafeterias.crear` | `nombre`, `ubicacion?`, `platos_fijos?` | `Cafeteria` — el `id` y el `codigo` los asigna el servidor |
+| `cafeterias.actualizar` | `id`, `nombre`, `ubicacion`, `platos_fijos` | `Cafeteria` |
 | `cafeterias.archivar` | `id` | `Cafeteria` con `activa:false` |
 | `cafeterias.reactivar` | `id` | `Cafeteria` con `activa:true` |
 
@@ -174,7 +230,7 @@ no es cosmético:
 
 | Acción | Params | Devuelve |
 |---|---|---|
-| `menu.delDia` | `fecha` | `{fecha, opciones[]}` — sin carta, `opciones: []`, **no** un error |
+| `menu.delDia` | `fecha`, `cafeteria_id?` | `{fecha, opciones[]}` — sin carta, `opciones: []`, **no** un error |
 | `menu.semana` | `lunes` | `{lunes, dias[7]}` — siempre siete, con `opciones: []` los vacíos |
 | `menu.guardarSemana` | `lunes`, `dias[{fecha, platos[]}]` | `{lunes, dias[]}` |
 
@@ -243,6 +299,8 @@ datos que el resto del sistema da por imposibles.
 | `medio` o `pago` ausentes, o con un valor fuera de la lista | `DATOS_INCOMPLETOS` |
 | No existe la cafetería / la reserva | `CAFETERIA_NO_ENCONTRADA`, `RESERVA_NO_ENCONTRADA` |
 | Acción no reconocida | `ACCION_DESCONOCIDA` |
+| Falta el token de sesión, o caducó | `NO_AUTENTICADO` |
+| La sesión es válida pero su perfil no puede hacer eso | `NO_AUTORIZADO` |
 
 ### Tres invariantes que no se ven en las firmas
 
@@ -273,109 +331,34 @@ campo `autor` en cada asiento.
 
 ## 5. El día de la migración
 
-### Sacar los datos
+**Ya ocurrió, y los pasos están en `MIGRACION.md`.** Lo que había aquí era un
+esquema relacional de partida y una lista de archivos que tocar; las dos cosas
+existen ahora de verdad y en su sitio:
 
-Ejecuta `exportarTodo()` en el editor de Apps Script y copia el JSON del
-registro. Trae las tres tablas con las fechas y los móviles como cadenas y las
-columnas JSON ya deserializadas.
-
-No exportes las pestañas a CSV a mano: `opciones` e `historial` llevan comas
-dentro y se rompen.
-
-### Un esquema relacional de partida
-
-En Sheets, `historial` y `opciones` son JSON dentro de una celda porque una
-hoja no tiene arreglos. **En una base de datos de verdad no deberían serlo:**
-
-```sql
-CREATE TABLE cafeteria (
-  id          TEXT PRIMARY KEY,       -- slug: 'bienestar-pro'
-  nombre      TEXT NOT NULL,
-  ubicacion   TEXT DEFAULT '',
-  imagen      TEXT DEFAULT '',
-  activa      BOOLEAN NOT NULL DEFAULT TRUE
-);
-
-CREATE TABLE carta_dia (
-  fecha       DATE PRIMARY KEY        -- una carta por día, para todo el campus
-);
-
-CREATE TABLE carta_opcion (
-  fecha       DATE REFERENCES carta_dia(fecha) ON DELETE CASCADE,
-  id          TEXT NOT NULL,          -- slug del nombre
-  nombre      TEXT NOT NULL,
-  orden       INT  NOT NULL,
-  PRIMARY KEY (fecha, id)
-);
-
-CREATE TABLE reserva (
-  id            TEXT PRIMARY KEY,
-  nombre        TEXT NOT NULL,
-  telefono      TEXT NOT NULL,        -- TEXT, no INTEGER. Ver §2
-  cafeteria_id  TEXT NOT NULL REFERENCES cafeteria(id),
-  fecha         DATE NOT NULL,
-  menu_id       TEXT NOT NULL,
-  menu_nombre   TEXT NOT NULL,        -- copia deliberada. Ver §4
-  estado        TEXT NOT NULL DEFAULT 'activa'
-                CHECK (estado IN ('activa','cancelada')),
-  creada_en     TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
--- La regla del duplicado, impuesta por la base de datos y no solo por el
--- código: es la única forma de que dos peticiones simultáneas no la burlen.
-CREATE UNIQUE INDEX reserva_sin_duplicado
-  ON reserva (cafeteria_id, fecha, telefono)
-  WHERE estado = 'activa';
-
-CREATE INDEX reserva_por_fecha ON reserva (fecha);
-
-CREATE TABLE reserva_asiento (
-  id          BIGSERIAL PRIMARY KEY,
-  reserva_id  TEXT NOT NULL REFERENCES reserva(id) ON DELETE CASCADE,
-  tipo        TEXT NOT NULL CHECK (tipo IN ('creacion','modificacion','cancelacion')),
-  ocurrido_en TIMESTAMPTZ NOT NULL DEFAULT now(),
-  autor       TEXT                    -- pendiente: hoy no hay identidad
-);
-
-CREATE TABLE reserva_cambio (
-  asiento_id  BIGINT NOT NULL REFERENCES reserva_asiento(id) ON DELETE CASCADE,
-  campo       TEXT NOT NULL CHECK (campo IN ('nombre','telefono','menu')),
-  antes       TEXT,
-  despues     TEXT
-);
-```
-
-**Ojo con la diferencia entre almacenamiento y contrato.** Aunque el historial
-viva en dos tablas, la API tiene que seguir devolviéndolo **anidado dentro de
-la reserva**, como en §2. El frontend no sabe nada de tablas.
-
-El índice único parcial merece un párrafo aparte: hoy la regla del duplicado la
-aplica el código, protegida por un bloqueo. Con una base de datos de verdad,
-declararla en el esquema es más barato y más fiable — deja de depender de que
-todos los caminos de escritura se acuerden de comprobarla.
-
-### Qué se toca en el frontend
-
-| Archivo | Qué |
+| Lo que decía esta sección | Dónde está ahora |
 |---|---|
-| `js/config.js` | `API_BASE_URL` a la nueva URL |
-| `js/services/httpClient.js` | Solo si el transporte cambia (headers, REST, auth) |
-| `js/mock/` | Borrar la carpeta, y su `import` en `api.js` |
+| «Un esquema relacional de partida» | `supabase/01-esquema.sql`, ejecutable, con las diferencias explicadas en sus comentarios |
+| «Sacar los datos» | `supabase/importar.mjs`, que además comprueba el volcado antes de escribir |
+| «Qué se toca en el frontend» | El frontend se reescribió entero en `src/`; `legado/` conserva el anterior |
+| «Y entonces sí: autenticación» | `api/_nucleo/sesion.ts` y `supabase/02-rls.sql` |
 
-**Nada más.** Ni las páginas, ni `js/ui/`, ni `js/utils/`, ni el CSS.
+Tres cosas del borrador salieron mal y conviene dejarlas anotadas, porque son
+el tipo de detalle que un esquema escrito de memoria siempre falla:
+
+- **Le faltaba `codigo` en `cafeteria`.** Sin él no se puede construir el
+  identificador de una reserva.
+- **Le faltaban `medio` y `pago` en `reserva`**, y por tanto también en el
+  `CHECK` de `reserva_cambio.campo`. El borrador es anterior a que existieran.
+- **Le faltaba `platos_fijos`.** La carta por sede se añadió después.
 
 ### Comprobarlo
 
 ```bash
-node pruebas/contrato.mjs https://mi-backend-nuevo/api --escribir
+node pruebas/contrato.mjs https://mi-backend/api --token=<jwt> --escribir
 ```
 
-Verde = el backend cumple. Es la misma prueba que pasa el mock, así que no hay
-discusión sobre si «funcionaba antes».
+Verde = el backend cumple. Es la misma prueba que pasaron el mock y Apps
+Script, así que no hay discusión sobre si «funcionaba antes».
 
-### Y entonces sí: autenticación
-
-Lo que hoy es un pestillo de cliente (`ui/accesoAdmin.js`) tiene que pasar a
-ser una sesión que el servidor valide, y el servidor debe **negarse a devolver
-datos** sin ella. Mientras eso no exista, cualquiera con la URL del backend
-puede leerlo y escribirlo todo. Es la deuda más importante del proyecto.
+El token tiene que ser de un perfil `admin`: el contrato ejercita cancelar,
+buscar y guardar la carta, que un perfil de mostrador tiene prohibidas.

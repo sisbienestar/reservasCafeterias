@@ -6,9 +6,32 @@
   "type": "module",
   "scripts": {
     "test": "bash pruebas/sincroniza.sh && node pruebas/ejecutar.mjs",
-    "sincroniza": "bash pruebas/sincroniza.sh"
+    "sincroniza": "bash pruebas/sincroniza.sh",
+    "dev": "vite",
+    "construir": "tsc --noEmit && vite build",
+    "vistaPrevia": "vite preview",
+    "tipos": "tsc --noEmit",
+    "backend-local": "node --env-file=.env.local --import tsx pruebas/servidor.mjs",
+    "importar": "node --env-file=.env.local supabase/importar.mjs",
+    "verificar": "node --env-file=.env.local supabase/verificar.mjs",
+    "permisos": "node --env-file=.env.local pruebas/permisos.mjs",
+    "local": "node pruebas/local.mjs"
   },
   "devDependencies": {
-    "jsdom": "^24.0.0"
+    "@types/node": "^26.4.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "@vitejs/plugin-react": "^4.7.0",
+    "jsdom": "^24.0.0",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2",
+    "vite": "^6.4.3"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.109.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.18.2",
+    "ws": "^8.21.3"
   }
 }

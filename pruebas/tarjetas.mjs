@@ -30,7 +30,7 @@ for (const foto of fotos) {
   const src = foto.getAttribute('src');
   // El src es relativo a la raíz del proyecto —así lo resuelve el navegador
   // al abrir index.html— y las suites corren desde pruebas/.
-  ok(existsSync(join('..', src)), `${src} existe en disco`);
+    ok(existsSync(join('..', 'public', src)), `${src} existe en disco`);
   ok(foto.getAttribute('alt') === '', `  alt vacío (decorativa) en ${src.split('/').pop()}`);
   ok(foto.getAttribute('loading') === 'lazy', `  carga diferida en ${src.split('/').pop()}`);
 }

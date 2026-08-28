@@ -84,7 +84,7 @@ for (const [nombre, queComprueba, entorno] of aCorrer) {
     env: {
       ...process.env,
       RUTA_GS: CODIGO_GS,
-      RUTA_CONFIG: join(AQUI, '..', 'js', 'config.js'),
+      RUTA_CONFIG: join(AQUI, '..', 'legado', 'js', 'config.js'),
       // Suficiente para distinguir lo encadenado de lo paralelo sin que la
       // suite entera tarde una eternidad.
       RETARDO_MS: process.env.RETARDO_MS || '60',

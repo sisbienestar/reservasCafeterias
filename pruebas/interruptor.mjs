@@ -10,7 +10,7 @@ const ok = (c, e) => { console.log(`${c ? '  OK  ' : ' FALLO'} · ${e}`); if (!c
 /** Copia el frontend con el interruptor en el estado pedido y lo carga. */
 async function conInterruptor(encendido) {
   const dir = mkdtempSync(join(tmpdir(), 'interruptor-'));
-  cpSync(join('..', 'js'), join(dir, 'js'), { recursive: true });
+  cpSync(join('..', 'legado', 'js'), join(dir, 'js'), { recursive: true });
   writeFileSync(join(dir, 'package.json'), '{"type":"module"}');
   const cfg = join(dir, 'js', 'config.js');
   writeFileSync(cfg, readFileSync(cfg, 'utf8')
