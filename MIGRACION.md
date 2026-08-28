@@ -4,8 +4,17 @@ Lo que hay que hacer, en orden, para pasar de Apps Script + Sheets a la pila
 nueva. Nada de esto se puede hacer desde el repositorio: hace falta entrar a
 Supabase y a Vercel.
 
-**Hasta que se complete el paso 7, lo que está en producción sigue siendo la
-app vanilla contra Apps Script.** Nada de lo que hay aquí la toca.
+> ## Estado: pasos 1 a 7 HECHOS (27 de agosto de 2026)
+>
+> La aplicación está desplegada en `https://reservas-kappa-ten.vercel.app` y
+> funcionando: portada, acceso, mostrador y administración, contra Supabase.
+>
+> **Queda el paso 8, y tiene una condición previa**: corregir en la hoja el
+> identificador repetido que se anota allí. Hasta entonces Apps Script sigue
+> sirviendo y `legado/` sigue en pie — son la copia de seguridad.
+>
+> Lo de abajo se conserva como registro de cómo se hizo, y porque el paso 8
+> todavía se ejecuta.
 
 ---
 
@@ -19,10 +28,10 @@ Conviene saberlo, porque cambia cuánto hay que desconfiar de cada paso.
 | La importación | **Hecha**: 5 cafeterías, 34 platos, 17 reservas, 32 asientos de historial. |
 | El backend de `api/` | **Probado contra la base real**: `contrato.mjs` pasa sus 70 comprobaciones y `npm run permisos` otras 26. |
 | El frontend de `src/` | Compila y empaqueta (`npm run construir`). **No se ha abierto en un navegador**: sin proyecto de Supabase no hay con qué entrar. |
-| `legado/` + `npm test` | 603 comprobaciones en verde, como siempre. Es lo único de aquí que está probado de verdad. |
+| El frontend de `src/` | **En producción.** Se abrió, se uso y se corrigieron sus regresiones de diseño contra el original. |
+| `legado/` + `npm test` | 603 comprobaciones en verde. Siguen ejercitando la app vanilla, NO React: es la deuda que dejó la migración. |
 
-Lo único que sigue sin ejecutarse nunca es el frontend de React. La prueba que
-convierte «compila» en «funciona» para esa parte es el paso 6.
+Todo lo de esta tabla se ha ejecutado ya contra el proyecto real.
 
 > Nota sobre `npm test`: la suite `viajes` mide tiempos de pared y falla de
 > forma intermitente en máquinas cargadas —comprobado también sobre el commit
