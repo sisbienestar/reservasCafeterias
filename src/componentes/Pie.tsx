@@ -5,9 +5,11 @@
  * React. No es adorno: en una herramienta interna, decir de quién es y a qué
  * dependencia pertenece es la única atribución que hay.
  *
- * El enlace a administración solo va en el inicio, igual que antes. Ahora
- * además solo se ofrece a quien puede usarlo, porque el servidor rechazará a
- * cualquier otro.
+ * El enlace a administración va en el inicio y nada más, igual que en el
+ * original. Se ofrece SIEMPRE, con sesión o sin ella: es la única puerta a
+ * administración que hay, y esconderla a quien no ha entrado la haría
+ * inalcanzable. Pulsarlo sin sesión abre el acceso; entrar con una cuenta que
+ * no es de administración devuelve a la portada.
  */
 
 import { Link } from 'react-router-dom';

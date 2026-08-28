@@ -16,7 +16,6 @@ import { useSesion } from './contexto/Sesion.js';
 import { Cabecera } from './componentes/Cabecera.js';
 import { Pie } from './componentes/Pie.js';
 import { BloqueEstado } from './componentes/BloqueEstado.js';
-import { Entrar } from './paginas/Entrar.js';
 import { Inicio } from './paginas/Inicio.js';
 import { Reserva } from './paginas/Reserva.js';
 import { Admin } from './paginas/Admin.js';
@@ -67,8 +66,6 @@ export function App() {
         {/* Pública. Es la puerta de la aplicación, no una pantalla más. */}
         <Route path="/" element={<Inicio />} />
 
-        <Route path="/entrar" element={<Entrar />} />
-
         <Route path="/reserva/:cafeteriaId" element={<ExigeSesion><Reserva /></ExigeSesion>} />
 
         <Route path="/admin" element={<ExigeSesion rol="admin"><Admin /></ExigeSesion>} />
@@ -94,7 +91,14 @@ function ExigeSesion({ rol, children }: { rol?: 'admin'; children: React.ReactNo
   const perfil = contexto?.perfil ?? null;
 
   if (!perfil) {
-    return <Navigate to="/entrar" replace state={{ volverA: donde.pathname + donde.search }} />;
+    /*
+     * A la portada, no a una pantalla de acceso.
+     *
+     * El acceso es un modal que abre la portada, así que lo que se manda es
+     * el destino: quien pulsó una cafetería o «Admin» sin sesión aparece en
+     * la portada con el formulario delante, y al entrar va donde iba.
+     */
+    return <Navigate to="/" replace state={{ pedirAcceso: donde.pathname + donde.search }} />;
   }
 
   /**

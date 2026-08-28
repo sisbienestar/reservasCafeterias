@@ -1,18 +1,22 @@
 /**
- * Elegir cafetería.
+ * La portada: las cafeterías del campus.
  *
- * Solo la ve administración. El mostrador no pasa por aquí: tiene UNA sede y
- * `App` lo manda directo a ella, porque elegir la propia todos los días no es
- * una decisión, es un clic.
+ * Es pública. Y es también donde vive el acceso: quien pulsa una sede o
+ * «Admin» sin sesión acaba aquí, con el modal delante y el destino guardado.
+ *
+ * No hay ningún botón de «Entrar» suelto. La sesión se pide cuando hace
+ * falta, no antes: un botón de entrar en una pantalla que no lo necesita solo
+ * invita a hacer un trámite que puede no llegar a hacer falta.
  */
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { getCafeterias } from '../servicios/cafeteriasServicio.js';
 import { usePeticion } from '../utiles/usePeticion.js';
 import { TarjetaCafeteria } from '../componentes/TarjetaCafeteria.js';
 import { BloqueEstado } from '../componentes/BloqueEstado.js';
 import { BarraSesion } from '../componentes/BarraSesion.js';
-import { Link } from 'react-router-dom';
+import { ModalAcceso } from '../componentes/ModalAcceso.js';
 import { Pie } from '../componentes/Pie.js';
 import { useHoy, useSesion } from '../contexto/Sesion.js';
 import { formatearFechaLarga } from '../utiles/fechas.js';
@@ -20,27 +24,37 @@ import { formatearFechaLarga } from '../utiles/fechas.js';
 export function Inicio() {
   const hoy = useHoy();
   const { contexto, salir } = useSesion();
+  const donde = useLocation();
+  const navegar = useNavigate();
+
   const consultar = useCallback(() => getCafeterias(), []);
   const { datos: cafeterias, cargando, error, recargar } = usePeticion(consultar, []);
+
+  /**
+   * A dónde iba quien acabó aquí sin sesión.
+   *
+   * Lo deja `ExigeSesion` al desviar. Si está, hay que pedir el acceso y
+   * llevar allí al entrar; si no, esto es una visita normal a la portada.
+   */
+  const destino = (donde.state as { pedirAcceso?: string } | null)?.pedirAcceso ?? null;
+  const [pidiendoAcceso, setPidiendoAcceso] = useState(Boolean(destino));
+
+  const alEntrar = useCallback(() => {
+    setPidiendoAcceso(false);
+    navegar(destino ?? '/', { replace: true });
+  }, [destino, navegar]);
+
+  const alCerrar = useCallback(() => {
+    setPidiendoAcceso(false);
+    // Se limpia el destino del historial: si no, volver aquí con el botón de
+    // atrás reabriría el formulario que se acaba de cerrar.
+    navegar('/', { replace: true });
+  }, [navegar]);
 
   return (
     <>
       <main className="contenedor pagina">
-        {/*
-          La portada es pública. Con sesión enseña quién ha entrado y por
-          dónde salir; sin ella, la puerta. Y sin ella no falta nada más: las
-          tarjetas se ven igual, porque saber qué cafeterías hay en el campus
-          no es un dato de nadie.
-        */}
-        {contexto?.perfil
-          ? <BarraSesion perfil={contexto.perfil} alSalir={salir} />
-          : (
-            <div className="barra-sesion">
-              <Link className="boton boton--secundario boton--sm barra-sesion__entrar" to="/entrar">
-                Entrar
-              </Link>
-            </div>
-          )}
+        {contexto?.perfil && <BarraSesion perfil={contexto.perfil} alSalir={salir} />}
 
         {/* La fecha ANTES del título, como en el original: es el sobretítulo
             que sitúa, no un dato al pie. */}
@@ -80,7 +94,12 @@ export function Inicio() {
             Las tarjetas cuelgan DIRECTAMENTE de la rejilla, sin <li> en medio.
             `.rejilla-tarjetas` es un grid y coloca a sus hijos inmediatos:
             envolverlas hacía que colocara los <li> y las tarjetas perdían su
-            sitio. Es lo que rompía esta pantalla.
+            sitio.
+
+            Son enlaces normales, sin saber nada de sesión. Pulsar una sin
+            haber entrado navega, `ExigeSesion` devuelve aquí con el destino y
+            el modal aparece. Que la tarjeta no tenga que preguntarse si hay
+            sesión es lo que deja una sola puerta en vez de dos.
           */}
           {cafeterias && cafeterias.length > 0 && (
             <div className="rejilla-tarjetas" aria-live="polite">
@@ -92,7 +111,11 @@ export function Inicio() {
         </section>
       </main>
 
-      <Pie conEnlaceAdmin={contexto?.perfil?.rol === 'admin'} />
+      {/* El enlace a administración va SIEMPRE, con sesión o sin ella: es la
+          única puerta que hay, y esconderla la haría inalcanzable. */}
+      <Pie conEnlaceAdmin />
+
+      <ModalAcceso abierto={pidiendoAcceso} alCerrar={alCerrar} alEntrar={alEntrar} />
     </>
   );
 }
