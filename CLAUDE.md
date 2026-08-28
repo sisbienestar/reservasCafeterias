@@ -131,6 +131,38 @@ arrancar, así que añadirlas sin reconstruir no cambia nada.
 
 ## La deuda
 
+### 1 · El nombre de usuario solo sirve con un dominio
+
+**Pendiente de decidir. Planteado por Fredy el 27 de agosto de 2026.**
+
+Hoy el nombre de usuario no se guarda en ninguna parte: se completa con
+`VITE_DOMINIO_USUARIOS` y ya. «silvia» entra como `silvia@reservas.uis`.
+
+Eso **solo funciona si todas las cuentas usan ese dominio**, y no va a ser el
+caso: habrá cuentas de gmail, de `@uis.edu.co` y de donde sea. Entonces unas
+personas entran escribiendo su nombre y otras tienen que escribir el correo
+entero, sin que nada en la pantalla explique la diferencia. Es exactamente el
+tipo de cosa que en un mostrador acaba en «a mí no me funciona».
+
+Se eligió así por dos razones que siguen siendo válidas y que hay que pesar
+contra la comodidad antes de cambiarlo:
+
+- Resolver el usuario contra la base de datos exige una consulta **pública**
+  —hace falta ANTES de tener sesión—, y eso es una puerta para averiguar qué
+  usuarios existen probando nombres.
+- Completar el correo en el navegador mantiene el inicio de sesión dentro de
+  Supabase, que limita los intentos por dirección. Si pasara por nuestra
+  función, todos llegarían desde la misma IP de Vercel y ese límite dejaría de
+  proteger a nadie.
+
+Las salidas, por orden de coste: (a) exigir que todas las cuentas del personal
+usen el dominio interno y dejar los correos reales solo para administración;
+(b) una acción de acceso en el servidor que reciba usuario y contraseña, con
+mensaje de error uniforme y un límite de intentos propio; (c) renunciar al
+nombre de usuario y entrar siempre por correo.
+
+### 2 · Las pruebas
+
 **Las 603 comprobaciones ejercitan `legado/`, no React.** Es lo más importante
 que dejó pendiente la migración.
 
