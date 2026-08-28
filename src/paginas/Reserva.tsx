@@ -39,7 +39,6 @@ import { ModalReserva, type DatosReserva } from '../componentes/ModalReserva.js'
 import { ModalTicket } from '../componentes/ModalTicket.js';
 import { BarraSesion } from '../componentes/BarraSesion.js';
 import { Pie } from '../componentes/Pie.js';
-import { useEsSedeAjena } from '../App.js';
 
 interface Aviso {
   tipo: 'exito' | 'aviso';
@@ -53,8 +52,6 @@ export function Reserva() {
   const hoy = contexto?.hoy ?? '';
   const permitirFinDeSemana = contexto?.permitirFinDeSemana ?? false;
   const diaHabil = hoy ? esDiaDeServicio(hoy, permitirFinDeSemana) : false;
-
-  const sedeAjena = useEsSedeAjena();
 
   const [cafeteria, setCafeteria] = useState<Cafeteria | null>(null);
   const [menu, setMenu] = useState<OpcionMenu[]>([]);
@@ -92,7 +89,7 @@ export function Reserva() {
   /* ── Arranque ───────────────────────────────────────────────────────── */
 
   useEffect(() => {
-    if (!cafeteriaId || !hoy || sedeAjena) return;
+    if (!cafeteriaId || !hoy) return;
     let vigente = true;
 
     setCargando(true);
@@ -126,7 +123,7 @@ export function Reserva() {
     });
 
     return () => { vigente = false; };
-  }, [cafeteriaId, hoy, diaHabil, sedeAjena]);
+  }, [cafeteriaId, hoy, diaHabil]);
 
   /**
    * Vuelve a pedir la tabla y la carta, las dos a la vez.
@@ -225,27 +222,6 @@ export function Reserva() {
   }
 
   /* ── Pintado ────────────────────────────────────────────────────────── */
-
-  /**
-   * Un mostrador que abre una sede que no es la suya se corta aquí, antes de
-   * consultar nada. El servidor le devolvería las reservas de SU sede pida la
-   * que pida, y la pantalla acabaría poniendo el nombre de una cafetería
-   * encima de las reservas de otra.
-   */
-  if (sedeAjena) {
-    return (
-      <>
-        <main className="contenedor pagina" id="contenido">
-          <BloqueEstado
-            tipo="error"
-            titulo="Esa no es tu cafetería"
-            detalle="Tu cuenta atiende otra sede. Si necesitas registrar reservas aquí, pídelo a administración."
-          />
-        </main>
-        <Pie />
-      </>
-    );
-  }
 
   if (falloDePagina) {
     return (

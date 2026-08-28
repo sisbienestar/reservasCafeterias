@@ -66,7 +66,10 @@ export function App() {
         {/* Pública. Es la puerta de la aplicación, no una pantalla más. */}
         <Route path="/" element={<Inicio />} />
 
-        <Route path="/reserva/:cafeteriaId" element={<ExigeSesion><Reserva /></ExigeSesion>} />
+        <Route
+          path="/reserva/:cafeteriaId"
+          element={<ExigeSesion><SoloSuSede><Reserva /></SoloSuSede></ExigeSesion>}
+        />
 
         <Route path="/admin" element={<ExigeSesion rol="admin"><Admin /></ExigeSesion>} />
 
@@ -116,24 +119,34 @@ function ExigeSesion({ rol, children }: { rol?: 'admin'; children: React.ReactNo
 }
 
 /**
- * ¿Está el mostrador abriendo una sede que no es la suya?
+ * El mostrador siempre acaba en SU sede.
  *
- * El servidor ya lo impone —`sedePermitida` le devuelve la suya pida la que
- * pida— pero eso, sin avisar, produce algo peor que un error: la pantalla
- * pondría «Autoservicio Bienestar Pro» encima de las reservas de Camilo
- * Torres. Quien atiende no tendría forma de notarlo.
+ * Si pulsa otra cafetería, se le lleva a la suya en vez de darle un error.
+ * Eso no es tragarse una equivocación: es que aquí no hay ninguna decisión
+ * que tomar. Su cuenta atiende una sola sede, el servidor le devolvería sus
+ * reservas pidiera la que pidiera, y la única pantalla que puede usar es
+ * exactamente esa. Un aviso solo añadiría un paso antes del mismo destino.
  *
- * Es un enganche y no un componente a propósito. Como componente habría que
- * invocarlo desde `Reserva` para leer su resultado, y llamar a un componente
- * como si fuera una función mete sus hooks en el orden de quien llama: basta
- * con que un día alguien lo ponga dentro de un `if` para romperlo de una
- * forma que no se entiende.
+ * Lo que sí había que evitar —y por eso existe esta guarda— es dejarle entrar
+ * a la ruta ajena: el servidor le da las reservas de SU sede, así que la
+ * pantalla acabaría poniendo «Autoservicio Bienestar Pro» encima de las
+ * reservas de Camilo Torres. Eso sí es un error, y silencioso.
+ *
+ * Administración no pasa por aquí: elige sede y las ve todas.
  */
-export function useEsSedeAjena(): boolean {
+function SoloSuSede({ children }: { children: React.ReactNode }) {
   const { contexto } = useSesion();
   const { cafeteriaId = '' } = useParams();
   const perfil = contexto?.perfil;
 
-  if (!perfil || perfil.rol === 'admin') return false;
-  return perfil.cafeteriaId !== cafeteriaId;
+  if (!perfil || perfil.rol === 'admin') return <>{children}</>;
+
+  // El `&&` no es defensivo de más: un mostrador sin sede no puede existir
+  // —lo impide un CHECK de la tabla— pero si alguna vez existiera, redirigir
+  // a `/reserva/` daría vueltas para siempre en vez de fallar.
+  if (perfil.cafeteriaId && perfil.cafeteriaId !== cafeteriaId) {
+    return <Navigate to={`/reserva/${perfil.cafeteriaId}`} replace />;
+  }
+
+  return <>{children}</>;
 }
