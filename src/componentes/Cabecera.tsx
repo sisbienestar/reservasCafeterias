@@ -5,9 +5,17 @@
  * Quién ha entrado y por dónde se sale NO van aquí: van en `<BarraSesion>`,
  * dentro de cada página. Meterlos en la cabecera descuadraba el logo y
  * convertía la marca en un panel de control.
+ *
+ * La versión sí va aquí, y fuera del enlace de la marca: mientras esto sea un
+ * prototipo, quien lo prueba tiene que poder decir qué versión está mirando
+ * sin preguntar, y desde cualquier pantalla.
  */
 
 import { Link } from 'react-router-dom';
+
+/** Se suben a mano al publicar una versión nueva para probar. */
+const VERSION = 'v1';
+const FECHA_VERSION = '19 de agosto de 2026';
 
 export function Cabecera() {
   return (
@@ -26,6 +34,11 @@ export function Cabecera() {
             </span>
           </span>
         </Link>
+
+        <p className="cabecera__version">
+          <span className="cabecera__version-nombre">Prototipo funcional {VERSION}</span>
+          <span className="cabecera__version-fecha">{FECHA_VERSION}</span>
+        </p>
       </div>
     </header>
   );

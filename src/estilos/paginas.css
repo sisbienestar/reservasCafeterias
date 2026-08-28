@@ -22,6 +22,33 @@
   padding-block: var(--e-3);
 }
 
+/* La versión del prototipo, arriba a la derecha. Va alineada a la derecha y
+   no al centro: el logo y ella son las dos únicas cosas de la cabecera, y
+   `space-between` ya las separa sin necesidad de un margen inventado. */
+.cabecera__version {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  flex-shrink: 0;
+  line-height: 1.3;
+  text-align: right;
+  margin-left: var(--e-4);
+}
+
+/* En --c-texto-2 y no en --c-texto-3: tiene que leerse a la primera para que
+   sirva de algo al reportar un fallo, pero sin competir con la marca. */
+.cabecera__version-nombre {
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-fuerte);
+  color: var(--c-texto-2);
+}
+
+.cabecera__version-fecha {
+  font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+}
+
 .pie {
   border-top: 1px solid var(--c-borde);
   padding-block: var(--e-5);
@@ -117,6 +144,15 @@
   .portada { padding-block: var(--e-4) var(--e-6); }
 
   .marca__institucion { display: none; }
+
+  /* Dos líneas a la derecha suben demasiado la cabecera en un móvil; en una
+     sola caben porque la marca ya perdió su primera línea. */
+  .cabecera__version {
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--e-2);
+    margin-left: var(--e-3);
+  }
 
   .encabezado-reserva {
     align-items: stretch;
