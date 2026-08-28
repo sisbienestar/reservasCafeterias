@@ -34,7 +34,7 @@ Ninguna devuelve datos de nadie, y las dos cambian de forma sin sesión:
 
 | Acción | Con sesión | Sin sesión |
 |---|---|---|
-| `cafeterias.listar` | respeta `incluir_inactivas` si el rol es `admin` | **ignora** `incluir_inactivas`: solo las activas |
+| ~~`cafeterias.listar`~~ | ya NO es pública: `/reservas` exige sesión | — |
 | `app.contexto` | `perfil` con nombre, rol y sede | `perfil: null` |
 
 Una sede archivada es una decisión de administración, así que fiarse del
@@ -219,7 +219,7 @@ nunca qué permitir: eso lo vuelve a comprobar el servidor en cada acción.
 
 | Acción | Params | Devuelve |
 |---|---|---|
-| `cafeterias.listar` | `incluir_inactivas?` | `Cafeteria[]` — sin el flag, solo las activas. **Pública**; ver §1 |
+| `cafeterias.listar` | `incluir_inactivas?` | `Cafeteria[]` — sin el flag, solo las activas |
 | `cafeterias.obtener` | `id` | `Cafeteria` |
 | `cafeterias.crear` | `nombre`, `ubicacion?`, `platos_fijos?` | `Cafeteria` — el `id` y el `codigo` los asigna el servidor |
 | `cafeterias.actualizar` | `id`, `nombre`, `ubicacion`, `platos_fijos` | `Cafeteria` |

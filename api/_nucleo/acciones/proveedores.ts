@@ -32,6 +32,8 @@ export interface ProveedorContrato {
   nombre: string;
   tipo_documento: string;
   categoria_fija: string;
+  /** Ruta dentro de public/. Vacía = la tarjeta usa las iniciales. */
+  imagen: string;
   activo: boolean;
 }
 
@@ -39,12 +41,12 @@ export interface ProveedorConCatalogo extends ProveedorContrato {
   productos: ProductoContrato[];
 }
 
-const COLUMNAS = 'id, nombre, tipo_documento, categoria_fija, activo';
+const COLUMNAS = 'id, nombre, tipo_documento, categoria_fija, imagen, activo';
 const COLUMNAS_PRODUCTO = 'id, orden, codigo, nombre, categoria, unidad_medida';
 
 interface FilaProveedor {
   id: string; nombre: string; tipo_documento: string;
-  categoria_fija: string | null; activo: boolean;
+  categoria_fija: string | null; imagen: string | null; activo: boolean;
 }
 
 interface FilaProducto {
@@ -64,6 +66,7 @@ function aContrato(fila: FilaProveedor): ProveedorContrato {
     nombre: fila.nombre,
     tipo_documento: fila.tipo_documento,
     categoria_fija: fila.categoria_fija ?? '',
+    imagen: fila.imagen ?? '',
     // Como en cafeterías: booleano de verdad, porque la cadena 'FALSE' es
     // *truthy* y un proveedor dado de baja aparecería activo.
     activo: fila.activo !== false,
@@ -174,7 +177,12 @@ function leerProveedor(params: Record<string, unknown>) {
       `«${categoria}» no es una de las tres casillas del FBE.04.`);
   }
 
-  return { nombre, tipo_documento: tipo, categoria_fija: categoria || null };
+  return {
+    nombre,
+    tipo_documento: tipo,
+    categoria_fija: categoria || null,
+    imagen: String(params.imagen ?? '').trim(),
+  };
 }
 
 /**

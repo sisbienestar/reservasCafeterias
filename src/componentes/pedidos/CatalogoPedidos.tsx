@@ -44,6 +44,7 @@ export function SeccionProveedores({ pedirConfirmacion }: Props) {
   const [nombre, setNombre] = useState('');
   const [tipo, setTipo] = useState<TipoDocumento>('FBE.34');
   const [categoria, setCategoria] = useState('');
+  const [imagen, setImagen] = useState('');
   const [guardando, setGuardando] = useState(false);
   const [aviso, setAviso] = useState<{ tipo: 'exito' | 'error'; mensaje: string } | null>(null);
 
@@ -62,6 +63,7 @@ export function SeccionProveedores({ pedirConfirmacion }: Props) {
     setNombre('');
     setTipo('FBE.34');
     setCategoria('');
+    setImagen('');
   }
 
   function editar(proveedor: Proveedor) {
@@ -69,6 +71,7 @@ export function SeccionProveedores({ pedirConfirmacion }: Props) {
     setNombre(proveedor.nombre);
     setTipo(proveedor.tipoDocumento);
     setCategoria(proveedor.categoriaFija);
+    setImagen(proveedor.imagen);
     setAviso(null);
   }
 
@@ -77,7 +80,7 @@ export function SeccionProveedores({ pedirConfirmacion }: Props) {
     setGuardando(true);
     setAviso(null);
     try {
-      const datos = { nombre, tipoDocumento: tipo, categoriaFija: categoria };
+      const datos = { nombre, tipoDocumento: tipo, categoriaFija: categoria, imagen };
       if (editando) await actualizarProveedor(editando.id, datos);
       else await crearProveedor(datos);
 
@@ -149,6 +152,20 @@ export function SeccionProveedores({ pedirConfirmacion }: Props) {
           </div>
         )}
 
+        {/* Solo el NOMBRE del archivo: se sube al repositorio en
+            public/assets/img/ y aquí se escribe cómo se llama. La carpeta la
+            pone la aplicación. Vacío deja las iniciales. */}
+        <div className="campo filtros__campo filtros__campo--ancho">
+          <label className="campo__etiqueta" htmlFor="prov-imagen">Imagen</label>
+          <input
+            id="prov-imagen"
+            className="campo__control"
+            value={imagen}
+            placeholder="nutresa.png"
+            onChange={(e) => setImagen(e.target.value)}
+          />
+        </div>
+
         <div className="filtros__acciones">
           {editando && (
             <button type="button" className="boton boton--secundario" onClick={limpiar}>
@@ -196,7 +213,7 @@ export function SeccionProveedores({ pedirConfirmacion }: Props) {
                   <td className="tabla__nombre">{proveedor.nombre}</td>
                   <td className="tabla__menu">
                     {proveedor.tipoDocumento}
-                    <span className="tabla__nota">{QUE_ES[proveedor.tipoDocumento]}</span>
+                    <span className="tabla__detalle">{QUE_ES[proveedor.tipoDocumento]}</span>
                   </td>
                   <td className="tabla__menu">{proveedor.categoriaFija || '—'}</td>
                   <td>

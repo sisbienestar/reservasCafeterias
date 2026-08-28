@@ -46,12 +46,15 @@ function aContrato(fila: FilaCafeteria): CafeteriaContrato {
  * Sin `incluir_inactivas`, solo las que están en servicio. El mostrador nunca
  * debe ver una sede cerrada; administración sí, para reabrirla.
  *
- * Es la única acción de datos que se sirve SIN sesión, porque la portada
- * enseña las sedes del campus antes de entrar. Y de ahí la comprobación de
- * abajo: sin sesión, `incluir_inactivas` se ignora. Una sede archivada es una
- * decisión de administración —que se cerró, y cuándo— y no tiene por qué
- * saberla quien todavía no ha entrado. Fiarse del parámetro habría bastado
- * para sacarla.
+ * Fue la única acción de datos que se servía SIN sesión, mientras la portada
+ * de reservas enseñaba las sedes del campus antes de entrar. Ya no: esa
+ * pantalla también pide sesión, así que esta acción salió de
+ * `ACCIONES_PUBLICAS` y `sesion` nunca llega nula.
+ *
+ * La comprobación de abajo se queda igual de todos modos. No es defensiva de
+ * más: lo que impide es que un MOSTRADOR con sesión saque las archivadas
+ * mandando el parámetro. Una sede cerrada es una decisión de administración
+ * —que se cerró, y cuándo— y fiarse del parámetro habría bastado para verla.
  */
 export async function listar(params: Record<string, unknown>, sesion: Sesion | null) {
   const puedeVerInactivas = sesion?.rol === 'admin' && Boolean(params.incluir_inactivas);

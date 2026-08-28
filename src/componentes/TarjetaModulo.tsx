@@ -15,6 +15,7 @@
  */
 
 import { Link } from 'react-router-dom';
+import { MedioTarjeta } from './MedioTarjeta.js';
 import type { Modulo } from '../contexto/Sesion.js';
 
 export function TarjetaModulo({ modulo }: { modulo: Modulo }) {
@@ -23,9 +24,7 @@ export function TarjetaModulo({ modulo }: { modulo: Modulo }) {
 
   const interior = (
     <>
-      <div className="tarjeta__medio">
-        <span className="tarjeta__inicial" aria-hidden="true">{modulo.inicial}</span>
-      </div>
+      <MedioTarjeta imagen={modulo.imagen} iniciales={modulo.inicial} />
 
       <div className="tarjeta__cuerpo">
         <p className="tarjeta__ubicacion">{etiqueta}</p>

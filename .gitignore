@@ -10,3 +10,12 @@ dist/
 volcado.json
 volcado*.json
 volcado.json.original
+
+# La app vanilla del prototipo. Se queda en el disco como copia de seguridad
+# —y las 603 pruebas la siguen ejercitando— pero fuera del repositorio: su
+# `js/config.js` lleva la URL del /exec de Apps Script, que sirve la hoja a
+# quien la tenga y sin pedir contraseña.
+#
+# Ojo: esto no borra la URL del HISTORIAL. Sigue en los commits anteriores.
+# Lo que de verdad cierra esa puerta es archivar el despliegue en Apps Script.
+legado/

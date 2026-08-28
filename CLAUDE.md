@@ -30,15 +30,16 @@ seguridad, no código muerto.
 
 ## Los módulos
 
-La portada `/` es la lista de módulos y es **pública**: enseña qué hay sin
-pedir nada. Cada módulo cuelga de su propio prefijo y se lleva dentro todo lo
-suyo, incluida su administración.
+La portada `/` es la lista de módulos y es la **única pantalla pública**:
+enseña qué hay sin pedir nada, y a partir de ahí hay que entrar. Cada módulo
+cuelga de su propio prefijo y se lleva dentro todo lo suyo, incluida su
+administración.
 
 | Ruta | Qué es | Quién entra |
 |---|---|---|
 | `/` | Los módulos | cualquiera |
 | `/admin` | Usuarios, módulos, ajustes y registro | rol `admin` |
-| `/reservas` | Las cafeterías del campus | cualquiera |
+| `/reservas` | Las cafeterías del campus | con sesión |
 | `/reservas/:cafeteriaId` | La pantalla de mostrador | con sesión, y solo a su sede |
 | `/reservas/admin` | Administración de reservas | rol `admin` |
 | `/pedidos` | Almacenes y proveedores | con sesión |
@@ -94,11 +95,10 @@ falla**, que es lo correcto en un despliegue donde todavía no se ha configurado
 
 Tres cosas que conviene no deshacer:
 
-- **El acceso se pide en la última pantalla PÚBLICA del camino.** `ExigeSesion`
-  recibe `portada` y devuelve ahí con el destino guardado. En reservas es
-  `/reservas`, que es pública; en pedidos es `/`, porque su portada ya exige
-  sesión y quien no ha entrado no llega a verla. Mandar a `/` a quien iba a una
-  sede le haría recorrer dos pantallas para volver donde estaba.
+- **El acceso vive en la portada de módulos, y en ningún otro sitio.** Los dos
+  módulos exigen sesión desde su primera pantalla, así que `ExigeSesion` recibe
+  siempre `portada="/"` y devuelve ahí con el destino guardado. Reservas tuvo su
+  propio modal mientras `/reservas` era pública; al cerrarse, sobró.
 - **La cabecera lleva el nombre de la APLICACIÓN**, nunca el del módulo. Es
   idéntica en todas las pantallas; quién dice dónde estás es el `<h1>` de cada
   portada.

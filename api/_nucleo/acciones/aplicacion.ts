@@ -16,16 +16,18 @@ export interface ModuloContrato {
   etiqueta: string;
   inicial: string;
   ruta: string;
+  /** Ruta dentro de public/. Vacía = la tarjeta usa las iniciales. */
+  imagen: string;
   orden: number;
   activo: boolean;
 }
 
 interface FilaModulo {
   id: string; nombre: string; etiqueta: string | null; inicial: string | null;
-  ruta: string | null; orden: number; activo: boolean;
+  ruta: string | null; imagen: string | null; orden: number; activo: boolean;
 }
 
-const COLUMNAS_MODULO = 'id, nombre, etiqueta, inicial, ruta, orden, activo';
+const COLUMNAS_MODULO = 'id, nombre, etiqueta, inicial, ruta, imagen, orden, activo';
 
 function aContratoModulo(fila: FilaModulo): ModuloContrato {
   return {
@@ -34,6 +36,7 @@ function aContratoModulo(fila: FilaModulo): ModuloContrato {
     etiqueta: fila.etiqueta ?? '',
     inicial: fila.inicial ?? '',
     ruta: fila.ruta ?? '',
+    imagen: fila.imagen ?? '',
     orden: fila.orden,
     activo: fila.activo !== false,
   };
@@ -79,6 +82,7 @@ export async function actualizarModulo(params: Record<string, unknown>, sesion: 
       nombre,
       etiqueta: String(params.etiqueta ?? '').trim(),
       inicial: String(params.inicial ?? '').trim(),
+      imagen: String(params.imagen ?? '').trim(),
       activo,
     }).eq('id', id).select(COLUMNAS_MODULO).maybeSingle(),
   );

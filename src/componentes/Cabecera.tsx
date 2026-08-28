@@ -36,6 +36,21 @@ export function Cabecera() {
             src="/assets/img/logo-uis.webp"
             alt="Universidad Industrial de Santander"
           />
+
+          {/*
+            El logo de Cafeterías UIS, al lado del de la Universidad.
+
+            `alt` vacío a propósito: es la MISMA identidad que ya dice el texto
+            de al lado. Con un texto alternativo, un lector de pantalla leería
+            «Universidad Industrial de Santander, Cafeterías UIS, Universidad
+            Industrial de Santander, Servicios Cafeterías Bienestar UIS» — la
+            marca cuatro veces para un solo enlace.
+          */}
+          <img
+            className="marca__logo marca__logo--cafeterias"
+            src="/assets/img/cafeteriasUIS.png"
+            alt=""
+          />
           <span className="marca__texto">
             <span className="marca__institucion">Universidad Industrial de Santander</span>
             {/* El nombre de la APLICACIÓN, no el del módulo: la cabecera es

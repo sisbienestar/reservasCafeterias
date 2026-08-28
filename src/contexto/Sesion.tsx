@@ -32,6 +32,8 @@ export interface Modulo {
   inicial: string;
   /** A dónde lleva. Vacía en un módulo anunciado que todavía no existe. */
   ruta: string;
+  /** Ruta dentro de public/. Vacía = la tarjeta usa las iniciales. */
+  imagen: string;
   activo: boolean;
 }
 
@@ -101,7 +103,10 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
         hoy: string;
         permitir_fin_de_semana: boolean;
         aplicacion?: { nombre: string; version: string; fecha_version: string };
-        modulos?: { id: string; nombre: string; etiqueta: string; inicial: string; ruta: string; activo: boolean }[];
+        modulos?: {
+          id: string; nombre: string; etiqueta: string; inicial: string;
+          ruta: string; imagen: string; activo: boolean;
+        }[];
         perfil: { nombre: string; rol: Rol; cafeteria_id: string | null } | null;
       }>('app.contexto');
 

@@ -2,13 +2,17 @@
  * Tarjeta de proveedor de la portada del módulo de pedidos.
  *
  * Reutiliza `.tarjeta` entera, como la de cafetería y la de módulo: las tres
- * son «elige uno de estos» y no había razón para que se vieran distintas. No
- * añade ni una clase.
+ * son «elige uno de estos».
+ *
+ * Lo único propio es `.tarjeta--compacta`, que la encoge, y la comparte con
+ * la de cafetería: las dos son listas de «elige dónde» que se recorren a
+ * diario, y a tamaño completo obligaban a desplazar para verlas enteras.
  */
 
 import { Link } from 'react-router-dom';
 import type { Proveedor } from '../servicios/proveedoresServicio.js';
 import { iniciales } from '../utiles/iniciales.js';
+import { MedioTarjeta } from './MedioTarjeta.js';
 
 /** Lo que en el nombre de un proveedor no lo distingue de los demás. */
 const GENERICAS = /^(almacén|almacen|proveedor|distribuidora)$/i;
@@ -28,12 +32,11 @@ const QUE_ES: Record<string, string> = {
 
 export function TarjetaProveedor({ proveedor }: { proveedor: Proveedor }) {
   return (
-    <Link className="tarjeta" to={`/pedidos/${proveedor.id}`}>
-      <div className="tarjeta__medio">
-        <span className="tarjeta__inicial" aria-hidden="true">
-          {iniciales(proveedor.nombre, GENERICAS)}
-        </span>
-      </div>
+    <Link className="tarjeta tarjeta--compacta" to={`/pedidos/${proveedor.id}`}>
+      <MedioTarjeta
+        imagen={proveedor.imagen}
+        iniciales={iniciales(proveedor.nombre, GENERICAS)}
+      />
 
       <div className="tarjeta__cuerpo">
         <p className="tarjeta__ubicacion">{QUE_ES[proveedor.tipoDocumento]}</p>

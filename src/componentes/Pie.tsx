@@ -5,29 +5,19 @@
  * React. No es adorno: en una herramienta interna, decir de quién es y a qué
  * dependencia pertenece es la única atribución que hay.
  *
- * El enlace a administración va en la portada de RESERVAS y nada más. Es la
- * administración de ese módulo —no la de la aplicación—, y por eso no aparece
- * en la lista de módulos. Se ofrece SIEMPRE, con sesión o sin ella: es la
- * única puerta que hay, y esconderla a quien no ha entrado la haría
- * inalcanzable. Pulsarlo sin sesión abre el acceso; entrar con una cuenta que
- * no es de administración devuelve a la portada del módulo.
+ * Llevó un enlace a la administración de reservas mientras esa portada era
+ * pública: era la única puerta que había y se ofrecía a todo el mundo, porque
+ * esconderla a quien no había entrado la habría hecho inalcanzable. Al pasar
+ * `/reservas` a exigir sesión, la pantalla ya sabe quién mira, y el enlace se
+ * fue a su sitio —junto al título, como en pedidos—. Aquí solo queda la
+ * atribución, que es lo que este pie siempre debió ser.
  */
 
-import { Link } from 'react-router-dom';
-
-export function Pie({ conEnlaceAdmin = false }: { conEnlaceAdmin?: boolean }) {
+export function Pie() {
   return (
     <footer className="pie">
       <div className="contenedor">
-        <p>
-          Bienestar Universitario · Universidad Industrial de Santander
-          {conEnlaceAdmin && (
-            <>
-              <span className="separador" aria-hidden="true">·</span>
-              <Link className="pie__enlace" to="/reservas/admin">Admin</Link>
-            </>
-          )}
-        </p>
+        <p>Bienestar Universitario · Universidad Industrial de Santander</p>
       </div>
     </footer>
   );

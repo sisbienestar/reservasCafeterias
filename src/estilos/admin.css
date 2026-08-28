@@ -477,16 +477,14 @@
   .barra-semana__acciones .boton { flex: 1; }
 }
 
-/* Enlace a administración desde el pie de la página operativa. Discreto a
-   propósito: no es una acción del personal de mostrador, es una puerta que
-   tiene que existir mientras no haya autenticación ni un menú propio. */
-.pie__enlace {
-  color: var(--c-texto-2);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.pie__enlace:hover { color: var(--c-acento); }
+/*
+ * Aquí vivía `.pie__enlace`, el acceso a administración desde el pie.
+ *
+ * Su propio comentario decía que era «una puerta que tiene que existir
+ * mientras no haya autenticación ni un menú propio». Ya hay las dos cosas: la
+ * portada de reservas exige sesión, así que sabe quién mira, y el acceso está
+ * junto al título como en pedidos. La regla se quitó al quedarse sin usos.
+ */
 
 /* ── Pantalla de acceso ──────────────────────────────────────────────── */
 
@@ -544,6 +542,46 @@
   justify-content: space-between;
   gap: var(--e-4);
   flex-wrap: wrap;
+
+  /*
+   * La barra es una FRANJA, no la primera línea del contenido.
+   *
+   * Sin esto quedaba pegada a lo que viniera detrás, y como el enlace de
+   * vuelta es pequeño y gris igual que el sobretítulo de la sección, las dos
+   * líneas se leían como un solo bloque de cuatro renglones sueltos:
+   *
+   *     ← Todos los proveedores
+   *     PEDIDOS A PROVEEDORES
+   *     Historial
+   *     Todas las cafeterías
+   *
+   * La regla de abajo le quitaba al enlace su propio margen y nadie ponía
+   * otro en su lugar. El filo la cierra y el margen la separa, así que el
+   * título de la sección empieza donde se ve que empieza.
+   */
+  padding-bottom: var(--e-3);
+  margin-bottom: var(--e-5);
+  border-bottom: 1px solid var(--c-borde);
 }
 
 .barra-sesion .enlace-volver { margin-bottom: 0; }
+
+/*
+ * El segundo dato de una celda: el tipo bajo el nombre del proveedor, el
+ * identificador bajo el del módulo, «Tu cuenta» bajo el nombre propio.
+ *
+ * Clase aparte de `.tabla__nota` y no un uso más de aquella, aunque se
+ * parezcan. `.tabla__nota` es un párrafo DEBAJO de la tabla —«mostrando 50 de
+ * 812»— y por eso lleva un margen de doce píxeles y ya es de bloque. Esto va
+ * DENTRO de una celda: sin `display: block` un `<span>` se queda en la misma
+ * línea pegado al dato principal, que es exactamente lo que se veía.
+ */
+.tabla__detalle {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+  /* El nombre de arriba puede ir en negrita —`.tabla__nombre`—; esto no
+     hereda ese peso, porque es el dato menor de los dos. */
+  font-weight: var(--peso-normal);
+}

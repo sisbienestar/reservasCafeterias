@@ -1,24 +1,22 @@
 /**
  * La portada del módulo de reservas: las cafeterías del campus.
  *
- * Es pública. Y es también donde vive el acceso: quien pulsa una sede o
- * «Admin» sin sesión acaba aquí, con el modal delante y el destino guardado.
- * El acceso es de cada módulo, no de la aplicación; `ExigeSesion` sabe a qué
- * portada devolver porque cada ruta se lo dice.
+ * Exige sesión, igual que la de pedidos. Fue pública mientras
+ * `cafeterias.listar` lo era; al cerrarse las dos, el acceso se fue de aquí a
+ * la lista de módulos, que es la única pantalla que queda abierta.
  *
- * No hay ningún botón de «Entrar» suelto. La sesión se pide cuando hace
- * falta, no antes: un botón de entrar en una pantalla que no lo necesita solo
- * invita a hacer un trámite que puede no llegar a hacer falta.
+ * Por eso aquí ya no hay `ModalAcceso`: con sesión siempre, no hay nada que
+ * pedir. Quien pulsa la tarjeta de reservas sin haber entrado ve el acceso en
+ * la portada y aterriza aquí después.
  */
 
-import { useCallback, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { getCafeterias } from '../../servicios/cafeteriasServicio.js';
 import { usePeticion } from '../../utiles/usePeticion.js';
 import { TarjetaCafeteria } from '../../componentes/TarjetaCafeteria.js';
 import { BloqueEstado } from '../../componentes/BloqueEstado.js';
 import { BarraSesion } from '../../componentes/BarraSesion.js';
-import { ModalAcceso } from '../../componentes/ModalAcceso.js';
 import { Pie } from '../../componentes/Pie.js';
 import { useHoy, useSesion } from '../../contexto/Sesion.js';
 import { formatearFechaLarga } from '../../utiles/fechas.js';
@@ -26,39 +24,15 @@ import { formatearFechaLarga } from '../../utiles/fechas.js';
 export function Inicio() {
   const hoy = useHoy();
   const { contexto, salir } = useSesion();
-  const donde = useLocation();
-  const navegar = useNavigate();
 
   const consultar = useCallback(() => getCafeterias(), []);
   const { datos: cafeterias, cargando, error, recargar } = usePeticion(consultar, []);
 
-  /**
-   * A dónde iba quien acabó aquí sin sesión.
-   *
-   * Lo deja `ExigeSesion` al desviar. Si está, hay que pedir el acceso y
-   * llevar allí al entrar; si no, esto es una visita normal a la portada.
-   */
-  const destino = (donde.state as { pedirAcceso?: string } | null)?.pedirAcceso ?? null;
-  const [pidiendoAcceso, setPidiendoAcceso] = useState(Boolean(destino));
-
-  const alEntrar = useCallback(() => {
-    setPidiendoAcceso(false);
-    navegar(destino ?? '/reservas', { replace: true });
-  }, [destino, navegar]);
-
-  const alCerrar = useCallback(() => {
-    setPidiendoAcceso(false);
-    // Se limpia el destino del historial: si no, volver aquí con el botón de
-    // atrás reabriría el formulario que se acaba de cerrar.
-    navegar('/reservas', { replace: true });
-  }, [navegar]);
-
   return (
     <>
       <main className="contenedor pagina">
-        {/* Sin sesión la vuelta a los módulos es el logo de la cabecera, que
-            está en todas las pantallas. Con sesión hay barra, y ahí cabe
-            decirlo con palabras. */}
+        {/* Aquí siempre hay sesión, así que la barra siempre se pinta. El
+            `&&` se queda porque `perfil` es opcional en el tipo. */}
         {contexto?.perfil && (
           <BarraSesion
             perfil={contexto.perfil}
@@ -69,9 +43,26 @@ export function Inicio() {
 
         {/* La fecha ANTES del título, como en el original: es el sobretítulo
             que sitúa, no un dato al pie. */}
-        <section className="portada">
-          <p className="portada__fecha">{formatearFechaLarga(hoy)}</p>
-          <h1 className="portada__titulo">Reservas de almuerzos</h1>
+        {/*
+          Título a la izquierda y acción a la derecha, igual que en pedidos.
+          El enlace a administración estaba en el pie y se ofrecía a todo el
+          mundo, porque esta pantalla era pública y no se sabía quién miraba.
+          Ahora pide sesión, así que se sabe: se enseña solo a quien puede
+          usarlo, y donde se busca.
+        */}
+        <section className="encabezado-reserva">
+          <div>
+            <p className="portada__fecha">{formatearFechaLarga(hoy)}</p>
+            <h1 className="encabezado-reserva__titulo">Reservas de almuerzos</h1>
+          </div>
+
+          {contexto?.perfil?.rol === 'admin' && (
+            <div className="filtros__acciones">
+              <Link className="boton boton--secundario" to="/reservas/admin">
+                Administrar reservas
+              </Link>
+            </div>
+          )}
         </section>
 
         <section aria-labelledby="titulo-cafeterias">
@@ -124,9 +115,8 @@ export function Inicio() {
 
       {/* El enlace a administración va SIEMPRE, con sesión o sin ella: es la
           única puerta que hay, y esconderla la haría inalcanzable. */}
-      <Pie conEnlaceAdmin />
+      <Pie />
 
-      <ModalAcceso abierto={pidiendoAcceso} alCerrar={alCerrar} alEntrar={alEntrar} />
     </>
   );
 }

@@ -5,14 +5,13 @@
  * Sigue sin haber un botón de «Entrar» suelto: la sesión se pide al abrir lo
  * que la necesita.
  *
- * Y aquí vive el acceso de los módulos que son privados enteros. Pedidos lo
- * es: su portada ya exige sesión, así que no puede alojar su propio modal
- * —quien no ha entrado no llega a verla—. Reservas conserva el suyo porque su
- * portada sí es pública y es ahí donde hay que devolver a quien pulsó una
- * sede. Cada módulo pide el acceso en la última pantalla pública del camino.
+ * Y aquí vive el acceso, para los dos módulos. Las dos portadas de módulo
+ * exigen sesión, así que ninguna puede alojar su propio modal: quien no ha
+ * entrado no llega a verlas. Esta es la única pantalla abierta, y por eso es
+ * la única que puede pedir la contraseña.
  *
- * Aquí NO va el enlace a administración. Administración es de reservas, no de
- * la aplicación: su sitio es el pie del módulo, no este.
+ * La administración de cada módulo vive dentro de él; la de la APLICACIÓN
+ * cuelga de la barra de sesión de aquí arriba, y solo para `admin`.
  */
 
 import { useCallback, useState } from 'react';
@@ -62,9 +61,21 @@ export function Modulos() {
           />
         )}
 
-        <section className="portada">
+        <section className="portada portada--con-emblema">
+          {/*
+            Los cuatro van SUELTOS, sin envoltorios. Es una rejilla, y cada uno
+            se coloca por su nombre de zona: así el emblema puede abarcar el
+            título y la bajada en escritorio, y solo el título en un móvil, sin
+            cambiar el HTML. Con envoltorios haría falta una estructura para
+            cada anchura.
+          */}
           <p className="portada__fecha">{formatearFechaLarga(hoy)}</p>
           <h1 className="portada__titulo">{contexto?.aplicacion.nombre}</h1>
+
+          {/* Decorativo: el nombre que dice el logo ya está en el titular de al
+              lado, así que un texto alternativo lo repetiría. */}
+          <img className="portada__emblema" src="/assets/img/cafeteriasUIS.png" alt="" />
+
           <p className="portada__bajada">
             Herramienta interna del personal de las cafeterías de la Universidad
             Industrial de Santander.

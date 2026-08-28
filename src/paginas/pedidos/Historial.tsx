@@ -265,7 +265,7 @@ function Fila({ pedido, conSede }: { pedido: FichaPedido; conSede: boolean }) {
       <td className="tabla__fecha">{formatearFechaCorta(pedido.fechaElaboracion)}</td>
       <td className="tabla__nombre">
         {pedido.proveedorNombre}
-        <span className="tabla__nota">{QUE_ES[pedido.tipoDocumento]}</span>
+        <span className="tabla__detalle">{QUE_ES[pedido.tipoDocumento]}</span>
       </td>
       {conSede && <td className="tabla__menu">{pedido.cafeteriaNombre}</td>}
       <td className="tabla__numero">{pedido.renglones}</td>

@@ -3,8 +3,9 @@
  *
  * La aplicación se divide en MÓDULOS y cada uno cuelga de su propio prefijo:
  * reservas de `/reservas`, y el que venga del suyo. La portada es la lista de
- * módulos, y es PÚBLICA: enseña qué hay sin pedir nada. La sesión se pide al
- * entrar donde empiezan a verse nombres y móviles de personas.
+ * módulos, y es la ÚNICA pantalla pública: enseña qué hay sin pedir nada, y a
+ * partir de ahí hay que entrar. Los dos módulos piden lo mismo en el mismo
+ * sitio — pulsar su tarjeta abre el acceso.
  *
  * Antes eran tres archivos HTML sueltos, y la división la imponía el enlace
  * por el que se llegaba. Ahora la decide `rol`, y el servidor la vuelve a
@@ -83,8 +84,21 @@ export function App() {
 
         {/* ── Módulo: reservas de almuerzos ──────────────────────────── */}
 
-        {/* También pública: la lista de cafeterías no dice nada de nadie. */}
-        <Route path="/reservas" element={<ExigeModulo modulo="reservas"><Inicio /></ExigeModulo>} />
+        {/*
+          Exige sesión, igual que la portada de pedidos. Antes era pública —la
+          lista de cafeterías no dice nada de nadie— pero eso dejaba los dos
+          módulos pidiendo cosas distintas en el mismo sitio: uno entraba
+          directo y el otro no. Ahora la puerta es la misma para los dos, y
+          está en la lista de módulos.
+        */}
+        <Route
+          path="/reservas"
+          element={
+            <ExigeModulo modulo="reservas">
+              <ExigeSesion portada="/"><Inicio /></ExigeSesion>
+            </ExigeModulo>
+          }
+        />
 
         {/*
           `/reservas/admin` va ANTES por orden de lectura, pero no por eso
@@ -94,14 +108,14 @@ export function App() {
         */}
         <Route
           path="/reservas/admin"
-          element={<ExigeModulo modulo="reservas"><ExigeSesion rol="admin" portada="/reservas"><Admin /></ExigeSesion></ExigeModulo>}
+          element={<ExigeModulo modulo="reservas"><ExigeSesion rol="admin" portada="/"><Admin /></ExigeSesion></ExigeModulo>}
         />
 
         <Route
           path="/reservas/:cafeteriaId"
           element={
             <ExigeModulo modulo="reservas">
-              <ExigeSesion portada="/reservas">
+              <ExigeSesion portada="/">
                 <SoloSuSede><Reserva /></SoloSuSede>
               </ExigeSesion>
             </ExigeModulo>
@@ -110,13 +124,7 @@ export function App() {
 
         {/* ── Módulo: pedidos a proveedores ──────────────────────────── */}
 
-        {/*
-          Esta portada SÍ exige sesión, al revés que la de reservas. La
-          diferencia no es de gusto: `proveedores.listar` no está en
-          ACCIONES_PUBLICAS, así que sin sesión esta pantalla solo podría
-          enseñar un error. `portada="/"` porque el acceso de este módulo vive
-          en la lista de módulos — ver el comentario de `Modulos`.
-        */}
+        {/* Igual que la de reservas: sesión, y el acceso en la portada. */}
         <Route
           path="/pedidos"
           element={<ExigeModulo modulo="pedidos"><ExigeSesion portada="/"><PedidosInicio /></ExigeSesion></ExigeModulo>}

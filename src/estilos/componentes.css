@@ -18,6 +18,22 @@
   flex-shrink: 0;
 }
 
+/*
+ * Los dos logos son UNA marca, no dos cosas separadas.
+ *
+ * `.marca` reparte doce píxeles entre todos sus hijos, y con ese hueco el de
+ * Cafeterías se leía como un elemento aparte en vez de como la segunda mitad
+ * del emblema. El margen negativo los junta sin tocar la separación con el
+ * texto, que sí tiene que respirar.
+ */
+.marca__logo--cafeterias {
+  margin-left: calc(var(--e-3) * -0.5);
+  /* El archivo lleva el fondo blanco pintado dentro. Sobre el fondo casi
+     blanco de la cabecera casi no se nota, pero el recorte lo quita del todo
+     y deja el círculo limpio. */
+  border-radius: 50%;
+}
+
 .marca__texto {
   display: flex;
   flex-direction: column;
@@ -929,4 +945,43 @@ td.tabla__numero-reserva { padding-right: var(--e-3); }
 
 @media (max-width: 26rem) {
   .ticket { font-size: 0.72rem; }
+}
+
+/* ── Tarjeta compacta ────────────────────────────────────────────────── */
+
+/*
+ * La misma tarjeta, encogida. La llevan las listas que se recorren a diario:
+ * los nueve proveedores y las cinco cafeterías. A tamaño completo había que
+ * desplazar para verlas enteras, y en un mostrador eso es justo lo que no se
+ * quiere.
+ *
+ * Va en una clase aparte y no tocando `.tarjeta` porque las de MÓDULO se
+ * quedan grandes: son dos, caben de una vez, y son la portada de la
+ * aplicación — ahí el tamaño es la bienvenida, no un estorbo.
+ */
+
+/* 21:9 en vez de 16:9. Una franja, no un cuadro: lo que va dentro suele ser un
+   logotipo o unas iniciales, no una fotografía que necesite altura. */
+.tarjeta--compacta .tarjeta__medio { aspect-ratio: 21 / 9; }
+
+/* Las iniciales bajan con la banda; a 3.25rem tocaban los bordes. */
+.tarjeta--compacta .tarjeta__inicial { font-size: 2.25rem; }
+
+.tarjeta--compacta .tarjeta__cuerpo {
+  padding: var(--e-4);
+  gap: var(--e-1);
+}
+
+/* De --texto-xl a --texto-base. Un nombre de proveedor es una etiqueta para
+   reconocer y pulsar, no un titular. */
+.tarjeta--compacta .tarjeta__nombre {
+  font-size: var(--texto-base);
+  padding-right: var(--e-5);
+}
+
+/* La flecha se acerca a la esquina, que ahora está más cerca. */
+.tarjeta--compacta .tarjeta__flecha {
+  right: var(--e-4);
+  bottom: var(--e-4);
+  font-size: var(--texto-base);
 }

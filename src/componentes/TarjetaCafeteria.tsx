@@ -1,9 +1,9 @@
 /** Tarjeta de cafetería de la portada del módulo de reservas. */
 
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Cafeteria } from '../servicios/cafeteriasServicio.js';
 import { iniciales } from '../utiles/iniciales.js';
+import { MedioTarjeta } from './MedioTarjeta.js';
 
 /** Lo que en el nombre de una sede no la distingue de las demás. */
 const GENERICAS = /^(cafetería|cafeteria|comedor|autoservicio)$/i;
@@ -13,31 +13,12 @@ const GENERICAS = /^(cafetería|cafeteria|comedor|autoservicio)$/i;
  * ofrece, y así funciona con teclado y con clic medio sin escribir nada.
  */
 export function TarjetaCafeteria({ cafeteria }: { cafeteria: Cafeteria }) {
-  // Una ruta mal escrita o un archivo que falte dejarían el icono de imagen
-  // rota dentro de la tarjeta. Mejor volver a las iniciales.
-  const [fotoRota, setFotoRota] = useState(false);
-  const hayFoto = Boolean(cafeteria.imagen) && !fotoRota;
-
   return (
-    <Link className="tarjeta" to={`/reservas/${cafeteria.id}`}>
-      <div className="tarjeta__medio">
-        {hayFoto ? (
-          <img
-            className="tarjeta__imagen"
-            src={cafeteria.imagen}
-            /* alt vacío a propósito: la foto es decorativa y el nombre de la
-               cafetería va justo debajo. Describirla aquí obligaría a un
-               lector de pantalla a oír dos veces lo mismo. */
-            alt=""
-            loading="lazy"
-            onError={() => setFotoRota(true)}
-          />
-        ) : (
-          <span className="tarjeta__inicial" aria-hidden="true">
-            {iniciales(cafeteria.nombre, GENERICAS)}
-          </span>
-        )}
-      </div>
+    <Link className="tarjeta tarjeta--compacta" to={`/reservas/${cafeteria.id}`}>
+      <MedioTarjeta
+        imagen={cafeteria.imagen}
+        iniciales={iniciales(cafeteria.nombre, GENERICAS)}
+      />
 
       <div className="tarjeta__cuerpo">
         <p className="tarjeta__ubicacion">{cafeteria.ubicacion}</p>

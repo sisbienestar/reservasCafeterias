@@ -31,13 +31,15 @@ export interface Asiento {
  * sirve, y cambiarlos dejaría un módulo que la aplicación no sabe servir.
  */
 export async function actualizarModulo(modulo: {
-  id: string; nombre: string; etiqueta: string; inicial: string; activo: boolean;
+  id: string; nombre: string; etiqueta: string; inicial: string;
+  imagen?: string; activo: boolean;
 }): Promise<Modulo> {
   return pedir<Modulo>('modulos.actualizar', {
     id: modulo.id,
     nombre: modulo.nombre,
     etiqueta: modulo.etiqueta,
     inicial: modulo.inicial,
+    imagen: modulo.imagen ?? '',
     activo: modulo.activo,
   });
 }

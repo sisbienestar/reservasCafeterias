@@ -131,25 +131,20 @@ export function tokenDe(autorizacion: string | undefined | null): string {
  *
  * Son dos y ninguna toca datos de nadie:
  *
- *  · `cafeterias.listar` — la portada enseña las sedes del campus antes de
- *    entrar, que es lo que hace que la aplicación tenga una puerta y no un
- *    muro. Sin sesión devuelve solo las ACTIVAS: `incluir_inactivas` se
- *    ignora, porque una sede archivada es información de administración.
  *  · `app.contexto` — la fecha de trabajo y el interruptor de fin de semana.
  *    Sin sesión el `perfil` viene en `null`, y eso es justo lo que le dice a
  *    la pantalla que hay que ofrecer el acceso.
  *
- * Nada más entra aquí sin pensarlo dos veces. Todo lo demás toca reservas, y
- * una reserva lleva el nombre y el móvil de una persona.
+ * Es UNA, y nada más entra aquí sin pensarlo dos veces.
  *
- * `proveedores.listar` se pensó dos veces y se quedó FUERA, aunque su pantalla
- * sea la portada de su módulo igual que la de cafeterías lo es del suyo. La
- * diferencia: las sedes del campus están en la señalización de la Universidad,
- * y a quién le compra Bienestar no. Sacarlo del muro no habría enseñado
- * nombres de personas, pero sí la lista de proveedores de la Universidad a
- * cualquiera con la URL, y eso no hay ninguna pantalla que lo necesite.
+ * `cafeterias.listar` estuvo aquí mientras `/reservas` era pública. Salió al
+ * dejar de serlo: ninguna pantalla sin sesión la necesita ya, y una acción
+ * pública que nadie usa es una puerta abierta sin nadie que entre por ella.
+ *
+ * Con esto los dos módulos piden lo mismo: la puerta de la aplicación es la
+ * lista de módulos, y a partir de ahí hay que entrar.
  */
-export const ACCIONES_PUBLICAS = new Set(['cafeterias.listar', 'app.contexto']);
+export const ACCIONES_PUBLICAS = new Set(['app.contexto']);
 
 /**
  * Como `identificar`, pero devuelve `null` en vez de fallar.

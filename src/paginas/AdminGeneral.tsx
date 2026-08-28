@@ -320,7 +320,7 @@ function SeccionUsuarios({ pedirConfirmacion, yoSoy }: {
                     <td className="tabla__nombre">{usuario.correo}</td>
                     <td className="tabla__nombre">
                       {usuario.nombre}
-                      {soyYo && <span className="tabla__nota">Tu cuenta</span>}
+                      {soyYo && <span className="tabla__detalle">Tu cuenta</span>}
                     </td>
                     <td>
                       <span className="marca-estado marca-estado--activa">
@@ -368,6 +368,23 @@ function SeccionModulos({ alCambiar }: { alCambiar: () => Promise<void> }) {
 
   const modulos = contexto?.modulos ?? [];
 
+  /**
+   * Guarda la ruta al salir del campo, no en cada tecla.
+   *
+   * Un `onChange` por pulsación mandaría una petición por letra. Al salir del
+   * campo es cuando se sabe que quien escribía terminó.
+   */
+  async function guardarImagen(modulo: typeof modulos[number], imagen: string) {
+    setAviso(null);
+    try {
+      await actualizarModulo({ ...modulo, imagen });
+      await alCambiar();
+      setAviso({ tipo: 'exito', mensaje: `Imagen de «${modulo.nombre}» guardada.` });
+    } catch (fallo) {
+      setAviso({ tipo: 'error', mensaje: (fallo as Error).message });
+    }
+  }
+
   async function cambiar(modulo: typeof modulos[number], activo: boolean) {
     setTrabajando(modulo.id);
     setAviso(null);
@@ -403,6 +420,7 @@ function SeccionModulos({ alCambiar }: { alCambiar: () => Promise<void> }) {
             <tr>
               <th scope="col">Módulo</th>
               <th scope="col">Ruta</th>
+              <th scope="col">Imagen</th>
               <th scope="col">Estado</th>
               <th className="tabla__acciones" scope="col">
                 <span className="visualmente-oculto">Acciones</span>
@@ -414,9 +432,26 @@ function SeccionModulos({ alCambiar }: { alCambiar: () => Promise<void> }) {
               <tr key={modulo.id} className={modulo.activo ? undefined : 'tabla__fila--apagada'}>
                 <td className="tabla__nombre">
                   {modulo.nombre}
-                  <span className="tabla__nota">{modulo.id}</span>
+                  <span className="tabla__detalle">{modulo.id}</span>
                 </td>
                 <td className="tabla__menu">{modulo.ruta || '—'}</td>
+                {/* Solo el nombre del archivo; la carpeta la pone la
+                    aplicación. Se edita aquí mismo: es un dato de una línea y
+                    abrir un formulario aparte para él sobraba. */}
+                <td>
+                  <input
+                    className="campo__control cantidad"
+                    style={{ width: '190px', textAlign: 'left' }}
+                    defaultValue={modulo.imagen}
+                    placeholder="pedidos.jpeg"
+                    aria-label={`Imagen de ${modulo.nombre}`}
+                    onBlur={(e) => {
+                      if (e.target.value !== modulo.imagen) {
+                        void guardarImagen(modulo, e.target.value);
+                      }
+                    }}
+                  />
+                </td>
                 <td>
                   <span className={`marca-estado marca-estado--${modulo.activo ? 'activa' : 'cancelada'}`}>
                     {modulo.activo ? 'En servicio' : 'Fuera de servicio'}

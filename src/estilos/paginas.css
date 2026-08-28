@@ -65,6 +65,74 @@
   padding-block: var(--e-6) var(--e-8);
 }
 
+/* Detrás de la barra de sesión no hace falta el aire de arriba: ya lo pone el
+   margen de la franja. Sumados dejaban la fecha flotando a media pantalla. */
+.barra-sesion + .portada { padding-top: 0; }
+
+/*
+ * La portada de módulos: el emblema de Cafeterías UIS frente al titular.
+ *
+ * REJILLA y no `flex`, y esa es la decisión que resuelve el problema. Con
+ * `flex` el emblema solo podía ponerse al lado de UN hermano, así que o se
+ * alineaba con el título y la bajada caía debajo de los dos, o había que
+ * meter título y bajada en un envoltorio —y entonces la fecha entraba en el
+ * bloque alineado y el logo quedaba centrado también contra ella, que es
+ * justo lo que se veía torcido—.
+ *
+ * Con zonas, cada elemento va suelto y el emblema abarca las filas que haga
+ * falta en cada anchura, sin tocar el HTML:
+ *
+ *      escritorio                 móvil
+ *   ┌──────────────────┐     ┌──────────────────┐
+ *   │ fecha            │     │ fecha            │
+ *   ├───────────┬──────┤     ├──────────┬───────┤
+ *   │ título    │      │     │ título   │ logo  │
+ *   ├───────────┤ logo │     ├──────────┴───────┤
+ *   │ bajada    │      │     │ bajada           │
+ *   └───────────┴──────┘     └──────────────────┘
+ */
+.portada--con-emblema {
+  display: grid;
+  /* `minmax(0, 1fr)` y no `1fr` a secas: sin el mínimo en cero, un título
+     largo sin espacios no dejaría encoger la columna y empujaría al emblema
+     fuera del contenedor. */
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'fecha  fecha'
+    'titulo emblema'
+    'bajada emblema';
+  column-gap: var(--e-5);
+  row-gap: var(--e-3);
+  align-items: center;
+}
+
+.portada--con-emblema .portada__fecha { grid-area: fecha; }
+.portada--con-emblema .portada__titulo { grid-area: titulo; }
+.portada--con-emblema .portada__bajada { grid-area: bajada; }
+
+/* Los márgenes de fecha y título los pone ahora el `row-gap`. Sumados
+   dejarían el doble de aire entre renglones. */
+.portada--con-emblema .portada__fecha,
+.portada--con-emblema .portada__titulo { margin-bottom: 0; }
+
+/*
+ * 88px, que es más o menos lo que miden el título y la bajada juntos. El
+ * tamaño importa porque el emblema no fija la altura de nada: son las filas
+ * de texto las que la fijan, y un logo mucho mayor solo dejaría hueco vacío
+ * arriba y abajo dentro de su zona.
+ *
+ * `border-radius` recorta las esquinas: el archivo lleva el fondo blanco
+ * pintado dentro —es un PNG de paleta, sin transparencia— y sobre el gris de
+ * la página se veía el cuadrado. Como el dibujo ya es un círculo centrado, el
+ * recorte solo se lleva las esquinas que sobran.
+ */
+.portada__emblema {
+  grid-area: emblema;
+  width: 88px;
+  height: auto;
+  border-radius: 50%;
+}
+
 .portada__fecha {
   font-size: var(--texto-sm);
   color: var(--c-acento);
@@ -144,6 +212,20 @@
   .portada { padding-block: var(--e-4) var(--e-6); }
 
   .marca__institucion { display: none; }
+
+  /*
+   * En móvil el emblema se queda SOLO frente al título y la bajada pasa a
+   * ocupar las dos columnas. Con la pantalla estrecha, un párrafo de tres
+   * líneas al lado del logo dejaría el texto en una columna de dedo y medio.
+   */
+  .portada--con-emblema {
+    grid-template-areas:
+      'fecha  fecha'
+      'titulo emblema'
+      'bajada bajada';
+  }
+
+  .portada__emblema { width: 64px; }
 
   /* En móvil la versión baja a su propia línea, debajo de la marca, y pasa a
      una sola: al lado del logo apretaba el nombre del sistema hasta romper la

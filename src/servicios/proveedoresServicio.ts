@@ -17,6 +17,8 @@ export interface Proveedor {
   tipoDocumento: TipoDocumento;
   /** La casilla marcable del FBE.04. Vacía en los FBE.34, que no la tienen. */
   categoriaFija: string;
+  /** Ruta dentro de public/. Vacía = la tarjeta usa las iniciales. */
+  imagen: string;
   activo: boolean;
 }
 
@@ -39,7 +41,7 @@ export interface ProveedorConCatalogo extends Proveedor {
 
 interface FilaProveedor {
   id: string; nombre: string; tipo_documento?: string;
-  categoria_fija?: string; activo?: boolean;
+  categoria_fija?: string; imagen?: string; activo?: boolean;
 }
 
 interface FilaProducto {
@@ -57,6 +59,7 @@ function normalizar(fila: FilaProveedor): Proveedor {
     // vez de pedirle al almacén casillas que no le corresponden.
     tipoDocumento: fila.tipo_documento === 'FBE.04' ? 'FBE.04' : 'FBE.34',
     categoriaFija: fila.categoria_fija ?? '',
+    imagen: fila.imagen ?? '',
     // Una fila sin la columna todavía se da por activa.
     activo: fila.activo !== false,
   };
@@ -139,6 +142,8 @@ export interface DatosProveedor {
   tipoDocumento: TipoDocumento;
   /** Solo en FBE.04. En un FBE.34 el servidor la rechaza. */
   categoriaFija?: string;
+  /** Ruta dentro de public/, como «assets/img/nutresa.png». */
+  imagen?: string;
 }
 
 /** Lo que se teclea por cada producto. El `orden` lo pone el servidor. */
@@ -153,6 +158,7 @@ const aParametros = (datos: DatosProveedor) => ({
   nombre: datos.nombre,
   tipo_documento: datos.tipoDocumento,
   categoria_fija: datos.categoriaFija ?? '',
+  imagen: datos.imagen ?? '',
 });
 
 /**
