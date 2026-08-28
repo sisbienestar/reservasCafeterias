@@ -82,12 +82,23 @@ export function ModalAcceso({ abierto, alCerrar, alEntrar }: Props) {
     }
   }
 
+  /*
+   * Aquí NO hay `onClose`, y es deliberado.
+   *
+   * El evento `close` se dispara siempre que el diálogo se cierra, también
+   * cuando lo cerramos nosotros al terminar de entrar. Y como cerrar navega a
+   * la portada, eso pisaba la navegación a la cafetería que acababa de
+   * hacerse: se entraba bien y se acababa en la portada igualmente, como si
+   * el acceso no hubiera servido de nada.
+   *
+   * Las tres salidas de verdad quedan cubiertas sin él: Escape por `cancel`,
+   * la × por su propio `onClick` y el fondo por el `onClick` del diálogo.
+   */
   return (
     <dialog
       className="modal modal--confirmacion"
       ref={dialogo}
       onCancel={(e) => { if (enviando) e.preventDefault(); else alCerrar(); }}
-      onClose={() => { if (!enviando) alCerrar(); }}
       onClick={(e) => { if (e.target === dialogo.current && !enviando) alCerrar(); }}
       aria-labelledby="titulo-acceso"
     >
