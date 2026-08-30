@@ -126,6 +126,15 @@ CREATE TABLE pedido (
    * Con nombre, y no con el que Postgres inventa: 07-flujo-pedidos.sql lo
    * reemplaza, y una restricción sin nombre no se puede soltar sin adivinar.
    */
+  /*
+   * OJO: estos NO son los estados de hoy.
+   *
+   * `16-unificar-estados.sql` los renombró a `creado`, `enviado`, `confirmado`
+   * y `anulado`, y partió `confirmado_en` en dos columnas. Aquí se deja lo que
+   * se ejecutó en su día: los archivos numerados son el registro de lo que
+   * pasó, y reescribirlos haría que la secuencia contara una historia que no
+   * ocurrió. Una instalación nueva los recorre en orden y acaba igual.
+   */
   estado              TEXT NOT NULL DEFAULT 'borrador'
                       CONSTRAINT pedido_estado_valido
                       CHECK (estado IN ('borrador', 'confirmado', 'anulado')),

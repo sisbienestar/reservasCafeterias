@@ -19,3 +19,6 @@ volcado.json.original
 # Ojo: esto no borra la URL del HISTORIAL. Sigue en los commits anteriores.
 # Lo que de verdad cierra esa puerta es archivar el despliegue en Apps Script.
 legado/
+
+# Capturas de pantalla del panel: se regeneran con `npm run capturas`.
+capturas/

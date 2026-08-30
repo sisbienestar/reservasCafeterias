@@ -198,7 +198,7 @@ no es cosmético:
 
 ---
 
-## 3. Las 43 acciones
+## 3. Las 45 acciones
 
 ### Sesión
 
@@ -212,8 +212,19 @@ un equipo con la hora mal puesta registrara el día equivocado sin avisar.
 `permitir_fin_de_semana` estaba duplicado en el frontend y en el backend y
 había que acordarse de apagar los dos; ahora solo existe el del servidor.
 
-`rol` es `"mostrador"` o `"admin"`. Es información para decidir **qué pintar**,
-nunca qué permitir: eso lo vuelve a comprobar el servidor en cada acción.
+`rol` es `"mostrador"`, `"auxiliar"` o `"admin"`. Es información para decidir
+**qué pintar**, nunca qué permitir: eso lo vuelve a comprobar el servidor en
+cada acción.
+
+El `mostrador` lleva SIEMPRE una sede y solo ve la suya; los otros dos van
+siempre SIN sede y las ven todas. Esa es la distinción con la que el código
+decide alcance —`cafeteria_id` nulo o no—, y no la lista de roles: así un rol
+nuevo sin sede no se queda fuera en silencio.
+
+`auxiliar` es «Auxiliar Administrativo Cafeterías». Vive solo en el módulo de
+pedidos: ve el historial de todas las sedes y ajusta las cantidades a lo que el
+proveedor va a entregar de verdad. No anula, no toca el catálogo y no entra al
+análisis.
 
 ### Cafeterías
 
@@ -277,8 +288,9 @@ cantidad pedida.
 | `pedidos.crear` | `proveedor_id`, `cafeteria_id`, `fecha_elaboracion`, `fecha_entrega?`, `hora_entrega?`, `lugar_entrega?`, `lineas[]` | `Pedido` con sus `lineas[]` |
 | `pedidos.obtener` | `id` | `Pedido` con sus `lineas[]` |
 | `pedidos.buscar` | `desde`, `hasta`, `proveedor_id?`, `cafeteria_id?`, `estado?`, `limite?` | `{total, pedidos[]}` — la FICHA de cada uno, sin sus líneas |
-| `pedidos.actualizar` | `id`, `fecha_entrega?`, `hora_entrega?`, `lugar_entrega?`, `lineas[]` | `Pedido` — solo si es `borrador` |
-| `pedidos.confirmar` | `id` | `Pedido` en `confirmado`, y avisa a administración |
+| `pedidos.actualizar` | `id`, `fecha_entrega?`, `hora_entrega?`, `lugar_entrega?`, `lineas[]` | `Pedido` — según la matriz de abajo |
+| `pedidos.enviar` | `id` | `Pedido` en `enviado`, y avisa a administración |
+| `pedidos.confirmar` | `id` | `Pedido` en `confirmado`. Lo cierra, y NO manda correo |
 | `pedidos.anular` | `id` | `Pedido` en `anulado` |
 
 ### El panel del módulo · solo `admin`
@@ -347,24 +359,67 @@ regla de `sedePermitida` que ya usan las reservas.
 #### El ciclo de un pedido
 
 ```
-borrador ──confirmar──► confirmado ──► administración imprime y firma
-   │  ▲                     │
-   │  └── actualizar        └── anular (solo admin)
-   └── anular
+creado ──enviar──► enviado ──confirmar──► confirmado
+   │                   │                        │
+   └──anular──► anulado ◄───┴────────────────────┘
 ```
 
-Un pedido nace **`borrador`**: quien lo elabora lo revisa como documento y lo
-corrige antes de que exista para nadie más. `pedidos.actualizar` **solo acepta
-borradores**, y no recibe `proveedor_id` ni `cafeteria_id` —cambiar el proveedor
-invalidaría todos los renglones—.
+Un pedido nace **`creado`**: quien lo elabora lo revisa como documento y lo
+corrige antes de que exista para nadie más. `pedidos.actualizar` no recibe
+`proveedor_id` ni `cafeteria_id` —cambiar el proveedor invalidaría todos los
+renglones—.
 
-Al confirmar deja de ser editable y se avisa a las cuentas con rol `admin`. **El
-aviso no puede tumbar la confirmación**: se manda después de cambiar el estado y
-sus fallos se registran sin deshacer nada.
+Al **enviar** se avisa a las cuentas con rol `admin`, que son quienes imprimen
+y firman. **El aviso no puede tumbar el envío**: se manda después de cambiar el
+estado y sus fallos se registran sin deshacer nada.
 
-No hay camino de vuelta: un confirmado no regresa a borrador, porque a esas
-alturas puede haber un papel impreso circulando. Se anula y se elabora otro. Un
-borrador lo anula quien lo hizo; uno confirmado, solo administración.
+**`confirmado`** es el pedido ya listo. Existe porque lo que se pide no
+siempre es lo que el proveedor puede traer: entre enviar y confirmar hay una
+ventana en la que el auxiliar administrativo cuadra las cantidades con lo que
+va a llegar de verdad, y `pedidos.confirmar` la cierra.
+
+**Pasar por ahí no implica que se haya cambiado nada.** Muchos pedidos llegan
+enteros y se confirman tal cual: la modificación es opcional y ocurre antes.
+
+No manda correo, al revés que enviar: lo hace quien ya estaba mirando el
+pedido.
+
+#### Quién edita qué
+
+| estado | `mostrador` | `auxiliar` | `admin` |
+|---|---|---|---|
+| `creado` | su sede | sí | sí |
+| `enviado` | no | sí | sí |
+| `confirmado` | no | no | sí |
+| `anulado` | no | no | no |
+
+Un **anulado no lo edita nadie**, ni administración: es un pedido que se decidió
+que no existe, y editarlo sería resucitarlo por la puerta de atrás.
+
+La matriz está escrita tres veces —`puede_editar_pedido` en SQL, `EDITORES` en
+`api/`, y los botones del documento— y la que manda es la primera. Las otras dos
+existen para dar un mensaje que explique por qué, y para no ofrecer un botón que
+va a fallar.
+
+No hay camino de vuelta: un enviado no regresa a creado y un confirmado no
+regresa a enviado, porque a esas alturas puede haber papel circulando con ese
+contenido. Se anula y se elabora otro. Uno recién creado lo anula quien lo hizo;
+en cuanto se envió, solo administración.
+
+#### El historial del pedido
+
+Cada creación, edición, envío, confirmación y anulación deja un asiento en
+`pedido_evento`, y `pedidos.obtener` los devuelve dentro del propio `Pedido`,
+en `eventos[]`, del más reciente al más antiguo. Van ahí y no en una acción
+aparte por la disciplina de un viaje por gesto: son unos pocos por pedido.
+
+Cada asiento copia el **nombre y el rol de quien lo hizo en ese momento**, igual
+que `producto_nombre` en las líneas: si mañana a alguien le cambian el rol, el
+historial tiene que seguir diciendo con qué sombrero hizo aquello.
+
+Los asientos de los pedidos que ya existían al crear la tabla llegan **sin
+autor**: la fecha estaba guardada y el autor no. Se dice así en la pantalla en
+vez de dejar el hueco en blanco.
 
 #### El resumen de `reservas.buscar`
 
@@ -419,7 +474,7 @@ datos que el resto del sistema da por imposibles.
 | No existe el proveedor / el pedido | `PROVEEDOR_NO_ENCONTRADO`, `PEDIDO_NO_ENCONTRADO` |
 | Pedido sin productos, producto ajeno al proveedor, sede cerrada o proveedor de baja | `PEDIDO_INVALIDO` |
 | En `pedidos.buscar`: `desde` posterior a `hasta`, o rango de más de un año | `RANGO_INVALIDO` |
-| Editar o confirmar un pedido que ya no es borrador | `PEDIDO_INVALIDO` |
+| Editar o confirmar un pedido en un estado que no lo permite | `PEDIDO_INVALIDO` |
 | Tocar un pedido de otra cafetería, o anular un confirmado sin ser `admin` | `NO_AUTORIZADO` |
 | El nombre de un proveedor nuevo ya existe | `PROVEEDOR_DUPLICADO` |
 | No existe el producto | `PRODUCTO_NO_ENCONTRADO` |

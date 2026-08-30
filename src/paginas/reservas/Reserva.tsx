@@ -37,7 +37,7 @@ import { ResumenDelDia } from '../../componentes/ResumenDelDia.js';
 import { TablaReservas } from '../../componentes/TablaReservas.js';
 import { ModalReserva, type DatosReserva } from '../../componentes/ModalReserva.js';
 import { ModalTicket } from '../../componentes/ModalTicket.js';
-import { BarraSesion } from '../../componentes/BarraSesion.js';
+import { BarraVolver } from '../../componentes/BarraVolver.js';
 import { Pie } from '../../componentes/Pie.js';
 
 interface Aviso {
@@ -239,19 +239,6 @@ export function Reserva() {
   return (
     <>
     <main className="contenedor pagina" id="contenido">
-      {/* El enlace de vuelta solo tiene sentido para quien puede elegir sede.
-          Al mostrador, con una sola, lo llevaría a una lista de un elemento. */}
-      {contexto?.perfil && (
-        <BarraSesion
-          perfil={contexto.perfil}
-          alSalir={salir}
-          sede={cafeteria?.nombre}
-          volver={contexto.perfil.rol === 'admin'
-            ? { a: '/reservas', texto: '← Todas las cafeterías' }
-            : undefined}
-        />
-      )}
-
       {/*
         El orden es ubicación, nombre y fecha, y el botón va DENTRO de esta
         sección. `.encabezado-reserva` es una fila: el texto a la izquierda y
@@ -260,9 +247,19 @@ export function Reserva() {
       */}
       <section className="encabezado-reserva">
         <div className="encabezado-reserva__texto">
-          <p className="encabezado-reserva__ubicacion">{cafeteria?.ubicacion}</p>
-          <h1 className="encabezado-reserva__titulo">{cafeteria?.nombre ?? '…'}</h1>
-          <p className="encabezado-reserva__meta">{hoy && formatearFechaLarga(hoy)}</p>
+          {/* El enlace de vuelta solo tiene sentido para quien puede elegir
+              sede. Al mostrador, con una sola, lo llevaría a una lista de un
+              elemento — pero la ubicación sí se le enseña igual. */}
+          <BarraVolver
+            volver={contexto?.perfil?.rol === 'admin'
+              ? { a: '/reservas', texto: '← Todas las cafeterías' }
+              : undefined}
+            contexto={cafeteria?.ubicacion}
+          />
+          <div className="encabezado-reserva__linea">
+            <h1 className="encabezado-reserva__titulo">{cafeteria?.nombre ?? '…'}</h1>
+            <p className="encabezado-reserva__meta">{hoy && formatearFechaLarga(hoy)}</p>
+          </div>
         </div>
         {diaHabil && (
           <button

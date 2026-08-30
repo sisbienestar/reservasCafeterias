@@ -18,7 +18,7 @@ import { useCallback, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { TarjetaModulo } from '../componentes/TarjetaModulo.js';
-import { BarraSesion } from '../componentes/BarraSesion.js';
+import { BarraVolver } from '../componentes/BarraVolver.js';
 import { ModalAcceso } from '../componentes/ModalAcceso.js';
 import { Pie } from '../componentes/Pie.js';
 import { useHoy, useSesion } from '../contexto/Sesion.js';
@@ -52,9 +52,7 @@ export function Modulos() {
         {/* Con sesión iniciada, la barra va también aquí: si no, la portada
             sería la única pantalla desde la que no se puede salir. */}
         {contexto?.perfil && (
-          <BarraSesion
-            perfil={contexto.perfil}
-            alSalir={salir}
+          <BarraVolver
             {...(contexto.perfil.rol === 'admin'
               ? { volver: { a: '/admin', texto: 'Administrar la aplicación' } }
               : {})}

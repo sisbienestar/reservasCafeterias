@@ -1,0 +1,985 @@
+[
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "COCA_COLA_AGOSTO.xlsx",
+  "hoja": "AGOSTO 19",
+  "bloque": "2",
+  "segun_encabezado": "2026-05-19",
+  "segun_nombre_hoja": "2026-08-19",
+  "se_usa": "2026-08-19"
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "COLOMBINA_FEBRERO.xlsx",
+  "hoja": "SALIDAS FEBRERO17 ",
+  "bloque": "0",
+  "segun_encabezado": "2026-02-24",
+  "segun_nombre_hoja": "2026-02-17",
+  "se_usa": "2026-02-17"
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+  "hoja": "SALIDAS RAPIFRITOS- FEB26",
+  "bloque": "0",
+  "segun_encabezado": "2026-02-25",
+  "segun_nombre_hoja": "2026-02-26",
+  "se_usa": "2026-02-26"
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+  "hoja": "SALIDAS RAPIFRITOS- FEB26",
+  "bloque": "1",
+  "segun_encabezado": "2026-02-25",
+  "segun_nombre_hoja": "2026-02-26",
+  "se_usa": "2026-02-26"
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+  "hoja": "SALIDAS RAPIFRITOS- FEB26",
+  "bloque": "2",
+  "segun_encabezado": "2026-02-25",
+  "segun_nombre_hoja": "2026-02-26",
+  "se_usa": "2026-02-26"
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+  "hoja": "SALIDAS RAPIFRITOS- MARZO 18",
+  "bloque": "1",
+  "segun_encabezado": "2026-03-19",
+  "segun_nombre_hoja": "2026-03-18",
+  "se_usa": "2026-03-18"
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+  "hoja": "SALIDAS RAPIFRITOS- MARZO 18",
+  "bloque": "2",
+  "segun_encabezado": "2026-03-19",
+  "segun_nombre_hoja": "2026-03-18",
+  "se_usa": "2026-03-18"
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+  "hoja": "SALIDAS RAPIFRITOS- MARZO 24",
+  "bloque": "2",
+  "segun_encabezado": "2026-03-20",
+  "segun_nombre_hoja": "2026-03-24",
+  "se_usa": "2026-03-24"
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+  "hoja": "SALIDAS RAPIFRITOS-MAYO 15",
+  "bloque": "0",
+  "segun_encabezado": "2026-05-19",
+  "segun_nombre_hoja": "2026-05-15",
+  "se_usa": "2026-05-15"
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO 11",
+  "bloque": "0",
+  "segun_encabezado": "2026-02-11",
+  "segun_nombre_hoja": "2026-03-11",
+  "se_usa": "2026-03-11"
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO 17",
+  "bloque": "0",
+  "segun_encabezado": "2026-02-17",
+  "segun_nombre_hoja": "2026-03-17",
+  "se_usa": "2026-03-17"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO 17",
+  "bloque": "1",
+  "producto": "AGUA BRISA PET 600 ML X 24",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "6"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO 17",
+  "bloque": "1",
+  "producto": "COCACOLA  PET 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "3"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO 17",
+  "bloque": "1",
+  "producto": "COCACOLA PET SIN AZUCAR 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO 17",
+  "bloque": "1",
+  "producto": "CUATRO PET 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO 17",
+  "bloque": "1",
+  "producto": "SPRITE PET 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO 24",
+  "bloque": "0",
+  "producto": "COCACOLA  PET 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "4"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO 24",
+  "bloque": "0",
+  "producto": "COCACOLA PET SIN AZUCAR 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO 24",
+  "bloque": "0",
+  "producto": "FUZE TEA  MANZANA - LIMONARIA  X 400 ML X  6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO 24",
+  "bloque": "0",
+  "producto": "FUZE TEA DURAZNO X 400 ML X  6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO 24",
+  "bloque": "0",
+  "producto": "FUZE TEA LIMON X 400 ML X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO 24",
+  "bloque": "0",
+  "producto": "JUGO DEL VALLE 500 MANGO  X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO 24",
+  "bloque": "0",
+  "producto": "JUGO DEL VALLE 500 MORA X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO 24",
+  "bloque": "0",
+  "producto": "POWER ADE x 500 ML AZUL X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO 24",
+  "bloque": "0",
+  "producto": "POWER ADE x 500 ML ROJO X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO25",
+  "bloque": "0",
+  "producto": "AGUA BRISA PET 600 ML X 24",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "6"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO25",
+  "bloque": "0",
+  "producto": "AGUA GAS BRISA LIMON 600 ML X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "3"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO25",
+  "bloque": "0",
+  "producto": "COCACOLA  PET 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "4"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO25",
+  "bloque": "0",
+  "producto": "COCACOLA PET SIN AZUCAR 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO25",
+  "bloque": "0",
+  "producto": "FUZE TEA  MANZANA - LIMONARIA  X 400 ML X  6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO25",
+  "bloque": "0",
+  "producto": "FUZE TEA DURAZNO X 400 ML X  6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO25",
+  "bloque": "0",
+  "producto": "FUZE TEA LIMON X 400 ML X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO25",
+  "bloque": "0",
+  "producto": "JUGO DEL VALLE 500 MANGO FRESA  X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- MARZO25",
+  "bloque": "0",
+  "producto": "JUGO DEL VALLE TETRA X 24 MANGO",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "0",
+  "producto": "AGUA BRISA PET 600 ML X 24",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "0",
+  "producto": "AGUA BRISA PET GAS 600 ML X 24",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "0",
+  "producto": "COCACOLA  PET 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "3"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "0",
+  "producto": "COCACOLA PET SIN AZUCAR 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "0",
+  "producto": "CUATRO PET 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "0",
+  "producto": "FUZE TEA  MANGO- MANZANILL  X 400 ML X  6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "0",
+  "producto": "FUZE TEA LIMON X 400 ML X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "0",
+  "producto": "JUGO DEL VALLE 500 MANGO FRESA  X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "0",
+  "producto": "JUGO DEL VALLE 500 MORA X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "0",
+  "producto": "JUGO DEL VALLE TETRA X 24 MANGO",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "0",
+  "producto": "JUGO DEL VALLE TETRA X 24 PIÑA MANDARINA",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "0",
+  "producto": "KOLA ROMAN  400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "1",
+  "producto": "AGUA BRISA PET 600 ML X 24",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "4"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "1",
+  "producto": "AGUA BRISA PET GAS 600 ML X 24",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "1",
+  "producto": "AGUA GAS BRISA LIMON 600 ML X 24",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "1",
+  "producto": "COCACOLA  PET 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "4"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "1",
+  "producto": "COCACOLA PET SIN AZUCAR 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "1",
+  "producto": "FUZE TEA  MANGO- MANZANILL  X 400 ML X  6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "1",
+  "producto": "FUZE TEA DURAZNO X 400 ML X  6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "1",
+  "producto": "FUZE TEA LIMON X 400 ML X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "1",
+  "producto": "JUGO DEL VALLE 500 MANGO PIÑA MANDARINA X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "1",
+  "producto": "POWER ADE x 500 ML AZUL X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 06",
+  "bloque": "1",
+  "producto": "POWER ADE x 500 ML ROJO X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "0",
+  "producto": "AGUA BRISA PET 600 ML X 24",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "0",
+  "segun_encabezado": "2026-04-28",
+  "segun_nombre_hoja": "2026-04-29",
+  "se_usa": "2026-04-29"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "0",
+  "producto": "AGUA BRISA PET GAS 600 ML X 24",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "0",
+  "producto": "AGUA GAS BRISA LIMON 600 ML X 24",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "3"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "0",
+  "producto": "COCACOLA  PET 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "4"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "0",
+  "producto": "COCACOLA PET SIN AZUCAR 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "0",
+  "producto": "FUZE TEA  MANGO- MANZANILL  X 400 ML X  6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "0",
+  "producto": "FUZE TEA  MANZANA - LIMONARIA  X 400 ML X  6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "0",
+  "producto": "FUZE TEA DURAZNO X 400 ML X  6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "0",
+  "producto": "FUZE TEA LIMON X 400 ML X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "0",
+  "producto": "JUGO DEL VALLE 500 MANGO  X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "0",
+  "producto": "JUGO DEL VALLE 500 MANGO FRESA  X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "0",
+  "producto": "JUGO DEL VALLE 500 MORA X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "0",
+  "producto": "POWER ADE x 500 ML AZUL X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "0",
+  "producto": "POWER ADE x 500 ML ROJO X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "1",
+  "producto": "AGUA BRISA PET 600 ML X 24",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "4"
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "1",
+  "segun_encabezado": "2026-04-28",
+  "segun_nombre_hoja": "2026-04-29",
+  "se_usa": "2026-04-29"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "1",
+  "producto": "AGUA BRISA PET GAS 600 ML X 24",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "1",
+  "producto": "AGUA GAS BRISA LIMON 600 ML X 24",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "3"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "1",
+  "producto": "COCACOLA  PET 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "4"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "1",
+  "producto": "COCACOLA PET SIN AZUCAR 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "1",
+  "producto": "FUZE TEA DURAZNO X 400 ML X  6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "1",
+  "producto": "FUZE TEA LIMON X 400 ML X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "1",
+  "producto": "JUGO DEL VALLE 500 MANGO  X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "1",
+  "producto": "JUGO DEL VALLE 500 MORA X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "3"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "1",
+  "producto": "POWER ADE x 500 ML AZUL X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "1",
+  "producto": "SPRITE PET 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "2",
+  "producto": "AGUA GAS BRISA LIMON 600 ML X 24",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "2",
+  "segun_encabezado": "2026-04-28",
+  "segun_nombre_hoja": "2026-04-29",
+  "se_usa": "2026-04-29"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "2",
+  "producto": "COCACOLA  PET 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "2",
+  "producto": "COCACOLA PET SIN AZUCAR 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "2",
+  "producto": "FUZE TEA  MANGO- MANZANILL  X 400 ML X  6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 29",
+  "bloque": "2",
+  "producto": "FUZE TEA LIMON X 400 ML X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 30",
+  "bloque": "0",
+  "producto": "AGUA BRISA PET 600 ML X 24",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 30",
+  "bloque": "0",
+  "segun_encabezado": "2026-04-29",
+  "segun_nombre_hoja": "2026-04-30",
+  "se_usa": "2026-04-30"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 30",
+  "bloque": "0",
+  "producto": "AGUA GAS BRISA LIMON 600 ML 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "3"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 30",
+  "bloque": "0",
+  "producto": "COCACOLA  PET 400 ML X 12",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "3"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 30",
+  "bloque": "0",
+  "producto": "FUZE TEA DURAZNO X 400 ML X  6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 30",
+  "bloque": "0",
+  "producto": "FUZE TEA LIMON X 400 ML X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 30",
+  "bloque": "0",
+  "producto": "JUGO DEL VALLE 500 MANGO  X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 30",
+  "bloque": "0",
+  "producto": "JUGO DEL VALLE 500 MORA X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "2"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 30",
+  "bloque": "0",
+  "producto": "POWER ADE x 500 ML AZUL X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "fila-corrida",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 30",
+  "bloque": "0",
+  "producto": "POWER ADE x 500 ML AZUL X 6",
+  "unidad_recuperada": "BANDEJA",
+  "cantidad_recuperada": "1"
+ },
+ {
+  "tipo": "producto-repetido-en-documento",
+  "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+  "hoja": "SALIDAS COCA COLA- ABRIL 30",
+  "bloque": "0",
+  "producto": "POWER ADE x 500 ML AZUL X 6",
+  "cantidades": [
+   1,
+   1
+  ]
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "FAMA_FEBRERO.xlsx",
+  "hoja": "SALIDAS FAMA-ABRIL28 BE,CT,A3",
+  "bloque": "0",
+  "segun_encabezado": "2026-05-05",
+  "segun_nombre_hoja": "2026-04-28",
+  "se_usa": "2026-04-28"
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "FAMA_FEBRERO.xlsx",
+  "hoja": "SALIDAS FAMA-ABRIL28 BE,CT,A3",
+  "bloque": "1",
+  "segun_encabezado": "2026-05-05",
+  "segun_nombre_hoja": "2026-04-28",
+  "se_usa": "2026-04-28"
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "_NEOFRUT_.xlsm",
+  "hoja": "NEOFRUT MARZO 3",
+  "bloque": "0",
+  "segun_encabezado": "2026-03-04",
+  "segun_nombre_hoja": "2026-03-03",
+  "se_usa": "2026-03-03"
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "_NEOFRUT_.xlsm",
+  "hoja": "NEOFRUT MAYO 7 11 (2)",
+  "bloque": "0",
+  "segun_encabezado": "2026-05-11",
+  "segun_nombre_hoja": "2026-05-07",
+  "se_usa": "2026-05-07"
+ },
+ {
+  "tipo": "fecha-discrepante",
+  "archivo": "_NEOFRUT_.xlsm",
+  "hoja": "NEOFRUT MAYO 7 11",
+  "bloque": "0",
+  "segun_encabezado": "2026-05-11",
+  "segun_nombre_hoja": "2026-05-07",
+  "se_usa": "2026-05-07"
+ },
+ {
+  "tipo": "documento-duplicado",
+  "descartado": "_NEOFRUT_.xlsm::NEOFRUT MARZO 16#0",
+  "se_queda": "_NEOFRUT_.xlsm::NEOFRUT MARZO 16 (2)#0",
+  "proveedor": "neofrut",
+  "sede": "administracion-3",
+  "fecha": "2026-03-16",
+  "lineas": 9
+ },
+ {
+  "tipo": "documento-duplicado",
+  "descartado": "_NEOFRUT_.xlsm::NEOFRUT MAYO 7 11#0",
+  "se_queda": "_NEOFRUT_.xlsm::NEOFRUT MAYO 7 11 (2)#0",
+  "proveedor": "neofrut",
+  "sede": "camilo-torres",
+  "fecha": "2026-05-07",
+  "lineas": 9
+ },
+ {
+  "tipo": "documento-duplicado",
+  "descartado": "_NEOFRUT_.xlsm::NEOFRUT MAYO 7 11#1",
+  "se_queda": "_NEOFRUT_.xlsm::NEOFRUT MAYO 7 11 (2)#1",
+  "proveedor": "neofrut",
+  "sede": "bienestar-universitario",
+  "fecha": "2026-05-07",
+  "lineas": 8
+ }
+]

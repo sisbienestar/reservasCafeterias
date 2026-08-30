@@ -21,7 +21,7 @@ import {
 } from '../servicios/usuariosServicio.js';
 import { getCafeterias } from '../servicios/cafeteriasServicio.js';
 import { usePeticion } from '../utiles/usePeticion.js';
-import { BarraSesion } from '../componentes/BarraSesion.js';
+import { BarraVolver } from '../componentes/BarraVolver.js';
 import { BloqueEstado } from '../componentes/BloqueEstado.js';
 import { ModalConfirmacion, type PeticionConfirmacion } from '../componentes/ModalConfirmacion.js';
 import { Pie } from '../componentes/Pie.js';
@@ -68,7 +68,7 @@ export function AdminGeneral() {
     <>
       <main className="contenedor pagina">
         {perfil && (
-          <BarraSesion perfil={perfil} alSalir={salir} volver={{ a: '/', texto: '← Módulos' }} />
+          <BarraVolver volver={{ a: '/', texto: '← Módulos' }} />
         )}
 
         <section className="encabezado-admin">
@@ -232,12 +232,13 @@ function SeccionUsuarios({ pedirConfirmacion, yoSoy }: {
             onChange={(e) => {
               const nuevo = e.target.value as Rol;
               setRol(nuevo);
-              // Administración ve todas las sedes, así que no se le asigna
-              // ninguna. Es la misma regla que el CHECK del esquema.
-              if (nuevo === 'admin') setSede('');
+              // Ni administración ni el auxiliar tienen sede: los dos trabajan
+              // con todas. Es la misma regla que el CHECK del esquema.
+              if (nuevo !== 'mostrador') setSede('');
             }}
           >
             <option value="mostrador">Mostrador</option>
+            <option value="auxiliar">Auxiliar administrativo</option>
             <option value="admin">Administración</option>
           </select>
         </div>

@@ -123,6 +123,38 @@ export function traducirError(error: ErrorPostgres): ErrorNegocio | null {
     return new ErrorNegocio('CAFETERIA_NO_ENCONTRADA', 'No existe esa cafetería.');
   }
 
+  /*
+   * LA BASE DE DATOS VA POR DETRÁS DEL CÓDIGO.
+   *
+   * `PGRST202` es lo que devuelve PostgREST cuando la función que se llama no
+   * existe CON ESA FIRMA. En la práctica solo pasa por un motivo: se desplegó
+   * código que manda un parámetro nuevo y todavía no se ha pegado el archivo
+   * de `supabase/` que se lo añade a la función.
+   *
+   * Sin esto sale como ERROR_INTERNO —«Ocurrió un error inesperado en el
+   * servidor»—, que es verdad y no sirve de nada: obliga a abrir el registro
+   * del servidor para descubrir que lo único que falta es una pegada. Ya costó
+   * un viaje de ida y vuelta el 30 de agosto de 2026, con `pedidos.confirmar`
+   * contra la firma vieja de `cambiar_estado_pedido`.
+   *
+   * El nombre de la función SÍ va en el mensaje. Normalmente no se cuentan
+   * detalles internos por la puerta, pero esto no se lo encuentra un extraño:
+   * hace falta sesión y permiso para llegar aquí, y sin ese nombre el mensaje
+   * vuelve a no decir qué archivo pegar.
+   *
+   * El CÓDIGO sigue siendo `ERROR_INTERNO` y no uno nuevo: `CodigoError` es
+   * parte del contrato que `pruebas/contrato.mjs` comprueba, y un despliegue a
+   * medias no es un error de negocio — es nuestro. Lo que faltaba no era un
+   * código, era un mensaje que dijera qué hacer.
+   */
+  if (codigo === 'PGRST202') {
+    const nombre = /function public\.(\w+)/.exec(error.message ?? '')?.[1];
+    return new ErrorNegocio('ERROR_INTERNO',
+      `La base de datos va por detrás del código: le falta ${nombre
+        ? `la versión nueva de «${nombre}»` : 'una función que el código ya usa'}. `
+      + 'Hay que ejecutar el archivo de supabase/ que todavía no se ha pegado.');
+  }
+
   return null;
 }
 

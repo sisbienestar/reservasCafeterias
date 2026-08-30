@@ -532,39 +532,39 @@
 
 .acceso__salida:hover { color: var(--c-acento); }
 
-/* ── Barra de sesión ─────────────────────────────────────────────────── */
+/* ── Renglón de contexto ────────────────────────────────────────────── */
 
-/* «Cerrar sesión» a la vista y no escondido en un menú: la pantalla vive en
-   un equipo compartido y salir tiene que costar un clic. */
-.barra-sesion {
+/*
+ * Un renglón, no una franja: de dónde vienes y dónde estás, en la misma línea.
+ *
+ * Tuvo filo y margen de franja mientras llevaba también la identidad y el
+ * botón de salir. Al mudarse eso a la cabecera se quedó un enlace de cinco
+ * palabras dentro de una franja con su raya y su aire, y justo debajo el
+ * sobretítulo de la sección diciendo casi lo mismo en otro renglón gris. Dos
+ * filas y dos separadores para situar una pantalla.
+ *
+ * Ahora comparten línea, y el filo que cierra el encabezado es el de
+ * `.encabezado-reserva`, una fila más abajo.
+ */
+.linea-contexto {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--e-4);
+  align-items: baseline;
   flex-wrap: wrap;
-
-  /*
-   * La barra es una FRANJA, no la primera línea del contenido.
-   *
-   * Sin esto quedaba pegada a lo que viniera detrás, y como el enlace de
-   * vuelta es pequeño y gris igual que el sobretítulo de la sección, las dos
-   * líneas se leían como un solo bloque de cuatro renglones sueltos:
-   *
-   *     ← Todos los proveedores
-   *     PEDIDOS A PROVEEDORES
-   *     Historial
-   *     Todas las cafeterías
-   *
-   * La regla de abajo le quitaba al enlace su propio margen y nadie ponía
-   * otro en su lugar. El filo la cierra y el margen la separa, así que el
-   * título de la sección empieza donde se ve que empieza.
-   */
-  padding-bottom: var(--e-3);
-  margin-bottom: var(--e-5);
-  border-bottom: 1px solid var(--c-borde);
+  gap: var(--e-2);
+  margin-bottom: var(--e-2);
 }
 
-.barra-sesion .enlace-volver { margin-bottom: 0; }
+.linea-contexto .enlace-volver { margin-bottom: 0; }
+
+/* El dato que sitúa —«Pedido n.º 9»— con el mismo aire que tenía de
+   sobretítulo: en versalitas y espaciado, para que no se confunda con el
+   enlace de al lado, que es texto normal con una flecha. */
+.linea-contexto__donde {
+  font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
 
 /*
  * El segundo dato de una celda: el tipo bajo el nombre del proveedor, el
@@ -585,3 +585,316 @@
      hereda ese peso, porque es el dato menor de los dos. */
   font-weight: var(--peso-normal);
 }
+
+/* ── Análisis de pedidos ──────────────────────────────────────────────────
+ *
+ * Todo lo de aquí abajo es de la sección de análisis del panel de pedidos.
+ * Reutiliza lo que ya existía —`.filtros`, `.tabla--admin`, `.indicador`,
+ * `.grafica*`, `.pestanas`, `.marca-estado`— y solo añade lo que no tenía
+ * nombre: la leyenda de varias series, la escala del mapa de calor, el
+ * centro del anillo y los controles que van dentro de la cabecera de un
+ * bloque.
+ */
+
+/* La pregunta que contesta cada vista. Va arriba del todo porque es lo que
+   convierte una tabla en una respuesta: sin ella hay que deducir para qué
+   sirve lo que se está mirando. */
+.analisis__pregunta {
+  margin: 0 0 var(--e-5);
+  font-size: var(--texto-base);
+  color: var(--c-texto-2);
+  border-left: 3px solid var(--c-acento);
+  padding-left: var(--e-4);
+}
+
+/* Cabecera de bloque: título a la izquierda, sus controles a la derecha. Se
+   parte en dos líneas antes de apretar el título. */
+.bloque-consolidado__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--e-3);
+}
+
+.bloque-consolidado__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--e-4);
+}
+
+/* Un campo dentro de una cabecera: etiqueta encima y control compacto, para
+   que no compita con los filtros de arriba. */
+.campo--enlinea {
+  flex-direction: column;
+  gap: var(--e-1);
+}
+
+.campo--enlinea .campo__etiqueta {
+  font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+}
+
+.campo__control--sm {
+  padding: var(--e-2) var(--e-3);
+  font-size: var(--texto-sm);
+  min-height: 34px;
+}
+
+.campo--casilla {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--e-2);
+}
+
+.campo--casilla .campo__etiqueta { margin: 0; }
+
+/* ── Leyenda ─────────────────────────────────────────────────────────────
+ *
+ * Obligatoria a partir de dos series: sin ella la identidad dependería solo
+ * del color, y hay tres tonos de la paleta que un ojo con daltonismo separa
+ * peor. El cuadrito lleva `aria-hidden`: lo que se lee es el texto. */
+.leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-3) var(--e-5);
+  margin: var(--e-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.leyenda__item {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+  font-size: var(--texto-sm);
+  color: var(--c-texto-2);
+}
+
+.leyenda__marca {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex: none;
+}
+
+/* ── Anillo ──────────────────────────────────────────────────────────── */
+
+/* El anillo no se estira a todo el ancho: un círculo de mil píxeles deja los
+   gajos tan abiertos que dejan de compararse. Se centra a tamaño fijo. */
+.grafica--anillo { display: flex; justify-content: center; }
+
+.grafica__lienzo--cuadrado { max-width: 260px; }
+
+.grafica__centro-valor {
+  font-size: 30px;
+  font-weight: var(--peso-fuerte);
+  fill: var(--c-texto);
+}
+
+.grafica__centro-rotulo {
+  font-size: 12px;
+  fill: var(--c-texto-3);
+}
+
+/* ── Escala del mapa de calor ────────────────────────────────────────────
+ *
+ * Sin ella el color es una intensidad sin unidad: se ve que una celda es más
+ * oscura que otra, pero no cuánto más. */
+.escala-calor {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+  margin-top: var(--e-3);
+  font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+}
+
+.escala-calor__paso {
+  width: 28px;
+  height: 12px;
+  border-radius: 2px;
+  border: 1px solid var(--c-borde);
+}
+
+.escala-calor__extremo { font-variant-numeric: tabular-nums; }
+
+/* ── Detalles de tabla ───────────────────────────────────────────────── */
+
+/* Un cero en una tabla cruzada es ruido: hay muchos y ninguno dice nada.
+   Se apaga para que las celdas con dato salten a la vista. */
+.tabla__cero { color: var(--c-texto-3); }
+
+/* La variación lleva su signo en el texto —«+12 %», «−4 %»— y el color solo
+   acompaña. Una flecha verde o roja sola no la lee todo el mundo. */
+.variacion { font-variant-numeric: tabular-nums; font-weight: var(--peso-medio); }
+.variacion--sube { color: var(--c-exito); }
+.variacion--baja { color: var(--c-aviso); }
+
+/* Tercer estado de la marca, para «Variable». No es un error —un producto que
+   varía no está mal— así que va en tono de aviso y no de peligro. */
+.marca-estado--aviso {
+  background: var(--c-aviso-suave);
+  color: var(--c-aviso);
+}
+
+@media (max-width: 48rem) {
+  /* En pantalla estrecha los controles del bloque se van debajo del título
+     en vez de dejarlo en una columna de dos palabras. */
+  .bloque-consolidado__acciones { width: 100%; }
+  .grafica__lienzo--cuadrado { max-width: 220px; }
+}
+
+/* ── Barra fija del análisis ──────────────────────────────────────────────
+ *
+ * Las cifras y las pestañas se quedan pegadas bajo la cabecera al bajar, y se
+ * encogen para devolverle alto a los datos. Van JUNTAS y no solo las cifras:
+ * si las pestañas se fueran por arriba, cambiar de vista obligaría a subir
+ * del todo, que es el desplazamiento que fijar la barra venía a ahorrar.
+ *
+ * `top` es el alto de `.cabecera`, que ya es sticky en 0; y el z-index queda
+ * por debajo del suyo (10) para pasar por detrás de ella, no por delante.
+ */
+.analisis__fijo {
+  position: sticky;
+  top: var(--alto-cabecera);
+  z-index: 5;
+  /* Opaco a propósito: por debajo pasa el contenido al desplazarse, y con
+     fondo translúcido se leerían las dos capas a la vez. */
+  background: var(--c-fondo);
+  padding-top: var(--e-4);
+  margin-bottom: var(--e-5);
+}
+
+/* El hueco inferior lo pone la barra, no las pestañas: un margen quedaría
+   fuera del fondo y dejaría pasar el contenido por esa franja. */
+.analisis__fijo .pestanas { margin-bottom: 0; }
+
+/* Un píxel invisible antes de la barra. Cuando sale por arriba de la
+   ventana, el observador enciende el modo compacto. */
+.analisis__centinela { height: 1px; margin-bottom: -1px; }
+
+/* ── Modo compacto ─────────────────────────────────────────────────────
+ *
+ * Encogen las tarjetas, no desaparecen: el número es lo que se sigue
+ * consultando mientras se lee una tabla larga. Lo que se va es el detalle,
+ * que es contexto de la primera lectura y ya se ha leído. */
+.analisis__fijo--compacta .rejilla-indicadores {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--e-3);
+  margin-bottom: var(--e-3);
+}
+
+.analisis__fijo--compacta .indicador {
+  padding: var(--e-2) var(--e-4);
+  box-shadow: none;
+}
+
+.analisis__fijo--compacta .indicador__rotulo { margin-bottom: 0; }
+.analisis__fijo--compacta .indicador__valor { font-size: var(--texto-lg); }
+.analisis__fijo--compacta .indicador__detalle { display: none; }
+
+/* La sombra solo aparece cuando la barra está despegada del principio: es lo
+   que dice que hay contenido pasando por debajo. */
+.analisis__fijo--compacta {
+  box-shadow: 0 6px 12px -8px rgb(0 0 0 / 0.18);
+}
+
+/* La transición va acotada a la barra del análisis, no a `.indicador` a
+   secas: esas clases las comparte el consolidado de reservas, donde nada las
+   cambia y una transición suelta solo sería una regla que no hace nada. */
+.analisis__fijo .rejilla-indicadores,
+.analisis__fijo .indicador,
+.analisis__fijo .indicador__valor {
+  transition: padding var(--transicion), font-size var(--transicion),
+              gap var(--transicion), margin var(--transicion);
+}
+
+/* Quien pide menos movimiento no ve el encogido animado; el resultado es el
+   mismo, llega de golpe. */
+@media (prefers-reduced-motion: reduce) {
+  .analisis__fijo .rejilla-indicadores,
+  .analisis__fijo .indicador,
+  .analisis__fijo .indicador__valor { transition: none; }
+}
+
+/* ── Rejilla de bloques ───────────────────────────────────────────────────
+ *
+ * Dos columnas cuando caben, una cuando no. `min(100%, 520px)` en el mínimo
+ * es lo que evita que en pantalla estrecha la pista pida 520 px y desborde.
+ *
+ * Todo lo que no sea un bloque —la pregunta de la vista, un aviso, el «no hay
+ * datos»— ocupa la fila entera: son texto que introduce a lo que viene y
+ * partirlo en columnas lo dejaría flotando al lado de una gráfica.
+ */
+/*
+ * El mínimo de columna son 760 px y NO 520, y la diferencia se nota mucho.
+ *
+ * Con 520, en una pantalla de 1800 px caben tres pistas de 573 px — y las
+ * tablas de estos bloques piden entre 520 y 900 px de ancho mínimo, así que
+ * casi todas acababan con su propia barra de desplazamiento horizontal
+ * dentro de una columna estrecha. Tres columnas que hay que arrastrar son
+ * peor que dos que se leen enteras. Con 760 salen dos pistas de 870 px, que
+ * es donde las tablas caben sin arrastrar.
+ */
+.analisis-rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 760px), 1fr));
+  gap: var(--e-5);
+  align-items: start;
+}
+
+.analisis-rejilla > * { grid-column: 1 / -1; }
+.analisis-rejilla > .bloque-consolidado { grid-column: auto; }
+.analisis-rejilla > .bloque-consolidado--completo { grid-column: 1 / -1; }
+
+/* El hueco lo pone la rejilla. El margen de `.bloque-consolidado` es para
+   cuando se apilan sueltos, como en el consolidado de reservas. */
+.analisis-rejilla > .bloque-consolidado { margin-bottom: 0; }
+
+/* ── El análisis pide más ancho que el resto ──────────────────────────────
+ *
+ * `--ancho-contenedor` son 1080 px y está bien para leer: una línea de texto
+ * más larga se sigue peor. Pero aquí no se lee, se compara — una tabla de
+ * producto × seis cafeterías o un mapa de calor de veinte semanas necesitan
+ * sitio, y a 1080 px lo que sobra son barras de desplazamiento horizontales
+ * dentro de cada tabla.
+ *
+ * Se redefine la variable en vez de pisar `max-width`: `.contenedor` ya la
+ * usa, así que el cambio entra por donde estaba previsto y sigue habiendo un
+ * solo sitio que decide el ancho.
+ */
+.contenedor--ancho { --ancho-contenedor: 1800px; }
+
+/* ── Tablas con desplazamiento propio ────────────────────────────────────
+ *
+ * Las tablas largas del análisis se recortan en alto en vez de estirar la
+ * página. Sin esto, «Sin pedir» son 172 filas y «Consistencia» 121: la vista
+ * mide varias pantallas, y al cambiar de pestaña la página se queda a media
+ * altura de un contenido que ya no existe — que es lo que se siente como que
+ * la pantalla se rompe.
+ *
+ * La cabecera se queda pegada arriba: una tabla con scroll propio en la que
+ * se pierden los títulos de columna es peor que una tabla larga.
+ */
+.tabla-envoltorio--alto {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.tabla-envoltorio--alto thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  /* Opaca: por debajo pasan las filas al desplazar. */
+  background: var(--c-superficie);
+  /* `border-bottom` en una celda sticky se despega al desplazar; la sombra
+     de un píxel hace de línea y sí acompaña. */
+  box-shadow: inset 0 -1px 0 var(--c-borde);
+}
+
+/* El globo de las gráficas tiene que pasar POR ENCIMA de la barra fija
+   (z-index 5): si no, al apuntar a la parte alta de una gráfica el dato
+   queda tapado justo por la barra que lo acompaña. */
+.grafica__globo { z-index: 6; }

@@ -14,7 +14,7 @@
 import { servicio, desempaquetar } from '../supabase.js';
 import { romper } from '../sobre.js';
 import { ES_FECHA, LIMITE_DETALLE, MAX_DIAS_RANGO, diasEntre } from '../dominio.js';
-import { sedePermitida, type Sesion } from '../sesion.js';
+import { sedePermitida, type Rol, type Sesion } from '../sesion.js';
 import { notificarPedido, type PedidoNotificable } from '../notificaciones.js';
 
 /** Lo que la pantalla manda por cada renglón con cantidad. */
@@ -27,6 +27,15 @@ interface LineaEntrante {
 
 /** Hasta dos decimales, como la columna. Más sería un redondeo silencioso. */
 const HORA = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+/**
+ * Los cuatro estados, en el orden en que le pasan a un pedido.
+ *
+ * El mismo CHECK que `pedido_estado_valido`. En una lista y no repetidos en
+ * cada sitio que los nombra, para que añadir el quinto —si algún día lo hay—
+ * no deje un filtro rechazándolo mientras el resto lo acepta.
+ */
+const ESTADOS = ['creado', 'enviado', 'confirmado', 'anulado'] as const;
 
 /**
  * Una cantidad del formulario.
@@ -220,9 +229,9 @@ export async function buscar(params: Record<string, unknown>, sesion: Sesion) {
 
   const estado = String(params.estado ?? '').trim();
   if (estado) {
-    if (!['borrador', 'confirmado', 'anulado'].includes(estado)) {
+    if (!(ESTADOS as readonly string[]).includes(estado)) {
       romper('DATOS_INCOMPLETOS',
-        '«estado» solo puede ser «borrador», «confirmado» o «anulado».');
+        `«estado» solo puede ser ${ESTADOS.map((e) => `«${e}»`).join(', ')}.`);
     }
     consulta = consulta.eq('estado', estado);
   }
@@ -366,7 +375,7 @@ function traducirDelSql(error: { message?: string }, proveedorNombre?: string): 
   }
   if (texto.includes('PEDIDO_NO_EDITABLE')) {
     romper('PEDIDO_INVALIDO',
-      'El pedido ya está confirmado y no se puede editar. Anúlalo y elabora otro.');
+      'El pedido ya se envió y no se puede editar. Anúlalo y elabora otro.');
   }
   if (texto.includes('TRANSICION_INVALIDA')) {
     romper('PEDIDO_INVALIDO', 'Ese pedido ya no está en un estado que permita hacer eso.');
@@ -379,7 +388,7 @@ function traducirDelSql(error: { message?: string }, proveedorNombre?: string): 
  *
  * Se consulta ANTES de cada cambio. Podría parecer redundante —las funciones
  * SQL ya comprueban el estado— pero el estado y el PERMISO son dos cosas: la
- * base sabe si un pedido es borrador, y no sabe si quien llama atiende esa
+ * base sabe en qué estado está un pedido, y no sabe si quien llama atiende esa
  * sede.
  */
 async function fichaDe(id: number) {
@@ -407,19 +416,62 @@ function idDe(params: Record<string, unknown>): number {
 /**
  * Solo se toca un pedido de la sede que se atiende.
  *
- * El mostrador, la suya. Administración, cualquiera: es quien imprime y firma,
- * y quien tiene que poder anular el pedido equivocado de una cafetería que
- * llamó por teléfono.
+ * El mostrador, la suya. Administración y el auxiliar, cualquiera: uno imprime
+ * y firma y tiene que poder anular el pedido equivocado de una cafetería que
+ * llamó por teléfono, y el otro habla con un proveedor que reparte en varias.
+ *
+ * Se pregunta por la sede y no por el rol: quien no tiene sede las ve todas.
  */
 function exigirSede(sesion: Sesion, cafeteriaId: string): void {
-  if (sesion.rol === 'admin') return;
+  if (sesion.cafeteriaId === null) return;
   if (sesion.cafeteriaId !== cafeteriaId) {
     romper('NO_AUTORIZADO', 'Ese pedido es de otra cafetería.');
   }
 }
 
 /**
- * Corrige un borrador: las cantidades y los datos de entrega.
+ * Quién puede editar un pedido, según en qué estado esté.
+ *
+ * ESTA TABLA ESTÁ DOS VECES: aquí y en `puede_editar_pedido` de
+ * `supabase/16-unificar-estados.sql`. No es un descuido — es la regla 4 de
+ * CLAUDE.md aplicada al revés de lo habitual: la que manda es la del servidor
+ * de base de datos, que es la última puerta, y esta de aquí está para poder
+ * dar un mensaje que explique POR QUÉ, en vez de un `PEDIDO_NO_EDITABLE`
+ * pelado. Si alguna vez hay que cambiarla, se cambian las dos.
+ *
+ *   estado       mostrador   auxiliar   admin
+ *   creado       su sede     sí         sí
+ *   enviado      NO          sí         sí
+ *   confirmado   NO          NO         sí
+ *   anulado      NO          NO         NO
+ */
+const EDITORES: Record<string, readonly Rol[]> = {
+  creado: ['mostrador', 'auxiliar', 'admin'],
+  enviado: ['auxiliar', 'admin'],
+  confirmado: ['admin'],
+  anulado: [],
+};
+
+/** El motivo, en la voz de quien lo está intentando. */
+function exigirEditable(estado: string, rol: Rol): void {
+  if (EDITORES[estado]?.includes(rol)) return;
+
+  if (estado === 'anulado') {
+    romper('PEDIDO_INVALIDO',
+      'Ese pedido está anulado y no se puede editar. Elabora uno nuevo.');
+  }
+  if (estado === 'confirmado') {
+    romper('PEDIDO_INVALIDO',
+      'Ese pedido ya está confirmado y quedó cerrado. Solo administración puede tocarlo.');
+  }
+  // Solo queda «enviado» visto por un mostrador.
+  romper('PEDIDO_INVALIDO',
+    'El pedido ya se envió a administración. Si el proveedor no puede traerlo '
+    + 'entero, modificarlo lo hace el auxiliar administrativo o administración.');
+}
+
+/**
+ * Corrige un pedido: las cantidades y los datos de entrega.
  *
  * NO recibe `proveedor_id` ni `cafeteria_id`, y no es un olvido: cambiar el
  * proveedor invalidaría todos los renglones de golpe, y cambiar la sede
@@ -431,11 +483,7 @@ export async function actualizar(params: Record<string, unknown>, sesion: Sesion
   const ficha = await fichaDe(id);
 
   exigirSede(sesion, ficha.cafeteria_id);
-
-  if (ficha.estado !== 'borrador') {
-    romper('PEDIDO_INVALIDO',
-      'El pedido ya está confirmado y no se puede editar. Anúlalo y elabora otro.');
-  }
+  exigirEditable(ficha.estado, sesion.rol);
 
   const esAlmacen = ficha.tipo_documento === 'FBE.04';
 
@@ -466,6 +514,11 @@ export async function actualizar(params: Record<string, unknown>, sesion: Sesion
     p_hora_entrega: horaEntrega,
     p_lugar_entrega: String(params.lugar_entrega ?? '').trim(),
     p_lineas: lineas,
+    // Para el asiento del historial. El rol va aparte del usuario porque la
+    // función lo necesita para su propia cerradura, y no debe fiarse de
+    // buscarlo ella: el que vale es el de ESTA sesión, ya validado.
+    p_actor: sesion.usuarioId,
+    p_rol: sesion.rol,
   });
 
   if (error) traducirDelSql(error);
@@ -473,11 +526,21 @@ export async function actualizar(params: Record<string, unknown>, sesion: Sesion
 }
 
 /**
- * Confirma un borrador y avisa a administración.
+ * Confirma un pedido enviado: queda cerrado y definitivo.
  *
- * El aviso va DESPUÉS del cambio de estado y no puede tumbarlo: ver
- * `notificaciones.ts`. Un pedido que no se puede confirmar porque el correo
- * falla dejaría a la cafetería sin poder trabajar por algo que no es suyo.
+ * Antes de esto, el pedido dice lo que se pidió; después, lo que va a llegar
+ * — y deja de tocarse, porque a partir de ahí es lo que se recibe contra el
+ * papel.
+ *
+ * OJO: pasar por aquí NO significa que se haya cambiado nada. Muchos pedidos
+ * llegan enteros y se confirman tal cual; la modificación es opcional y ocurre
+ * antes. Por eso el estado se llama por lo que ES —confirmado— y no por lo que
+ * quizá se hizo.
+ *
+ * NO avisa por correo, al revés que `enviar`. El aviso del envío existe para
+ * que administración sepa que hay algo que imprimir y firmar; esto lo hace
+ * precisamente quien ya estaba mirando el pedido, así que un segundo correo
+ * sería avisar a alguien de algo que acaba de hacer.
  */
 export async function confirmar(params: Record<string, unknown>, sesion: Sesion) {
   const id = idDe(params);
@@ -485,15 +548,47 @@ export async function confirmar(params: Record<string, unknown>, sesion: Sesion)
 
   exigirSede(sesion, ficha.cafeteria_id);
 
-  if (ficha.estado !== 'borrador') {
-    romper('PEDIDO_INVALIDO', ficha.estado === 'confirmado'
-      ? 'Ese pedido ya estaba confirmado.'
-      : 'Ese pedido está anulado.');
+  if (ficha.estado !== 'enviado') {
+    romper('PEDIDO_INVALIDO', ficha.estado === 'creado'
+      ? 'Ese pedido todavía no se ha enviado a administración.'
+      : ficha.estado === 'confirmado'
+        ? 'Ese pedido ya estaba confirmado.'
+        : 'Ese pedido está anulado.');
   }
 
   const { data, error } = await servicio().rpc('cambiar_estado_pedido', {
     p_id: id,
     p_nuevo: 'confirmado',
+    p_actor: sesion.usuarioId,
+  });
+
+  if (error) traducirDelSql(error);
+  return data;
+}
+
+/**
+ * Envía a administración un pedido recién creado, y avisa por correo.
+ *
+ * El aviso va DESPUÉS del cambio de estado y no puede tumbarlo: ver
+ * `notificaciones.ts`. Un pedido que no se puede enviar porque el correo falla
+ * dejaría a la cafetería sin poder trabajar por algo que no es suyo.
+ */
+export async function enviar(params: Record<string, unknown>, sesion: Sesion) {
+  const id = idDe(params);
+  const ficha = await fichaDe(id);
+
+  exigirSede(sesion, ficha.cafeteria_id);
+
+  if (ficha.estado !== 'creado') {
+    romper('PEDIDO_INVALIDO', ficha.estado === 'anulado'
+      ? 'Ese pedido está anulado.'
+      : 'Ese pedido ya se había enviado.');
+  }
+
+  const { data, error } = await servicio().rpc('cambiar_estado_pedido', {
+    p_id: id,
+    p_nuevo: 'enviado',
+    p_actor: sesion.usuarioId,
   });
 
   if (error) traducirDelSql(error);
@@ -505,10 +600,10 @@ export async function confirmar(params: Record<string, unknown>, sesion: Sesion)
 /**
  * Anula un pedido. Es el único camino de vuelta que hay.
  *
- * Un borrador lo anula quien lo elabora —se equivocó de proveedor y prefiere
- * empezar de nuevo—. Uno ya confirmado solo administración, porque a esas
- * alturas puede haber un papel impreso circulando y quien decide que ese papel
- * ya no vale es quien lo firma.
+ * Un pedido recién creado lo anula quien lo elabora: se equivocó de proveedor
+ * y prefiere empezar de nuevo. Uno ya enviado, solo administración, porque a
+ * esas alturas puede haber un papel impreso circulando y quien decide que ese
+ * papel ya no vale es quien lo firma.
  */
 export async function anular(params: Record<string, unknown>, sesion: Sesion) {
   const id = idDe(params);
@@ -519,14 +614,18 @@ export async function anular(params: Record<string, unknown>, sesion: Sesion) {
   if (ficha.estado === 'anulado') {
     romper('PEDIDO_INVALIDO', 'Ese pedido ya estaba anulado.');
   }
-  if (ficha.estado === 'confirmado' && sesion.rol !== 'admin') {
+  // Un pedido recién creado lo anula quien lo elabora. En cuanto se envió puede
+  // haber papel firmado circulando, y quien decide que ese papel ya no vale es
+  // quien lo firma.
+  if (ficha.estado !== 'creado' && sesion.rol !== 'admin') {
     romper('NO_AUTORIZADO',
-      'Un pedido confirmado solo lo puede anular administración.');
+      'Un pedido que ya se envió solo lo puede anular administración.');
   }
 
   const { data, error } = await servicio().rpc('cambiar_estado_pedido', {
     p_id: id,
     p_nuevo: 'anulado',
+    p_actor: sesion.usuarioId,
   });
 
   if (error) traducirDelSql(error);

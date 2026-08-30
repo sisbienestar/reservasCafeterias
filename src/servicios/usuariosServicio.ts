@@ -29,7 +29,7 @@ const normalizar = (f: FilaUsuario): Usuario => ({
   usuarioId: f.usuario_id,
   correo: f.correo ?? '',
   nombre: f.nombre ?? '',
-  rol: f.rol === 'admin' ? 'admin' : 'mostrador',
+  rol: f.rol === 'admin' ? 'admin' : f.rol === 'auxiliar' ? 'auxiliar' : 'mostrador',
   cafeteriaId: f.cafeteria_id ?? '',
   cafeteriaNombre: f.cafeteria_nombre ?? '',
 });

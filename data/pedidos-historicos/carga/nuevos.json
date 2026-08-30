@@ -1,0 +1,209 @@
+[
+ {
+  "proveedor": "rapifritos",
+  "nombre": "PAPA DE (POLLO CARNE Y MEDIO HUEVO)",
+  "unidad": "UNIDAD",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "rapifritos",
+  "nombre": "FLAUTA POLLO QUESO CHAMPIÑONES FRITA",
+  "unidad": "UNIDAD",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "rapifritos",
+  "nombre": "EMPANADA DE YUCA (CARNE Y POLLO)",
+  "unidad": "UNIDAD",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "rapifritos",
+  "nombre": "EMPANADA POLLO QUESO FRITA",
+  "unidad": "UNIDAD",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "rapifritos",
+  "nombre": "EMPANADA HAWAIANA FRITA",
+  "unidad": "UNIDAD",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "rapifritos",
+  "nombre": "EMPANADA MIXTA DE TRIGO",
+  "unidad": "UNIDAD",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "neofrut",
+  "nombre": "PULPA DE MARACUYA",
+  "unidad": "LIBRAS",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "neofrut",
+  "nombre": "PULPA DE LULO",
+  "unidad": "LIBRAS",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "neofrut",
+  "nombre": "PULPA DE MANGO",
+  "unidad": "LIBRAS",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "neofrut",
+  "nombre": "PULPA DE MORA",
+  "unidad": "LIBRAS",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "neofrut",
+  "nombre": "PULPA DE NARANJA",
+  "unidad": "LIBRAS",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "neofrut",
+  "nombre": "PULPA DE FRESA",
+  "unidad": "LIBRAS",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "neofrut",
+  "nombre": "PULPA DE LIMON",
+  "unidad": "LIBRAS",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "neofrut",
+  "nombre": "PULPA DE DURAZNO",
+  "unidad": "LIBRAS",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": [
+   "PULPA DURAZNO"
+  ]
+ },
+ {
+  "proveedor": "neofrut",
+  "nombre": "PULPA DE PIÑA",
+  "unidad": "LIBRAS",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "cocacola",
+  "nombre": "FUZE TEA NEGRO LIMON X 400 ML X 6",
+  "unidad": "BANDEJA",
+  "motivo": "el más parecido del catálogo se queda en 0.43: FUZE TEA  MANGO- MANZANILL  X 400 ML X  6",
+  "variantes": [
+   "FUZE TEA NEGRO - LIMON X 400 ML X 6"
+  ]
+ },
+ {
+  "proveedor": "cocacola",
+  "nombre": "COCACOLA ZERO 400 ML X 12",
+  "unidad": "BANDEJA",
+  "motivo": "Zero y Sin Azúcar son dos referencias distintas de Coca-Cola.",
+  "variantes": [
+   "COCACOLA ZERO PET 400 ML X 12"
+  ]
+ },
+ {
+  "proveedor": "cocacola",
+  "nombre": "AGUA GAS BRISA LIMON 600 ML X 6",
+  "unidad": "BANDEJA",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": [
+   "AGUA GAS BRISA LIMON 600 ML 6",
+   "AGUA GAS BRISA LIMON 600 ML X6"
+  ]
+ },
+ {
+  "proveedor": "cocacola",
+  "nombre": "AGUA GAS BRISA 600 ML 6",
+  "unidad": "BANDEJA",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "cocacola",
+  "nombre": "AGUA BRISA LIMA LIMON 600 ML X 6",
+  "unidad": "BANDEJA",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "cocacola",
+  "nombre": "AGUA BRISA LIMÓN 600 ML 6",
+  "unidad": "BANDEJA",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "vicky",
+  "nombre": "PLATANO VERDE KAHOY 60 g",
+  "unidad": "BOLSA",
+  "motivo": "El catálogo tiene «PLATANO SALADO» y «PLATANO AGRIDULCE»; verde no es ninguno de los dos.",
+  "variantes": []
+ },
+ {
+  "proveedor": "vicky",
+  "nombre": "PAPA CEBOLLITAS",
+  "unidad": "UNIDAD",
+  "motivo": "el más parecido del catálogo se queda en 0.33: PAPA MAYONESA",
+  "variantes": []
+ },
+ {
+  "proveedor": "cocacola",
+  "nombre": "JUGO DEL VALLE 188 MANGO FRESA X24",
+  "unidad": "BANDEJA",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": [
+   "JUGO DEL VALLE 188 ML MANGO FRESA X24"
+  ]
+ },
+ {
+  "proveedor": "cocacola",
+  "nombre": "JUGO DEL VALLE 188 ML MORA X24",
+  "unidad": "BANDEJA",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "cocacola",
+  "nombre": "JUGO DEL VALLE 500 ML MORA X24",
+  "unidad": "BANDEJA",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "cocacola",
+  "nombre": "AGUA BRISA LIMON -MANZANA 600 ML 6",
+  "unidad": "BANDEJA",
+  "motivo": "ningún producto del catálogo comparte números ni palabras",
+  "variantes": []
+ },
+ {
+  "proveedor": "cocacola",
+  "nombre": "POWER 500ML X6",
+  "unidad": "BANDEJA",
+  "motivo": "el más parecido del catálogo se queda en 0.50: POWER ADE x 500 ML AZUL X 6",
+  "variantes": []
+ }
+]

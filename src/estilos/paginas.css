@@ -22,32 +22,94 @@
   padding-block: var(--e-3);
 }
 
-/* La versión del prototipo, arriba a la derecha. Va alineada a la derecha y
-   no al centro: el logo y ella son las dos únicas cosas de la cabecera, y
-   `space-between` ya las separa sin necesidad de un margen inventado. */
-.cabecera__version {
+/* ── Quién ha entrado, en la cabecera ────────────────────────────────────
+ *
+ * Estaba en `.barra-sesion`, dentro de cada página. Subió aquí porque allí
+ * recibía la sede como propiedad de la pantalla y acababa enseñando la sede
+ * de lo que se estaba mirando como si fuera la de la persona. Ver el
+ * comentario de `Cabecera.tsx`.
+ */
+.cabecera__sesion {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1px;
+  align-items: center;
+  gap: var(--e-3);
   flex-shrink: 0;
-  line-height: 1.3;
-  text-align: right;
   margin-left: var(--e-4);
+  min-width: 0;
 }
 
-/* En --c-texto-2 y no en --c-texto-3: tiene que leerse a la primera para que
-   sirva de algo al reportar un fallo, pero sin competir con la marca. */
-.cabecera__version-nombre {
+.cabecera__quien {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  text-align: right;
+  /* Puede encogerse hasta cero antes que desbordar: es lo que permite que en
+     una pantalla estrecha siga cabiendo junto al botón. */
+  min-width: 0;
+}
+
+/* El nombre se recorta con puntos suspensivos si no cabe; el rol y la sede,
+   NO. Un nombre a medias sigue identificando a la persona —quien lo lee ya
+   sabe cómo se llama—, pero media sede no sirve de nada, y comprobar la sede
+   es justo para lo que se mira esto. */
+.cabecera__nombre {
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--c-texto);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/*
+ * La sede no se recorta, pero SÍ se parte en varias líneas.
+ *
+ * Esto ya hizo daño una vez en la barra de la que viene: «Mostrador ·
+ * Cafetería Administración 3» en una línea que no puede partirse hacía la
+ * franja más ancha que la pantalla, y con ella la página entera. El síntoma
+ * —todo corrido hacia un lado, con los títulos cortados— no apunta aquí en
+ * absoluto, así que conviene dejarlo dicho.
+ */
+.cabecera__rol {
   font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* ── La línea de la versión ──────────────────────────────────────────────
+ *
+ * Debajo de la cabecera y FUERA de ella: la cabecera va fija arriba, y esto
+ * no tiene por qué ocupar sitio en todas las pantallas mientras se lee. Se ve
+ * al principio, que es cuando se mira.
+ *
+ * SIN fondo y SIN filo, a propósito. Los tuvo un rato y era demasiado: un
+ * dato de dos palabras dentro de una banda gris con su raya pesa como una
+ * sección, y esto no es una sección — es una nota al margen. Alineada a la
+ * izquierda, que es donde empieza todo lo demás de la página.
+ *
+ * En --c-texto-2 el nombre y no en --c-texto-3: tiene que leerse a la primera
+ * para que sirva de algo al reportar un fallo, pero sin competir con la marca.
+ */
+.franja-version__interior {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: var(--e-2);
+  padding-block: var(--e-2);
+  font-size: var(--texto-xs);
+}
+
+.franja-version__nombre {
   font-weight: var(--peso-fuerte);
   color: var(--c-texto-2);
 }
 
-.cabecera__version-fecha {
-  font-size: var(--texto-xs);
-  color: var(--c-texto-3);
-}
+.franja-version__fecha { color: var(--c-texto-3); }
+
+/* El punto que las separa. Va en CSS y no en el JSX porque solo existe cuando
+   hay fecha, y así no hay que decidirlo dos veces. */
+.franja-version__fecha::before { content: '·'; margin-right: var(--e-1); }
 
 .pie {
   border-top: 1px solid var(--c-borde);
@@ -65,9 +127,9 @@
   padding-block: var(--e-6) var(--e-8);
 }
 
-/* Detrás de la barra de sesión no hace falta el aire de arriba: ya lo pone el
-   margen de la franja. Sumados dejaban la fecha flotando a media pantalla. */
-.barra-sesion + .portada { padding-top: 0; }
+/* Detrás del renglón de contexto no hace falta el aire de arriba: ya lo pone
+   su margen. Sumados dejaban la fecha flotando a media pantalla. */
+.linea-contexto + .portada { padding-top: 0; }
 
 /*
  * La portada de módulos: el emblema de Cafeterías UIS frente al titular.
@@ -173,18 +235,38 @@
   margin-bottom: var(--e-6);
 }
 
-.encabezado-reserva__ubicacion {
-  font-size: var(--texto-xs);
-  color: var(--c-texto-3);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  margin-bottom: var(--e-2);
-}
+/* Aquí vivía `.encabezado-reserva__ubicacion`, el sobretítulo. Ya no lo usa
+   ninguna pantalla: lo que situaba se mudó al renglón del enlace de vuelta,
+   con el que compartía sitio y tono. Ver `.linea-contexto` en admin.css. */
 
 .encabezado-reserva__titulo {
   font-size: var(--texto-2xl);
   margin-bottom: var(--e-3);
 }
+
+/*
+ * El título y su alcance en la MISMA línea.
+ *
+ * «Historial» y «Todas las cafeterías» ocupaban dos renglones para decir una
+ * cosa: qué pantalla es y sobre qué. Juntos se leen de un tirón y la página
+ * empieza cuarenta píxeles antes.
+ *
+ * `baseline` y no `center`: el alcance es texto pequeño junto a un titular
+ * grande, y centrarlos verticalmente lo dejaba flotando a media altura. Con
+ * `wrap`, en una ventana estrecha el alcance baja solo a su línea, que es
+ * exactamente el comportamiento de antes.
+ */
+.encabezado-reserva__linea {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--e-3);
+}
+
+/* Los márgenes de los dos los pone ahora el `gap` de la fila. Sumados
+   dejaban el doble de aire y devolvían el renglón que se quería quitar. */
+.encabezado-reserva__linea .encabezado-reserva__titulo,
+.encabezado-reserva__linea .encabezado-reserva__meta { margin-bottom: 0; }
 
 .encabezado-reserva__meta {
   font-size: var(--texto-sm);
@@ -195,6 +277,137 @@
 }
 
 .encabezado-reserva__meta .separador { color: var(--c-borde-fuerte); }
+
+/* ── Los tres pasos del pedido ───────────────────────────────────────────
+ *
+ * Los TRES siempre a la vista, con los ya dados en verde, y debajo solo la
+ * instrucción del paso en el que está. Sustituye a tres `.aviso` que decían
+ * en cuatro líneas lo que cabe aquí, y que empujaban el documento fuera de la
+ * pantalla en cada visita. La caja se reserva para lo que interrumpe —un
+ * error—; esto se consulta de un vistazo.
+ *
+ * No se reutilizó `.marca-estado`, que sí existe: aquella es una PÍLDORA para
+ * una celda de tabla, de ancho mínimo y para UN estado. Aquí hacen falta los
+ * tres a la vez y la secuencia entre ellos.
+ */
+/*
+ * FIJA al desplazar, justo debajo de la cabecera.
+ *
+ * El documento mide una página entera y los botones estaban solo arriba: para
+ * confirmar un pedido después de repasar los renglones había que subir otra
+ * vez. Ahora la barra acompaña, y de paso el estado se sigue viendo mientras
+ * se lee la tabla.
+ *
+ * Mismo patrón que `.analisis__fijo` en admin.css —`--alto-cabecera` es la
+ * altura de la cabecera, que también es fija— y con su misma razón para el
+ * fondo OPACO: por debajo pasa el documento al desplazarse, y con un fondo
+ * translúcido se leerían las dos capas a la vez.
+ *
+ * `z-index` por debajo del de la cabecera (10), para pasar por detrás de ella
+ * y no al revés.
+ */
+.pasos-pedido {
+  position: sticky;
+  top: var(--alto-cabecera);
+  z-index: 9;
+  background: var(--c-fondo);
+  padding-block: var(--e-3);
+  margin-bottom: var(--e-4);
+  border-bottom: 1px solid var(--c-borde);
+}
+
+/* Los pasos y su instrucción, como una sola caja frente a los botones. */
+.pasos-pedido__estado { min-width: 0; }
+
+/*
+ * Los pasos a la izquierda, los botones a la derecha.
+ *
+ * `space-between` con dos hijos, y `wrap` para que en una ventana estrecha los
+ * botones bajen enteros en vez de encogerse. Bajaron aquí desde el encabezado,
+ * donde competían por el ancho con el nombre del proveedor.
+ */
+.pasos-pedido__fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--e-3) var(--e-4);
+}
+
+.pasos-pedido__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--e-2) var(--e-4);
+  font-size: var(--texto-sm);
+}
+
+/*
+ * Cada paso, con su icono. El separador entre pasos es un `::after` y no un
+ * elemento: así no hay que decidir en el JSX cuál es el último, y al envolver
+ * en una ventana estrecha no queda una rayita huérfana al final de la línea.
+ */
+.pasos-pedido__paso {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+  color: var(--c-texto-3);
+}
+
+.pasos-pedido__paso:not(:last-child)::after {
+  content: '';
+  width: var(--e-5);
+  height: 1px;
+  margin-left: var(--e-2);
+  background: var(--c-borde-fuerte);
+}
+
+/* Alto fijo: sin él, el renglón daba un salto al cambiar de icono. */
+.pasos-pedido__icono {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  fill: none;
+  stroke: var(--c-borde-fuerte);
+}
+
+/* Los pasos DADOS, en verde: el círculo lleno y el visto en blanco encima. */
+.pasos-pedido__paso--dado { color: var(--c-texto); }
+
+.pasos-pedido__paso--dado .pasos-pedido__icono {
+  fill: var(--c-exito);
+  stroke: var(--c-superficie);
+}
+
+/* Y el actual, además, en negrita: entre tres verdes hay que poder decir en
+   cuál se está sin contar. El color solo no bastaría. */
+.pasos-pedido__paso--aqui .pasos-pedido__nombre {
+  font-weight: var(--peso-fuerte);
+}
+
+/* La instrucción del paso actual, debajo y alineada con el texto de arriba. */
+.pasos-pedido__que {
+  margin-top: var(--e-2);
+  font-size: var(--texto-sm);
+  color: var(--c-texto-2);
+}
+
+/* El anulado no está en la secuencia: un renglón suyo, todo en gris. */
+.pasos-pedido--anulado {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  flex-wrap: wrap;
+  font-size: var(--texto-sm);
+  color: var(--c-texto-3);
+}
+
+.pasos-pedido--anulado .pasos-pedido__icono { stroke: var(--c-texto-3); }
+.pasos-pedido--anulado .pasos-pedido__nombre { font-weight: var(--peso-fuerte); }
+.pasos-pedido--anulado .pasos-pedido__que { margin-top: 0; color: var(--c-texto-3); }
 
 /* El aviso ocupa el hueco entre el encabezado y la tabla solo cuando existe;
    `hidden` lo saca del flujo y no deja un salto en blanco. */
@@ -227,36 +440,28 @@
 
   .portada__emblema { width: 64px; }
 
-  /* En móvil la versión baja a su propia línea, debajo de la marca, y pasa a
-     una sola: al lado del logo apretaba el nombre del sistema hasta romper la
-     cabecera.
+  /* En móvil la identidad baja a su propia línea, debajo de la marca: al lado
+     del logo apretaba el nombre del sistema hasta romper la cabecera.
 
-     Y ahí va pegada a la izquierda, no a la derecha. A la derecha no se alinea
-     con nada —el nombre del sistema termina donde lo deja el salto de línea—,
-     y una línea suelta que no coincide con ningún borde se lee como un
-     descuadre. A la izquierda comparte margen con el logo y con todo lo que
-     viene debajo en la página. */
+     NO se esconde, que es lo que se hacía antes para ganar sitio. El móvil es
+     justo donde va a estar el mostrador, y esto existe para que nadie registre
+     una mañana entera con la sesión de otra sede: esconderlo ahí lo deja sin
+     ninguna utilidad. */
   .cabecera__interior {
     flex-wrap: wrap;
-    row-gap: var(--e-1);
+    row-gap: var(--e-2);
   }
 
-  .cabecera__version {
+  .cabecera__sesion {
     width: 100%;
-    flex-direction: row;
-    align-items: baseline;
-    justify-content: flex-start;
-    text-align: left;
-    gap: var(--e-2);
     margin-left: 0;
+    /* El nombre a la izquierda y el botón a la derecha: comparten margen con
+       el logo y con todo lo que viene debajo. Una línea suelta que no coincide
+       con ningún borde se lee como un descuadre. */
+    justify-content: space-between;
   }
 
-  /* El punto solo existe cuando las dos partes comparten línea. */
-  .cabecera__version-fecha::before {
-    content: '·';
-    margin-right: var(--e-2);
-    color: var(--c-borde-fuerte);
-  }
+  .cabecera__quien { text-align: left; }
 
   .encabezado-reserva {
     align-items: stretch;

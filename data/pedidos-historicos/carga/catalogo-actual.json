@@ -1,0 +1,1991 @@
+[
+ {
+  "id": 151,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 1,
+  "codigo": null,
+  "nombre": "AREPA SANTANDEREANA *5 unidades",
+  "categoria": null,
+  "unidad_medida": "PAQUETE"
+ },
+ {
+  "id": 150,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 2,
+  "codigo": null,
+  "nombre": "AJOS",
+  "categoria": null,
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 152,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 3,
+  "codigo": null,
+  "nombre": "AROMATICA DE HIERBAS ( ESCRIBA LOS SABORES)",
+  "categoria": null,
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 153,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 4,
+  "codigo": null,
+  "nombre": "AVENA EN HOJUELAS",
+  "categoria": null,
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 154,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 5,
+  "codigo": null,
+  "nombre": "AZUCAR SOBRE",
+  "categoria": null,
+  "unidad_medida": "SOBRE"
+ },
+ {
+  "id": 155,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 6,
+  "codigo": null,
+  "nombre": "AZUCAR SUELTA",
+  "categoria": null,
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 156,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 7,
+  "codigo": null,
+  "nombre": "CAFÉ PEPA",
+  "categoria": null,
+  "unidad_medida": "LIBRA"
+ },
+ {
+  "id": 157,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 8,
+  "codigo": null,
+  "nombre": "CANELA EN ASTILLAS",
+  "categoria": null,
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 158,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 9,
+  "codigo": null,
+  "nombre": "CANELA EN POLVO",
+  "categoria": null,
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 159,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 10,
+  "codigo": null,
+  "nombre": "CHOCOLATE DE LA ABUELA",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 160,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 11,
+  "codigo": null,
+  "nombre": "CHOCOLATE INSTANTANEO",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 161,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 12,
+  "codigo": null,
+  "nombre": "CLAVO",
+  "categoria": null,
+  "unidad_medida": "SOBRE"
+ },
+ {
+  "id": 162,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 13,
+  "codigo": null,
+  "nombre": "CREMA DE LECHE",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 163,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 14,
+  "codigo": null,
+  "nombre": "ESENCIA DE BANANO",
+  "categoria": null,
+  "unidad_medida": "BOTELLA"
+ },
+ {
+  "id": 164,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 15,
+  "codigo": null,
+  "nombre": "ESENCIA DE VAINILLA",
+  "categoria": null,
+  "unidad_medida": "BOTELLA"
+ },
+ {
+  "id": 165,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 16,
+  "codigo": null,
+  "nombre": "ESENCIA DE AREQUIPE",
+  "categoria": null,
+  "unidad_medida": "BOTELLA"
+ },
+ {
+  "id": 166,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 17,
+  "codigo": null,
+  "nombre": "GRANOLA",
+  "categoria": null,
+  "unidad_medida": "LIBRA"
+ },
+ {
+  "id": 167,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 18,
+  "codigo": null,
+  "nombre": "HARINA DE MAIZ PRECOCIDO (HARINA PAN)",
+  "categoria": null,
+  "unidad_medida": "LIBRA"
+ },
+ {
+  "id": 168,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 19,
+  "codigo": null,
+  "nombre": "HARINA DE PANDEBONO",
+  "categoria": null,
+  "unidad_medida": "LIBRA"
+ },
+ {
+  "id": 169,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 20,
+  "codigo": null,
+  "nombre": "HARINA DE PANDEYUCA",
+  "categoria": null,
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 170,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 21,
+  "codigo": null,
+  "nombre": "HARINA DE TRIGO",
+  "categoria": null,
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 171,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 22,
+  "codigo": null,
+  "nombre": "HUEVOS",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 172,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 23,
+  "codigo": null,
+  "nombre": "JAMON BLOQUE X 5 LIBRAS",
+  "categoria": null,
+  "unidad_medida": "BLOQUE"
+ },
+ {
+  "id": 173,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 24,
+  "codigo": null,
+  "nombre": "JAMON TAJADO",
+  "categoria": null,
+  "unidad_medida": "LIBRA"
+ },
+ {
+  "id": 174,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 25,
+  "codigo": null,
+  "nombre": "LECHE CONDENSADA",
+  "categoria": null,
+  "unidad_medida": "LATA"
+ },
+ {
+  "id": 175,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 26,
+  "codigo": null,
+  "nombre": "LECHE DESLACTOSADA",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 176,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 27,
+  "codigo": null,
+  "nombre": "LECHE ENTERA",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 177,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 28,
+  "codigo": null,
+  "nombre": "LECHE EN POLVO",
+  "categoria": null,
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 178,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 29,
+  "codigo": null,
+  "nombre": "MARGARINA DE MESA Y COCINA",
+  "categoria": null,
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 179,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 30,
+  "codigo": null,
+  "nombre": "MAYONESA",
+  "categoria": null,
+  "unidad_medida": "GALON"
+ },
+ {
+  "id": 180,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 31,
+  "codigo": null,
+  "nombre": "MIEL DE ABEJAS",
+  "categoria": null,
+  "unidad_medida": "BOTELLA"
+ },
+ {
+  "id": 181,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 32,
+  "codigo": null,
+  "nombre": "MOSTAZA",
+  "categoria": null,
+  "unidad_medida": "GALON"
+ },
+ {
+  "id": 182,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 33,
+  "codigo": null,
+  "nombre": "NESCAFE CAPUCCINO TRADICIONAL (ROJO)",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 183,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 34,
+  "codigo": null,
+  "nombre": "NESCAFE CAPUCCINO VAINILLA (AZUL)",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 184,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 35,
+  "codigo": null,
+  "nombre": "NESCAFE TRADICION",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 185,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 36,
+  "codigo": "PAN",
+  "nombre": "CASCARITA",
+  "categoria": null,
+  "unidad_medida": "UNIDADES"
+ },
+ {
+  "id": 186,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 37,
+  "codigo": null,
+  "nombre": "PANELA",
+  "categoria": null,
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 187,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 38,
+  "codigo": null,
+  "nombre": "PIMIENTA",
+  "categoria": null,
+  "unidad_medida": "LIBRA"
+ },
+ {
+  "id": 188,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 39,
+  "codigo": null,
+  "nombre": "POLVO DE HORNEAR",
+  "categoria": null,
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 189,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 40,
+  "codigo": null,
+  "nombre": "QUESO BLOQUE  (BLOQUE X 5 LIBRAS)",
+  "categoria": null,
+  "unidad_medida": "BLOQUE"
+ },
+ {
+  "id": 190,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 41,
+  "codigo": null,
+  "nombre": "QUESO TAJADO (BLOQUE X 4 LIBRAS)",
+  "categoria": null,
+  "unidad_medida": "BLOQUE"
+ },
+ {
+  "id": 191,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 42,
+  "codigo": null,
+  "nombre": "QUESO SALADO",
+  "categoria": null,
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 192,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 43,
+  "codigo": null,
+  "nombre": "RECORTE DE TOCIENTA",
+  "categoria": null,
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 193,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 44,
+  "codigo": null,
+  "nombre": "SAL",
+  "categoria": null,
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 194,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 45,
+  "codigo": null,
+  "nombre": "SALSA DE AJI",
+  "categoria": null,
+  "unidad_medida": "BOTELLA"
+ },
+ {
+  "id": 195,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 46,
+  "codigo": null,
+  "nombre": "SALSA DE TOMATE",
+  "categoria": null,
+  "unidad_medida": "GALON"
+ },
+ {
+  "id": 196,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 47,
+  "codigo": null,
+  "nombre": "TE HELADO SABORES SURTIDOS (ESCRIBA LOS SABORES)",
+  "categoria": null,
+  "unidad_medida": "SOBRE"
+ },
+ {
+  "id": 197,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 48,
+  "codigo": null,
+  "nombre": "TE HINDU SURTIDO ( ESCRIBA SABORES)",
+  "categoria": null,
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 198,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 49,
+  "codigo": null,
+  "nombre": "TOSTADOS",
+  "categoria": null,
+  "unidad_medida": "PAQUETES"
+ },
+ {
+  "id": 199,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 50,
+  "codigo": null,
+  "nombre": "VINAGRE BLANCO",
+  "categoria": null,
+  "unidad_medida": "GALON"
+ },
+ {
+  "id": 200,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 51,
+  "codigo": null,
+  "nombre": "NACHOS",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 201,
+  "proveedor_id": "almacen-alimentos",
+  "orden": 52,
+  "codigo": null,
+  "nombre": "CHORIZOS",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 1,
+  "proveedor_id": "almacen-aseo",
+  "orden": 1,
+  "codigo": null,
+  "nombre": "ALCOHOL",
+  "categoria": null,
+  "unidad_medida": "GALON"
+ },
+ {
+  "id": 2,
+  "proveedor_id": "almacen-aseo",
+  "orden": 2,
+  "codigo": null,
+  "nombre": "BIOVARSOL",
+  "categoria": null,
+  "unidad_medida": "GALON"
+ },
+ {
+  "id": 3,
+  "proveedor_id": "almacen-aseo",
+  "orden": 3,
+  "codigo": null,
+  "nombre": "BOLSA DE ASEO MEDIANA BLANCA 75x90",
+  "categoria": null,
+  "unidad_medida": "PQTE"
+ },
+ {
+  "id": 4,
+  "proveedor_id": "almacen-aseo",
+  "orden": 4,
+  "codigo": null,
+  "nombre": "BOLSA DE ASEO MEDIANA NEGRA 75x90",
+  "categoria": null,
+  "unidad_medida": "PQTE"
+ },
+ {
+  "id": 5,
+  "proveedor_id": "almacen-aseo",
+  "orden": 5,
+  "codigo": null,
+  "nombre": "BOLSA DE ASEO MEDIANA VERDE 75x90",
+  "categoria": null,
+  "unidad_medida": "PQTE"
+ },
+ {
+  "id": 6,
+  "proveedor_id": "almacen-aseo",
+  "orden": 6,
+  "codigo": null,
+  "nombre": "BOLSA DE ASEO GRANDE BLANCA 120x90",
+  "categoria": null,
+  "unidad_medida": "PQTE"
+ },
+ {
+  "id": 7,
+  "proveedor_id": "almacen-aseo",
+  "orden": 7,
+  "codigo": null,
+  "nombre": "BOLSA DE ASEO GRANDE NEGRA 120x90",
+  "categoria": null,
+  "unidad_medida": "PQTE"
+ },
+ {
+  "id": 8,
+  "proveedor_id": "almacen-aseo",
+  "orden": 8,
+  "codigo": null,
+  "nombre": "BOLSA DE ASEO GRANDE VERDE 120x90",
+  "categoria": null,
+  "unidad_medida": "PQTE"
+ },
+ {
+  "id": 9,
+  "proveedor_id": "almacen-aseo",
+  "orden": 9,
+  "codigo": null,
+  "nombre": "BRILLO FINO",
+  "categoria": null,
+  "unidad_medida": "UNID"
+ },
+ {
+  "id": 10,
+  "proveedor_id": "almacen-aseo",
+  "orden": 10,
+  "codigo": null,
+  "nombre": "BRILLO GRUESO",
+  "categoria": null,
+  "unidad_medida": "UNID"
+ },
+ {
+  "id": 11,
+  "proveedor_id": "almacen-aseo",
+  "orden": 11,
+  "codigo": null,
+  "nombre": "DESENGRASANTE",
+  "categoria": null,
+  "unidad_medida": "GALON"
+ },
+ {
+  "id": 12,
+  "proveedor_id": "almacen-aseo",
+  "orden": 12,
+  "codigo": null,
+  "nombre": "ESCOBA CON PALO",
+  "categoria": null,
+  "unidad_medida": "UNID"
+ },
+ {
+  "id": 13,
+  "proveedor_id": "almacen-aseo",
+  "orden": 13,
+  "codigo": null,
+  "nombre": "ESPONJA DORADA",
+  "categoria": null,
+  "unidad_medida": "UNID"
+ },
+ {
+  "id": 14,
+  "proveedor_id": "almacen-aseo",
+  "orden": 14,
+  "codigo": null,
+  "nombre": "HIPOCLORITO",
+  "categoria": null,
+  "unidad_medida": "GALON"
+ },
+ {
+  "id": 15,
+  "proveedor_id": "almacen-aseo",
+  "orden": 15,
+  "codigo": null,
+  "nombre": "JABON DE MANOS",
+  "categoria": null,
+  "unidad_medida": "GALON"
+ },
+ {
+  "id": 16,
+  "proveedor_id": "almacen-aseo",
+  "orden": 16,
+  "codigo": null,
+  "nombre": "JABON EN POLVO",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 17,
+  "proveedor_id": "almacen-aseo",
+  "orden": 17,
+  "codigo": null,
+  "nombre": "LIMPIONES (                                                           )",
+  "categoria": null,
+  "unidad_medida": "UNID"
+ },
+ {
+  "id": 18,
+  "proveedor_id": "almacen-aseo",
+  "orden": 18,
+  "codigo": null,
+  "nombre": "MECHA DE TRAPERO (                                                   )",
+  "categoria": null,
+  "unidad_medida": "UNID"
+ },
+ {
+  "id": 19,
+  "proveedor_id": "almacen-aseo",
+  "orden": 19,
+  "codigo": null,
+  "nombre": "PAPEL HIGIENICO",
+  "categoria": null,
+  "unidad_medida": "ROLLO"
+ },
+ {
+  "id": 20,
+  "proveedor_id": "almacen-aseo",
+  "orden": 20,
+  "codigo": null,
+  "nombre": "TOALLAS DE MANO",
+  "categoria": null,
+  "unidad_medida": "ROLLO"
+ },
+ {
+  "id": 21,
+  "proveedor_id": "almacen-aseo",
+  "orden": 21,
+  "codigo": null,
+  "nombre": "DESINFECTANTE VEGETALES",
+  "categoria": null,
+  "unidad_medida": "TARRO"
+ },
+ {
+  "id": 202,
+  "proveedor_id": "almacen-colombina",
+  "orden": 1,
+  "codigo": null,
+  "nombre": "BOM BOM BUM",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 203,
+  "proveedor_id": "almacen-colombina",
+  "orden": 2,
+  "codigo": null,
+  "nombre": "CHICLETS",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 204,
+  "proveedor_id": "almacen-colombina",
+  "orden": 3,
+  "codigo": null,
+  "nombre": "CHOCOBREAK",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 205,
+  "proveedor_id": "almacen-colombina",
+  "orden": 4,
+  "codigo": null,
+  "nombre": "CREMA MUU",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 206,
+  "proveedor_id": "almacen-colombina",
+  "orden": 5,
+  "codigo": null,
+  "nombre": "HALLS /MENTA HELADA",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 207,
+  "proveedor_id": "almacen-colombina",
+  "orden": 6,
+  "codigo": null,
+  "nombre": "MAX COCO WAFER",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 208,
+  "proveedor_id": "almacen-colombina",
+  "orden": 7,
+  "codigo": null,
+  "nombre": "MENTAS",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 209,
+  "proveedor_id": "almacen-colombina",
+  "orden": 8,
+  "codigo": null,
+  "nombre": "NUCITA",
+  "categoria": null,
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 210,
+  "proveedor_id": "almacen-colombina",
+  "orden": 9,
+  "codigo": null,
+  "nombre": "WAFER NUCITA",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 88,
+  "proveedor_id": "almacen-desechables",
+  "orden": 1,
+  "codigo": null,
+  "nombre": "BOLSA CIERRE HERMETICO  10*8CM",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 89,
+  "proveedor_id": "almacen-desechables",
+  "orden": 2,
+  "codigo": null,
+  "nombre": "BOLSA DE ALUMINIO",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 90,
+  "proveedor_id": "almacen-desechables",
+  "orden": 3,
+  "codigo": null,
+  "nombre": "BOLSA DE PAPEL",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 91,
+  "proveedor_id": "almacen-desechables",
+  "orden": 4,
+  "codigo": null,
+  "nombre": "BOLSA MANIJA BLANCA (CAMISETA)",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 92,
+  "proveedor_id": "almacen-desechables",
+  "orden": 5,
+  "codigo": "CONTENEDOR CON TAPA PARA ENSALADAS-CAJA MEDIANA",
+  "nombre": "CONTENEDOR CON TAPA PARA ENSALADAS 16 OZ",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 93,
+  "proveedor_id": "almacen-desechables",
+  "orden": 6,
+  "codigo": null,
+  "nombre": "CONTENEDOR DE 16 OZ SOPA",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 94,
+  "proveedor_id": "almacen-desechables",
+  "orden": 7,
+  "codigo": null,
+  "nombre": "CUCHARA",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 95,
+  "proveedor_id": "almacen-desechables",
+  "orden": 8,
+  "codigo": null,
+  "nombre": "CUCHARITA",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 96,
+  "proveedor_id": "almacen-desechables",
+  "orden": 9,
+  "codigo": null,
+  "nombre": "CUCHILLO",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 97,
+  "proveedor_id": "almacen-desechables",
+  "orden": 10,
+  "codigo": null,
+  "nombre": "MEZCLADORES",
+  "categoria": null,
+  "unidad_medida": "PAQUETE"
+ },
+ {
+  "id": 98,
+  "proveedor_id": "almacen-desechables",
+  "orden": 11,
+  "codigo": null,
+  "nombre": "PAPEL ALUMNIO",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 99,
+  "proveedor_id": "almacen-desechables",
+  "orden": 12,
+  "codigo": null,
+  "nombre": "PLATO DE PONQUE",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 100,
+  "proveedor_id": "almacen-desechables",
+  "orden": 13,
+  "codigo": null,
+  "nombre": "PORTACOMIDAS 2 DIV",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 101,
+  "proveedor_id": "almacen-desechables",
+  "orden": 14,
+  "codigo": null,
+  "nombre": "PORTACOMIDAS 3 DIV",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 102,
+  "proveedor_id": "almacen-desechables",
+  "orden": 15,
+  "codigo": null,
+  "nombre": "PORTACOMIDAS SIN DIV",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 103,
+  "proveedor_id": "almacen-desechables",
+  "orden": 16,
+  "codigo": null,
+  "nombre": "SERVILLETAS X 200",
+  "categoria": null,
+  "unidad_medida": "PAQUETE"
+ },
+ {
+  "id": 104,
+  "proveedor_id": "almacen-desechables",
+  "orden": 17,
+  "codigo": null,
+  "nombre": "TAPA VASO 12 OZ",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 105,
+  "proveedor_id": "almacen-desechables",
+  "orden": 18,
+  "codigo": null,
+  "nombre": "TENEDOR",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 106,
+  "proveedor_id": "almacen-desechables",
+  "orden": 19,
+  "codigo": null,
+  "nombre": "VASO 12 OZ",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 107,
+  "proveedor_id": "almacen-desechables",
+  "orden": 20,
+  "codigo": null,
+  "nombre": "VASO 4 OZ",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 108,
+  "proveedor_id": "almacen-desechables",
+  "orden": 21,
+  "codigo": null,
+  "nombre": "VASO 7 OZ",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 109,
+  "proveedor_id": "almacen-desechables",
+  "orden": 22,
+  "codigo": null,
+  "nombre": "VASO 9 OZ",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 110,
+  "proveedor_id": "almacen-desechables",
+  "orden": 23,
+  "codigo": null,
+  "nombre": "VINIPEL X 1000",
+  "categoria": null,
+  "unidad_medida": "ROLLO"
+ },
+ {
+  "id": 22,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 1,
+  "codigo": "1064996",
+  "nombre": "GTA. TOSH MIEL FIT BS. 9X3 243G",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 23,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 2,
+  "codigo": "1062132",
+  "nombre": "Galletas TOSH Ajonjoli Fit Bs. 9x3",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 24,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 3,
+  "codigo": "1064999",
+  "nombre": "GTA.TOSH FUSION DE CEREAL FIT BS.9X3",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 25,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 4,
+  "codigo": "1001574",
+  "nombre": "Gta. FESTIVAL Chocolate  Bs. 12x4",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 26,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 5,
+  "codigo": "1001573",
+  "nombre": "Gta. FESTIVAL Fresa  Bs. 12x4",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 27,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 6,
+  "codigo": "1001572",
+  "nombre": "Gta. FESTIVAL Limon  Bs. 12x4",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 28,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 7,
+  "codigo": "1049449",
+  "nombre": "Gta. FESTIVAL Minichips Choc Bs. x12",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 29,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 8,
+  "codigo": "1038784",
+  "nombre": "Gta. FESTIVAL Recreo Bs. 12x6 648g",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 30,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 9,
+  "codigo": "1001571",
+  "nombre": "Gta. FESTIVAL Vainilla  Bs. 12x4",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 31,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 10,
+  "codigo": "1001586",
+  "nombre": "Gta. NOEL WAFERS Chocolate Bs. 18x4",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 32,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 11,
+  "codigo": "1001522",
+  "nombre": "Gta. NOEL WAFERS Fresa Bs. 18x4",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 33,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 12,
+  "codigo": "1001588",
+  "nombre": "Gta. NOEL WAFERS Vainilla Bs. 18x4",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 34,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 13,
+  "codigo": "1045207",
+  "nombre": "Gta. TOSH Avena Chocolate Bs. x6 180g",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 35,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 14,
+  "codigo": "1045206",
+  "nombre": "Gta. TOSH Avena Manzana Mani Bs. x6 180g",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 36,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 15,
+  "codigo": "1045205",
+  "nombre": "Gta. TOSH Avena MielAjonjoli Bs. x6 180g",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 37,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 16,
+  "codigo": "1001561",
+  "nombre": "Gta. TOSH Chocolate  Bs. 6x2",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 38,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 17,
+  "codigo": "1015524",
+  "nombre": "Gta. TOSH Mousse Naranja Bs. x6",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 39,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 18,
+  "codigo": "1001563",
+  "nombre": "Gta. TOSH Vainilla  Bs. 6x2",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 40,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 19,
+  "codigo": "1035439",
+  "nombre": "Gta. TOSH Wafer Multicereal COCO Bs. x6",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 41,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 20,
+  "codigo": "1035440",
+  "nombre": "Gta. TOSH Wafer Multicereal KIWI Bs. X6",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 42,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 21,
+  "codigo": "1009631",
+  "nombre": "Gta. TOSH Yogurt Fresa Bs.x6",
+  "categoria": "GALLETAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 43,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 22,
+  "codigo": "1003905",
+  "nombre": "JET Wafer Vainilla 20plex20undx 22g",
+  "categoria": "GALLETAS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 44,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 23,
+  "codigo": "1063337",
+  "nombre": "Glina. CHOCOLYNE 24plex6undx24g",
+  "categoria": "CHOCOLATINAS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 45,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 24,
+  "codigo": "1069494",
+  "nombre": "Glina. FESTIVAL Golochips 6plex24unx20g",
+  "categoria": "CHOCOLATINAS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 46,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 25,
+  "codigo": "1068252",
+  "nombre": "Glina. GOL 12Plegx24undx28g",
+  "categoria": "CHOCOLATINAS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 47,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 26,
+  "codigo": "1025339",
+  "nombre": "Glina. JET Burbujas 24bolx12undx14g",
+  "categoria": "CHOCOLATINAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 48,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 27,
+  "codigo": "1025339",
+  "nombre": "Glina. JET Gool balones 12bolx100undx4.5",
+  "categoria": "CHOCOLATINAS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 49,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 28,
+  "codigo": "1066740",
+  "nombre": "Glina. JET Leche 30plex50undx11g",
+  "categoria": "CHOCOLATINAS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 50,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 29,
+  "codigo": "1004081",
+  "nombre": "Glina. SANTANDER 36% 12plex10undx70g",
+  "categoria": "CHOCOLATINAS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 51,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 30,
+  "codigo": "1004080",
+  "nombre": "Glina. SANTANDER 53% 12plex10undx70g",
+  "categoria": "CHOCOLATINAS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 52,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 31,
+  "codigo": "1004079",
+  "nombre": "Glina. SANTANDER 65% 12plex10undx70g",
+  "categoria": "CHOCOLATINAS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 53,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 32,
+  "codigo": "1004078",
+  "nombre": "Glina. SANTANDER 70% 12plex10undx70g",
+  "categoria": "CHOCOLATINAS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 54,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 33,
+  "codigo": "2000613",
+  "nombre": "Kumis ALPINA natural vaso x 200g",
+  "categoria": "LACTEOS",
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 55,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 34,
+  "codigo": "2007126",
+  "nombre": "Multip Alpin ALPINA Chocol bol 180mlx6un",
+  "categoria": "LACTEOS",
+  "unidad_medida": "PAQUETE"
+ },
+ {
+  "id": 56,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 35,
+  "codigo": "2007127",
+  "nombre": "Multip Alpin ALPINA Fresa bol 180mlx6un",
+  "categoria": "LACTEOS",
+  "unidad_medida": "PAQUETE"
+ },
+ {
+  "id": 57,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 36,
+  "codigo": "2000555",
+  "nombre": "Yogurt ALPINA fresa x 150g",
+  "categoria": "LACTEOS",
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 58,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 37,
+  "codigo": "2000556",
+  "nombre": "Yogurt ALPINA melocoton x 150g",
+  "categoria": "LACTEOS",
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 59,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 38,
+  "codigo": "2000557",
+  "nombre": "Yogurt ALPINA mora x 150g",
+  "categoria": "LACTEOS",
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 60,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 39,
+  "codigo": "2023067",
+  "nombre": "YOGURT ALPINA GRIEGO NATURAL 150GR",
+  "categoria": "LACTEOS",
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 61,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 40,
+  "codigo": "2000667",
+  "nombre": "Arequipito ALPINA 24 x 50g",
+  "categoria": "LACTEOS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 62,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 41,
+  "codigo": "2000575",
+  "nombre": "Avena ALPINA canela x 250g",
+  "categoria": "LACTEOS",
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 63,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 42,
+  "codigo": "2000574",
+  "nombre": "Avena ALPINA natural x 250g",
+  "categoria": "LACTEOS",
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 64,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 43,
+  "codigo": "1044776",
+  "nombre": "Brr. TOSH Ara Pas Cho 12plex24undx23g",
+  "categoria": "FRUTOS SECOS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 65,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 44,
+  "codigo": "1040777",
+  "nombre": "Pasab. LA ESPECIAL lim pim 8Plex24unx40g",
+  "categoria": "FRUTOS SECOS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 66,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 45,
+  "codigo": "1004183",
+  "nombre": "Pasab. LA ESPECIAL maiz 8plex24undx40g",
+  "categoria": "FRUTOS SECOS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 67,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 46,
+  "codigo": "1044449",
+  "nombre": "Pasab. LA ESPECIAL MezAran 8Plex24ux40g",
+  "categoria": "FRUTOS SECOS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 68,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 47,
+  "codigo": "1058025",
+  "nombre": "Pasab. LA ESPECIAL pasas 8plex24undx45g",
+  "categoria": "FRUTOS SECOS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 69,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 48,
+  "codigo": "1057986",
+  "nombre": "Pasab. LA ESPECIAL sal 8plex24undx45g",
+  "categoria": "FRUTOS SECOS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 70,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 49,
+  "codigo": "1044458",
+  "nombre": "Pasab.LA ESPECIAL HabaMix 8plegx12ux35g",
+  "categoria": "FRUTOS SECOS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 71,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 50,
+  "codigo": "1070489",
+  "nombre": "Pasab. LE Manicero Sal10plex12unx21g",
+  "categoria": "FRUTOS SECOS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 72,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 51,
+  "codigo": "1046879",
+  "nombre": "Pasab.LA ESPECIAL mezcla 8plex24undx40g",
+  "categoria": "FRUTOS SECOS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 73,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 52,
+  "codigo": "1040819",
+  "nombre": "TARRO X 5L TRADICIONAL VAINILLA FRESA NI",
+  "categoria": "INSUMOS",
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 74,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 53,
+  "codigo": "1057724",
+  "nombre": "Grageado Chocolate colores 10bsasx500g",
+  "categoria": "INSUMOS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 75,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 54,
+  "codigo": "1036871",
+  "nombre": "Granizado Colcafe 1300g 10un",
+  "categoria": "INSUMOS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 76,
+  "proveedor_id": "almacen-nutresa",
+  "orden": 55,
+  "codigo": "2028112",
+  "nombre": "Salsa Chocolate ZAFRAN 1000grx8un Bl",
+  "categoria": "INSUMOS",
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 127,
+  "proveedor_id": "cocacola",
+  "orden": 1,
+  "codigo": null,
+  "nombre": "AGUA BRISA BOTELLON 5 GALONES",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 128,
+  "proveedor_id": "cocacola",
+  "orden": 2,
+  "codigo": null,
+  "nombre": "AGUA BRISA PET 600 ML X 24",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 129,
+  "proveedor_id": "cocacola",
+  "orden": 3,
+  "codigo": null,
+  "nombre": "AGUA BRISA PET GAS 600 ML X 24",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 130,
+  "proveedor_id": "cocacola",
+  "orden": 4,
+  "codigo": null,
+  "nombre": "AGUA GAS BRISA LIMON 600 ML X 24",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 131,
+  "proveedor_id": "cocacola",
+  "orden": 5,
+  "codigo": null,
+  "nombre": "COCACOLA  PET 400 ML X 12",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 132,
+  "proveedor_id": "cocacola",
+  "orden": 6,
+  "codigo": null,
+  "nombre": "COCACOLA PET SIN AZUCAR 400 ML X 12",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 133,
+  "proveedor_id": "cocacola",
+  "orden": 7,
+  "codigo": null,
+  "nombre": "CUATRO PET 400 ML X 12",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 134,
+  "proveedor_id": "cocacola",
+  "orden": 8,
+  "codigo": null,
+  "nombre": "FUZE TEA  MANGO- MANZANILL  X 400 ML X  6",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 135,
+  "proveedor_id": "cocacola",
+  "orden": 9,
+  "codigo": null,
+  "nombre": "FUZE TEA  MANZANA - LIMONARIA  X 400 ML X  6",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 136,
+  "proveedor_id": "cocacola",
+  "orden": 10,
+  "codigo": null,
+  "nombre": "FUZE TEA DURAZNO X 400 ML X  6",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 137,
+  "proveedor_id": "cocacola",
+  "orden": 11,
+  "codigo": null,
+  "nombre": "FUZE TEA LIMON X 400 ML X 6",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 138,
+  "proveedor_id": "cocacola",
+  "orden": 12,
+  "codigo": null,
+  "nombre": "JUGO DEL VALLE 500 MANGO  X 6",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 139,
+  "proveedor_id": "cocacola",
+  "orden": 13,
+  "codigo": null,
+  "nombre": "JUGO DEL VALLE 500 MANGO FRESA  X 6",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 140,
+  "proveedor_id": "cocacola",
+  "orden": 14,
+  "codigo": null,
+  "nombre": "JUGO DEL VALLE 500 MANGO PIÑA MANDARINA X 6",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 141,
+  "proveedor_id": "cocacola",
+  "orden": 15,
+  "codigo": null,
+  "nombre": "JUGO DEL VALLE 500 MORA X 6",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 142,
+  "proveedor_id": "cocacola",
+  "orden": 16,
+  "codigo": null,
+  "nombre": "JUGO DEL VALLE TETRA X 24 MANGO",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 143,
+  "proveedor_id": "cocacola",
+  "orden": 17,
+  "codigo": null,
+  "nombre": "JUGO DEL VALLE TETRA X 24 MANGO FRESA",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 144,
+  "proveedor_id": "cocacola",
+  "orden": 18,
+  "codigo": null,
+  "nombre": "JUGO DEL VALLE TETRA X 24 MORA",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 145,
+  "proveedor_id": "cocacola",
+  "orden": 19,
+  "codigo": null,
+  "nombre": "JUGO DEL VALLE TETRA X 24 PIÑA MANDARINA",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 146,
+  "proveedor_id": "cocacola",
+  "orden": 20,
+  "codigo": null,
+  "nombre": "KOLA ROMAN  400 ML X 12",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 147,
+  "proveedor_id": "cocacola",
+  "orden": 21,
+  "codigo": null,
+  "nombre": "POWER ADE x 500 ML AZUL X 6",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 148,
+  "proveedor_id": "cocacola",
+  "orden": 22,
+  "codigo": null,
+  "nombre": "POWER ADE x 500 ML ROJO X 6",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 149,
+  "proveedor_id": "cocacola",
+  "orden": 23,
+  "codigo": null,
+  "nombre": "SPRITE PET 400 ML X 12",
+  "categoria": null,
+  "unidad_medida": "BANDEJA"
+ },
+ {
+  "id": 111,
+  "proveedor_id": "pulpas-camilo",
+  "orden": 2,
+  "codigo": null,
+  "nombre": "PULPA DE MARACUYA",
+  "categoria": "PULPA SIN DOSIFICAR",
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 112,
+  "proveedor_id": "pulpas-camilo",
+  "orden": 3,
+  "codigo": null,
+  "nombre": "PULPA DE LULO",
+  "categoria": "PULPA SIN DOSIFICAR",
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 113,
+  "proveedor_id": "pulpas-camilo",
+  "orden": 4,
+  "codigo": null,
+  "nombre": "PULPA DE MANGO",
+  "categoria": "PULPA SIN DOSIFICAR",
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 114,
+  "proveedor_id": "pulpas-camilo",
+  "orden": 5,
+  "codigo": null,
+  "nombre": "PULPA DE LIMON",
+  "categoria": "PULPA SIN DOSIFICAR",
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 115,
+  "proveedor_id": "pulpas-camilo",
+  "orden": 6,
+  "codigo": null,
+  "nombre": "PULPA DE PIÑA",
+  "categoria": "PULPA SIN DOSIFICAR",
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 116,
+  "proveedor_id": "pulpas-camilo",
+  "orden": 7,
+  "codigo": null,
+  "nombre": "PULPA DE FRESA",
+  "categoria": "PULPA SIN DOSIFICAR",
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 117,
+  "proveedor_id": "pulpas-camilo",
+  "orden": 8,
+  "codigo": null,
+  "nombre": "PULPA DE DURAZNO",
+  "categoria": "PULPA SIN DOSIFICAR",
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 118,
+  "proveedor_id": "pulpas-camilo",
+  "orden": 9,
+  "codigo": null,
+  "nombre": "PULPA DE MORA",
+  "categoria": "PULPA SIN DOSIFICAR",
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 119,
+  "proveedor_id": "pulpas-camilo",
+  "orden": 10,
+  "codigo": null,
+  "nombre": "PULPA DE NARANJA",
+  "categoria": "PULPA SIN DOSIFICAR",
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 120,
+  "proveedor_id": "pulpas-camilo",
+  "orden": 13,
+  "codigo": null,
+  "nombre": "PULPA DE GUANABANA",
+  "categoria": "PULPA DOSIFICADA",
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 121,
+  "proveedor_id": "pulpas-camilo",
+  "orden": 14,
+  "codigo": null,
+  "nombre": "PULPA DE  MORA",
+  "categoria": "PULPA DOSIFICADA",
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 122,
+  "proveedor_id": "pulpas-camilo",
+  "orden": 15,
+  "codigo": null,
+  "nombre": "PULPA DE MANGO",
+  "categoria": "PULPA DOSIFICADA",
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 123,
+  "proveedor_id": "pulpas-camilo",
+  "orden": 16,
+  "codigo": null,
+  "nombre": "PULPA DE LIMON",
+  "categoria": "PULPA DOSIFICADA",
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 124,
+  "proveedor_id": "pulpas-camilo",
+  "orden": 17,
+  "codigo": null,
+  "nombre": "PULPA DE PIÑA",
+  "categoria": "PULPA DOSIFICADA",
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 125,
+  "proveedor_id": "pulpas-camilo",
+  "orden": 18,
+  "codigo": null,
+  "nombre": "PULPA DE FRESA",
+  "categoria": "PULPA DOSIFICADA",
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 126,
+  "proveedor_id": "pulpas-camilo",
+  "orden": 19,
+  "codigo": null,
+  "nombre": "PULPA DE UVA",
+  "categoria": "PULPA DOSIFICADA",
+  "unidad_medida": "LIBRAS"
+ },
+ {
+  "id": 211,
+  "proveedor_id": "ramo",
+  "orden": 1,
+  "codigo": null,
+  "nombre": "BARRITA CHOCORRAMO",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 212,
+  "proveedor_id": "ramo",
+  "orden": 2,
+  "codigo": null,
+  "nombre": "BROWNIE AREQUIPE X 6 UND X 65 GR",
+  "categoria": null,
+  "unidad_medida": "CAJA"
+ },
+ {
+  "id": 213,
+  "proveedor_id": "ramo",
+  "orden": 3,
+  "codigo": null,
+  "nombre": "CHOCORRAMO TJDA X 65 GR",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 214,
+  "proveedor_id": "ramo",
+  "orden": 4,
+  "codigo": null,
+  "nombre": "GALA TAJADA X 60 GR",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 215,
+  "proveedor_id": "ramo",
+  "orden": 5,
+  "codigo": null,
+  "nombre": "GANSITO X 6 X 37 GR",
+  "categoria": null,
+  "unidad_medida": "PAQUETE"
+ },
+ {
+  "id": 216,
+  "proveedor_id": "ramo",
+  "orden": 6,
+  "codigo": null,
+  "nombre": "LECHERITA X 8 GALLETAS",
+  "categoria": null,
+  "unidad_medida": "PAQUETE"
+ },
+ {
+  "id": 217,
+  "proveedor_id": "ramo",
+  "orden": 7,
+  "codigo": null,
+  "nombre": "GALLETAS LIMONCITAS X 8",
+  "categoria": null,
+  "unidad_medida": "PAQUETE"
+ },
+ {
+  "id": 218,
+  "proveedor_id": "ramo",
+  "orden": 8,
+  "codigo": null,
+  "nombre": "PONQUÉ RAMO TRADICIONAL",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 219,
+  "proveedor_id": "ramo",
+  "orden": 9,
+  "codigo": null,
+  "nombre": "GALA MITI",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 220,
+  "proveedor_id": "ramo",
+  "orden": 10,
+  "codigo": null,
+  "nombre": "CHOCORRAMO MITI",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 221,
+  "proveedor_id": "ramo",
+  "orden": 11,
+  "codigo": null,
+  "nombre": "TORTA VAINILLA O CHOCOLATE 900 G X 16 PORCIONES",
+  "categoria": null,
+  "unidad_medida": "UNIDAD"
+ },
+ {
+  "id": 77,
+  "proveedor_id": "vicky",
+  "orden": 1,
+  "codigo": null,
+  "nombre": "CHICHARRON CARNUDO NAT",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 78,
+  "proveedor_id": "vicky",
+  "orden": 2,
+  "codigo": null,
+  "nombre": "CHICHARRON CARNUDO PICANTE",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 79,
+  "proveedor_id": "vicky",
+  "orden": 3,
+  "codigo": null,
+  "nombre": "MIXTON BBQ",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 80,
+  "proveedor_id": "vicky",
+  "orden": 4,
+  "codigo": null,
+  "nombre": "MIXTON NAT",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 81,
+  "proveedor_id": "vicky",
+  "orden": 5,
+  "codigo": null,
+  "nombre": "PAPA MAYONESA",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 82,
+  "proveedor_id": "vicky",
+  "orden": 6,
+  "codigo": null,
+  "nombre": "PAPA BBQ",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 83,
+  "proveedor_id": "vicky",
+  "orden": 7,
+  "codigo": null,
+  "nombre": "PAPA POLLO",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 84,
+  "proveedor_id": "vicky",
+  "orden": 8,
+  "codigo": null,
+  "nombre": "ROSQUILLAS DE QUESO",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 85,
+  "proveedor_id": "vicky",
+  "orden": 9,
+  "codigo": null,
+  "nombre": "TROCILLOS",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 86,
+  "proveedor_id": "vicky",
+  "orden": 10,
+  "codigo": null,
+  "nombre": "PLATANO SALADO",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ },
+ {
+  "id": 87,
+  "proveedor_id": "vicky",
+  "orden": 11,
+  "codigo": null,
+  "nombre": "PLATANO AGRIDULCE",
+  "categoria": null,
+  "unidad_medida": "BOLSA"
+ }
+]

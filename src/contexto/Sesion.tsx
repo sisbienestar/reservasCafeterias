@@ -22,7 +22,20 @@ import { supabase } from '../servicios/supabase.js';
 import { pedir, ErrorServicio } from '../servicios/api.js';
 import { hoyISO } from '../utiles/fechas.js';
 
-export type Rol = 'mostrador' | 'admin';
+export type Rol = 'mostrador' | 'auxiliar' | 'admin';
+
+/**
+ * Cómo se llama cada rol en pantalla.
+ *
+ * Aquí y no en el componente que lo pinta: lo usan la cabecera y el panel de
+ * cuentas, y cuando estaba duplicado el rol nuevo salió como «auxiliar» en
+ * minúscula en una de las dos.
+ */
+export const NOMBRE_ROL: Record<string, string> = {
+  mostrador: 'Mostrador',
+  auxiliar: 'Auxiliar administrativo',
+  admin: 'Administración',
+};
 
 /** Un módulo de la aplicación, tal como lo sirve el servidor. */
 export interface Modulo {
@@ -40,8 +53,17 @@ export interface Modulo {
 export interface Perfil {
   nombre: string;
   rol: Rol;
-  /** La sede del mostrador. `null` en administración. */
+  /** La sede del mostrador. `null` en administración y en el auxiliar. */
   cafeteriaId: string | null;
+  /**
+   * Su nombre. Vacío en quien no tiene sede.
+   *
+   * Lo enseña la cabecera. Va en el perfil y no lo pasa cada página porque
+   * es la sede de LA PERSONA: cuando lo ponía la pantalla, un pedido de otra
+   * cafetería hacía que la barra dijera la sede del pedido como si fuera la
+   * suya.
+   */
+  cafeteriaNombre: string;
 }
 
 interface Contexto {
@@ -107,7 +129,10 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
           id: string; nombre: string; etiqueta: string; inicial: string;
           ruta: string; imagen: string; activo: boolean;
         }[];
-        perfil: { nombre: string; rol: Rol; cafeteria_id: string | null } | null;
+        perfil: {
+          nombre: string; rol: Rol;
+          cafeteria_id: string | null; cafeteria_nombre?: string;
+        } | null;
       }>('app.contexto');
 
       setContexto({
@@ -123,6 +148,7 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
           nombre: datos.perfil.nombre,
           rol: datos.perfil.rol,
           cafeteriaId: datos.perfil.cafeteria_id,
+          cafeteriaNombre: datos.perfil.cafeteria_nombre ?? '',
         },
       });
       setError(null);

@@ -1,0 +1,517 @@
+{
+ "alias": [
+  {
+   "proveedor": "almacen-colombina",
+   "historico": "BOM BOM BUM 24",
+   "catalogo": "BOM BOM BUM"
+  },
+  {
+   "proveedor": "almacen-colombina",
+   "historico": "CHOCOBREAK 50",
+   "catalogo": "CHOCOBREAK"
+  },
+  {
+   "proveedor": "almacen-colombina",
+   "historico": "CREMA MUU 12",
+   "catalogo": "CREMA MUU"
+  },
+  {
+   "proveedor": "almacen-colombina",
+   "historico": "MAX COCO WAFER 10",
+   "catalogo": "MAX COCO WAFER"
+  },
+  {
+   "proveedor": "almacen-colombina",
+   "historico": "NUCITA 18",
+   "catalogo": "NUCITA"
+  },
+  {
+   "proveedor": "vicky",
+   "historico": "CHICHARRON CARNUDO NATURAL 30 g bolsa x 6",
+   "catalogo": "CHICHARRON CARNUDO NAT"
+  },
+  {
+   "proveedor": "vicky",
+   "historico": "MIXTO BBQ 40 g bolsa x 6",
+   "catalogo": "MIXTON BBQ"
+  },
+  {
+   "proveedor": "vicky",
+   "historico": "TROCILLO SABOR POLLO 25 g",
+   "catalogo": "TROCILLOS"
+  },
+  {
+   "proveedor": "vicky",
+   "historico": "PAPA POLLO x7",
+   "catalogo": "PAPA POLLO"
+  },
+  {
+   "proveedor": "vicky",
+   "historico": "ROSQUILLAS DE QUESO x6",
+   "catalogo": "ROSQUILLAS DE QUESO"
+  },
+  {
+   "proveedor": "vicky",
+   "historico": "TROCILLOS x6",
+   "catalogo": "TROCILLOS"
+  },
+  {
+   "proveedor": "vicky",
+   "historico": "PLATANO SALADO x6",
+   "catalogo": "PLATANO SALADO"
+  },
+  {
+   "proveedor": "vicky",
+   "historico": "CHICHARRON CARNUDO NAT x6",
+   "catalogo": "CHICHARRON CARNUDO NAT"
+  },
+  {
+   "proveedor": "vicky",
+   "historico": "CHICHARRON CARNUDO PICANTE x6",
+   "catalogo": "CHICHARRON CARNUDO PICANTE"
+  },
+  {
+   "proveedor": "vicky",
+   "historico": "PAPA MAYONESA x6",
+   "catalogo": "PAPA MAYONESA"
+  },
+  {
+   "proveedor": "vicky",
+   "historico": "PAPA BBQx6",
+   "catalogo": "PAPA BBQ"
+  },
+  {
+   "proveedor": "ramo",
+   "historico": "LIMONCITAS X8 GALLETAS",
+   "catalogo": "GALLETAS LIMONCITAS X 8"
+  },
+  {
+   "proveedor": "cocacola",
+   "historico": "GASEOSA CUATRO PET 400ML",
+   "catalogo": "CUATRO PET 400 ML X 12"
+  },
+  {
+   "proveedor": "cocacola",
+   "historico": "GASEOSA KOLA ROMAN PET 400ML",
+   "catalogo": "KOLA ROMAN  400 ML X 12"
+  },
+  {
+   "proveedor": "cocacola",
+   "historico": "GASEOSA SPRITE PET 400ML",
+   "catalogo": "SPRITE PET 400 ML X 12"
+  },
+  {
+   "proveedor": "ramo",
+   "historico": "GALA X 60 GR",
+   "catalogo": "GALA TAJADA X 60 GR"
+  }
+ ],
+ "exacto": [
+  {
+   "proveedor": "cocacola",
+   "nombre": "AGUA BRISA PET GAS 600 ML X 24"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "COCACOLA PET 400 ML X 12"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "COCACOLA PET SIN AZUCAR 400 ML X 12"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "FUZE TEA MANGO- MANZANILL X 400 ML X 6"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "FUZE TEA DURAZNO X 400 ML X 6"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "FUZE TEA LIMON X 400 ML X 6"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "JUGO DEL VALLE 500 MANGO X 6"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "JUGO DEL VALLE 500 MANGO FRESA X 6"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "JUGO DEL VALLE 500 MORA X 6"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "JUGO DEL VALLE TETRA X 24 MANGO"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "JUGO DEL VALLE TETRA X 24 MANGO FRESA"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "JUGO DEL VALLE TETRA X 24 PIÑA MANDARINA"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "KOLA ROMAN 400 ML X 12"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "POWER ADE x 500 ML AZUL X 6"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "POWER ADE x 500 ML ROJO X 6"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "SPRITE PET 400 ML X 12"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "AGUA BRISA PET 600 ML X 24"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "CUATRO PET 400 ML X 12"
+  },
+  {
+   "proveedor": "ramo",
+   "nombre": "BARRITA CHOCORRAMO"
+  },
+  {
+   "proveedor": "ramo",
+   "nombre": "BROWNIE AREQUIPE X 6 UND X 65 GR"
+  },
+  {
+   "proveedor": "ramo",
+   "nombre": "CHOCORRAMO TJDA X 65 GR"
+  },
+  {
+   "proveedor": "ramo",
+   "nombre": "GALA TAJADA X 60 GR"
+  },
+  {
+   "proveedor": "ramo",
+   "nombre": "GANSITO X 6 X 37 GR"
+  },
+  {
+   "proveedor": "ramo",
+   "nombre": "LECHERITA X 8 GALLETAS"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "FUZE TEA MANZANA - LIMONARIA X 400 ML X 6"
+  },
+  {
+   "proveedor": "ramo",
+   "nombre": "GALLETAS LIMONCITAS X 8"
+  },
+  {
+   "proveedor": "vicky",
+   "nombre": "PLATANO AGRIDULCE"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "AGUA GAS BRISA LIMON 600 ML X 24"
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "JUGO DEL VALLE 500 MANGO PIÑA MANDARINA X 6"
+  }
+ ],
+ "parecido": [
+  {
+   "proveedor": "cocacola",
+   "historico": "FUZE TEA MANZANA X 400 ML X 6",
+   "catalogo": "FUZE TEA  MANZANA - LIMONARIA  X 400 ML X  6",
+   "puntuacion": 0.8
+  },
+  {
+   "proveedor": "cocacola",
+   "historico": "FUZE TEA MANGO X 400 ML X 6",
+   "catalogo": "FUZE TEA  MANGO- MANZANILL  X 400 ML X  6",
+   "puntuacion": 0.8
+  }
+ ],
+ "nuevo": [
+  {
+   "proveedor": "rapifritos",
+   "nombre": "PAPA DE (POLLO CARNE Y MEDIO HUEVO)",
+   "unidad": "UNIDAD",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 228,
+   "variantes": []
+  },
+  {
+   "proveedor": "rapifritos",
+   "nombre": "FLAUTA POLLO QUESO CHAMPIÑONES FRITA",
+   "unidad": "UNIDAD",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 224,
+   "variantes": []
+  },
+  {
+   "proveedor": "rapifritos",
+   "nombre": "EMPANADA DE YUCA (CARNE Y POLLO)",
+   "unidad": "UNIDAD",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 207,
+   "variantes": []
+  },
+  {
+   "proveedor": "rapifritos",
+   "nombre": "EMPANADA POLLO QUESO FRITA",
+   "unidad": "UNIDAD",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 205,
+   "variantes": []
+  },
+  {
+   "proveedor": "rapifritos",
+   "nombre": "EMPANADA HAWAIANA FRITA",
+   "unidad": "UNIDAD",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 109,
+   "variantes": []
+  },
+  {
+   "proveedor": "rapifritos",
+   "nombre": "EMPANADA MIXTA DE TRIGO",
+   "unidad": "UNIDAD",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 106,
+   "variantes": []
+  },
+  {
+   "proveedor": "neofrut",
+   "nombre": "PULPA DE MARACUYA",
+   "unidad": "LIBRAS",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 28,
+   "variantes": []
+  },
+  {
+   "proveedor": "neofrut",
+   "nombre": "PULPA DE LULO",
+   "unidad": "LIBRAS",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 28,
+   "variantes": []
+  },
+  {
+   "proveedor": "neofrut",
+   "nombre": "PULPA DE MANGO",
+   "unidad": "LIBRAS",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 28,
+   "variantes": []
+  },
+  {
+   "proveedor": "neofrut",
+   "nombre": "PULPA DE MORA",
+   "unidad": "LIBRAS",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 28,
+   "variantes": []
+  },
+  {
+   "proveedor": "neofrut",
+   "nombre": "PULPA DE NARANJA",
+   "unidad": "LIBRAS",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 28,
+   "variantes": []
+  },
+  {
+   "proveedor": "neofrut",
+   "nombre": "PULPA DE FRESA",
+   "unidad": "LIBRAS",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 26,
+   "variantes": []
+  },
+  {
+   "proveedor": "neofrut",
+   "nombre": "PULPA DE LIMON",
+   "unidad": "LIBRAS",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 25,
+   "variantes": []
+  },
+  {
+   "proveedor": "neofrut",
+   "nombre": "PULPA DE DURAZNO",
+   "unidad": "LIBRAS",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 23,
+   "variantes": [
+    "PULPA DURAZNO"
+   ]
+  },
+  {
+   "proveedor": "neofrut",
+   "nombre": "PULPA DE PIÑA",
+   "unidad": "LIBRAS",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 23,
+   "variantes": []
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "FUZE TEA NEGRO LIMON X 400 ML X 6",
+   "unidad": "BANDEJA",
+   "motivo": "el más parecido del catálogo se queda en 0.43: FUZE TEA  MANGO- MANZANILL  X 400 ML X  6",
+   "veces": 7,
+   "variantes": [
+    "FUZE TEA NEGRO - LIMON X 400 ML X 6"
+   ]
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "COCACOLA ZERO 400 ML X 12",
+   "unidad": "BANDEJA",
+   "motivo": "Zero y Sin Azúcar son dos referencias distintas de Coca-Cola.",
+   "veces": 7,
+   "variantes": [
+    "COCACOLA ZERO PET 400 ML X 12"
+   ]
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "AGUA GAS BRISA LIMON 600 ML X 6",
+   "unidad": "BANDEJA",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 5,
+   "variantes": [
+    "AGUA GAS BRISA LIMON 600 ML 6",
+    "AGUA GAS BRISA LIMON 600 ML X6"
+   ]
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "AGUA GAS BRISA 600 ML 6",
+   "unidad": "BANDEJA",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 5,
+   "variantes": []
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "AGUA BRISA LIMA LIMON 600 ML X 6",
+   "unidad": "BANDEJA",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 3,
+   "variantes": []
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "AGUA BRISA LIMÓN 600 ML 6",
+   "unidad": "BANDEJA",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 3,
+   "variantes": []
+  },
+  {
+   "proveedor": "vicky",
+   "nombre": "PLATANO VERDE KAHOY 60 g",
+   "unidad": "BOLSA",
+   "motivo": "El catálogo tiene «PLATANO SALADO» y «PLATANO AGRIDULCE»; verde no es ninguno de los dos.",
+   "veces": 1,
+   "variantes": []
+  },
+  {
+   "proveedor": "vicky",
+   "nombre": "PAPA CEBOLLITAS",
+   "unidad": "UNIDAD",
+   "motivo": "el más parecido del catálogo se queda en 0.33: PAPA MAYONESA",
+   "veces": 1,
+   "variantes": []
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "JUGO DEL VALLE 188 MANGO FRESA X24",
+   "unidad": "BANDEJA",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 1,
+   "variantes": [
+    "JUGO DEL VALLE 188 ML MANGO FRESA X24"
+   ]
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "JUGO DEL VALLE 188 ML MORA X24",
+   "unidad": "BANDEJA",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 1,
+   "variantes": []
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "JUGO DEL VALLE 500 ML MORA X24",
+   "unidad": "BANDEJA",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 1,
+   "variantes": []
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "AGUA BRISA LIMON -MANZANA 600 ML 6",
+   "unidad": "BANDEJA",
+   "motivo": "ningún producto del catálogo comparte números ni palabras",
+   "veces": 1,
+   "variantes": []
+  },
+  {
+   "proveedor": "cocacola",
+   "nombre": "POWER 500ML X6",
+   "unidad": "BANDEJA",
+   "motivo": "el más parecido del catálogo se queda en 0.50: POWER ADE x 500 ML AZUL X 6",
+   "veces": 1,
+   "variantes": []
+  }
+ ],
+ "dudoso": [],
+ "convivencia": [
+  {
+   "proveedor": "cocacola",
+   "historico": "FUZE TEA NEGRO - LIMON X 400 ML X 6",
+   "descartado": "FUZE TEA DURAZNO X 400 ML X  6",
+   "puntuacion": 0.5
+  },
+  {
+   "proveedor": "cocacola",
+   "historico": "FUZE TEA NEGRO - LIMON X 400 ML X 6",
+   "descartado": "FUZE TEA LIMON X 400 ML X 6",
+   "puntuacion": 0.8
+  },
+  {
+   "proveedor": "cocacola",
+   "historico": "FUZE TEA MANZANA X 400 ML X 6",
+   "descartado": "FUZE TEA DURAZNO X 400 ML X  6",
+   "puntuacion": 0.6
+  },
+  {
+   "proveedor": "cocacola",
+   "historico": "FUZE TEA MANGO X 400 ML X 6",
+   "descartado": "FUZE TEA DURAZNO X 400 ML X  6",
+   "puntuacion": 0.6
+  },
+  {
+   "proveedor": "cocacola",
+   "historico": "FUZE TEA NEGRO LIMON X 400 ML X 6",
+   "descartado": "FUZE TEA DURAZNO X 400 ML X  6",
+   "puntuacion": 0.5
+  },
+  {
+   "proveedor": "cocacola",
+   "historico": "FUZE TEA NEGRO LIMON X 400 ML X 6",
+   "descartado": "FUZE TEA LIMON X 400 ML X 6",
+   "puntuacion": 0.8
+  }
+ ]
+}

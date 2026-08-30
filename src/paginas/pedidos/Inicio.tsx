@@ -15,9 +15,10 @@ import { getProveedores } from '../../servicios/proveedoresServicio.js';
 import { usePeticion } from '../../utiles/usePeticion.js';
 import { TarjetaProveedor } from '../../componentes/TarjetaProveedor.js';
 import { BloqueEstado } from '../../componentes/BloqueEstado.js';
-import { BarraSesion } from '../../componentes/BarraSesion.js';
+import { BarraVolver } from '../../componentes/BarraVolver.js';
 import { Pie } from '../../componentes/Pie.js';
 import { useHoy, useSesion } from '../../contexto/Sesion.js';
+import { puede } from '../../servicios/capacidades.js';
 import { formatearFechaLarga } from '../../utiles/fechas.js';
 
 export function Inicio() {
@@ -32,9 +33,7 @@ export function Inicio() {
     <>
       <main className="contenedor pagina">
         {contexto?.perfil && (
-          <BarraSesion
-            perfil={contexto.perfil}
-            alSalir={salir}
+          <BarraVolver
             volver={{ a: '/', texto: '← Módulos' }}
           />
         )}
@@ -64,7 +63,7 @@ export function Inicio() {
               qué hacer dentro. La ruta lo comprueba igual, y el servidor
               también.
             */}
-            {perfil?.rol === 'admin' && (
+            {puede(perfil?.rol, 'administrarCatalogo') && (
               <Link className="boton boton--secundario" to="/pedidos/admin">
                 Administrar catálogo
               </Link>

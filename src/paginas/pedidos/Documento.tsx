@@ -13,16 +13,22 @@
  * tiempo de arranque a una función de Vercel.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
-  getPedido, confirmarPedido, type Pedido as PedidoGuardado,
+  getPedido, enviarPedido, confirmarPedido,
+  PASOS_PEDIDO, ANULADO, nombreDeEstado,
+  type Pedido as PedidoGuardado, type EventoPedido,
 } from '../../servicios/pedidosServicio.js';
 import type { TipoDocumento } from '../../servicios/proveedoresServicio.js';
 import { usePeticion } from '../../utiles/usePeticion.js';
 import { BloqueEstado } from '../../componentes/BloqueEstado.js';
-import { BarraSesion } from '../../componentes/BarraSesion.js';
+import { BarraVolver } from '../../componentes/BarraVolver.js';
+import {
+  ModalConfirmacion, type PeticionConfirmacion,
+} from '../../componentes/ModalConfirmacion.js';
 import { useSesion } from '../../contexto/Sesion.js';
+import { puede } from '../../servicios/capacidades.js';
 import { formatearFechaLarga } from '../../utiles/fechas.js';
 
 /**
@@ -71,12 +77,199 @@ function partesDeFecha(fechaISO: string): [string, string, string] {
   return [dia, mes, anio];
 }
 
-/** Lo que dice cada estado en pantalla. */
-const ESTADOS: Record<string, string> = {
-  borrador: 'Borrador',
-  confirmado: 'Confirmado',
-  anulado: 'Anulado',
+/**
+ * Cada asiento del historial, en una frase.
+ *
+ * En pasado y en tercera persona, como se lee un registro. Las palabras son
+ * las mismas que las de la base desde que se unificaron: ver .
+ *
+ * «Editado» se dice distinto según desde dónde: corregir un pedido recién
+ * creado es rutina y tocar uno ya enviado no lo es, y el historial existe
+ * justamente para que esa diferencia se note.
+ */
+function frase(evento: EventoPedido): string {
+  switch (evento.accion) {
+    case 'creado':
+      return 'Se elaboró el pedido';
+    case 'enviado':
+      return 'Se envió a administración';
+    case 'confirmado':
+      return 'Se confirmó: el pedido quedó cerrado';
+    case 'anulado':
+      return 'Se anuló';
+    case 'editado':
+      return evento.detalle.estado === 'creado'
+        ? 'Se corrigió antes de enviarlo'
+        : `Se modificaron las cantidades (estaba ${nombreDeEstado(evento.detalle.estado ?? '')})`;
+    default:
+      return evento.accion;
+  }
+}
+
+/**
+ * Dónde está el pedido, con los tres pasos delante.
+ *
+ * Sustituye a tres cajas de aviso que decían lo mismo en cuatro líneas cada
+ * una. Una caja es para lo que INTERRUMPE —un error, algo que hay que leer
+ * antes de seguir—; el estado no interrumpe nada, se consulta de un vistazo,
+ * y en caja acababa empujando el documento fuera de la pantalla en cada visita.
+ *
+ * Los iconos no son decoración: marcan qué pasos ya se dieron, así que dicen a
+ * la vez dónde está y cuánto queda. Y el texto va igualmente — el verde es un
+ * refuerzo, no el dato: quien no distinga los tonos lee «Enviado» y su
+ * instrucción exactamente igual.
+ *
+ * Los nombres visibles salen de `PASOS_PEDIDO`, que desde la unificación son
+ * los mismos que guarda la base.
+ */
+
+/** El visto de un paso ya dado. Un solo trazo, para que se lea a 16 px. */
+const Visto = () => (
+  <svg className="pasos-pedido__icono" viewBox="0 0 16 16" aria-hidden="true">
+    <circle cx="8" cy="8" r="7" />
+    <path d="M4.8,8.3 L7,10.5 L11.2,5.8" fill="none" strokeWidth="1.8"
+          strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+/** Lo que todavía no ha pasado: el mismo círculo, hueco y gris. */
+const Pendiente = () => (
+  <svg className="pasos-pedido__icono" viewBox="0 0 16 16" aria-hidden="true">
+    <circle cx="8" cy="8" r="7" fill="none" strokeWidth="1.5" />
+  </svg>
+);
+
+function LineaEstado({ estado, acciones }: { estado: string; acciones?: ReactNode }) {
+  if (estado === 'anulado') {
+    /*
+     * Un anulado no está en ningún paso: se salió del camino. Enseñar los tres
+     * con alguno en verde diría que sigue avanzando, que es justo lo contrario.
+     */
+    return (
+      <p className="pasos-pedido pasos-pedido--anulado no-imprimir">
+        <svg className="pasos-pedido__icono" viewBox="0 0 16 16" aria-hidden="true">
+          <circle cx="8" cy="8" r="7" fill="none" strokeWidth="1.5" />
+          <path d="M5.2,5.2 L10.8,10.8 M10.8,5.2 L5.2,10.8"
+                strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+        <strong className="pasos-pedido__nombre">{ANULADO.nombre}</strong>
+        <span className="pasos-pedido__que">{ANULADO.queSigue}</span>
+      </p>
+    );
+  }
+
+  const actual = PASOS_PEDIDO.findIndex((p) => p.estado === estado);
+
+  return (
+    <div className="pasos-pedido no-imprimir">
+      {/*
+        Los pasos a la izquierda y los botones a la derecha, en la MISMA fila.
+        Estaban arriba, junto al título, y ahí competían con él por el ancho:
+        con un proveedor de nombre largo se caían a una fila propia. Aquí van
+        justo al lado de lo que dicen que falta —«Valida y confirma el pedido»
+        y el botón «Confirmar pedido»— que es donde se buscan.
+      */}
+      <div className="pasos-pedido__fila">
+        {/*
+          Los pasos y su instrucción van JUNTOS en una columna, y los botones
+          al lado. La instrucción estaba fuera de la fila y por eso los botones
+          se alineaban solo con los pasos, quedando la explicación descolgada
+          debajo. Como una sola caja, los botones se centran contra las dos
+          líneas.
+        */}
+        <div className="pasos-pedido__estado">
+          {/*
+            Los TRES pasos, siempre. Enseñar solo el actual obligaba a recordar
+            cuántos quedaban; con los tres delante, dónde está el pedido se ve
+            sin saberse el proceso de memoria.
+
+            Es una lista ordenada porque eso es: una secuencia. Quien la oiga
+            con un lector de pantalla necesita ese orden tanto como quien la ve.
+          */}
+          <ol className="pasos-pedido__lista">
+            {PASOS_PEDIDO.map((paso, i) => {
+              const dado = i <= actual;
+              return (
+                <li
+                  key={paso.estado}
+                  className={`pasos-pedido__paso${dado ? ' pasos-pedido__paso--dado' : ''}`
+                    + (i === actual ? ' pasos-pedido__paso--aqui' : '')}
+                  aria-current={i === actual ? 'step' : undefined}
+                >
+                  {dado ? <Visto /> : <Pendiente />}
+                  <span className="pasos-pedido__nombre">{paso.nombre}</span>
+                </li>
+              );
+            })}
+          </ol>
+
+          {/*
+            Solo la del paso actual. Las tres a la vez serían tres
+            instrucciones compitiendo, y dos de ellas para un momento que ya
+            pasó o que todavía no toca.
+          */}
+          <p className="pasos-pedido__que">{PASOS_PEDIDO[actual]?.queSigue ?? ''}</p>
+        </div>
+
+        {acciones}
+      </div>
+    </div>
+  );
+}
+
+/** El rol con el que se hizo, dicho con palabras. */
+const ROLES: Record<string, string> = {
+  mostrador: 'mostrador',
+  auxiliar: 'auxiliar administrativo',
+  admin: 'administración',
 };
+
+/**
+ * El historial de modificaciones del pedido.
+ *
+ * Va con `.no-imprimir`: en el papel de un FBE.04 no cabe ni pinta nada — la
+ * hoja es el pedido, no su biografía. Aquí abajo sí, porque es donde alguien
+ * pregunta «¿y esto quién lo cambió?».
+ *
+ * REUTILIZA las clases `.historial*` de `componentes.css`, que ya existían
+ * para el historial de una reserva. Son el mismo objeto —qué le ha pasado a
+ * esto, del último cambio al primero— y por eso no se inventan clases nuevas:
+ * dos sistemas paralelos para la misma idea es exactamente lo que hubo que
+ * deshacer en `react.css` (regla 5 de CLAUDE.md). De ahí viene también que la
+ * antigüedad se marque con el borde izquierdo y no con un punto de color.
+ *
+ * Los asientos sin autor son los que se reconstruyeron al cargar el histórico
+ * de los Excel: se sabe CUÁNDO pasó porque la fecha estaba guardada, y no se
+ * sabe quién. Se dice así en vez de dejar el hueco en blanco, que se leería
+ * como un fallo de la pantalla.
+ */
+function Historia({ eventos }: { eventos: EventoPedido[] }) {
+  if (eventos.length === 0) return null;
+
+  return (
+    <section className="historial no-imprimir">
+      <h2 className="historial__titulo">Historial del pedido</h2>
+      <ol className="historial__lista">
+        {eventos.map((evento, i) => (
+          <li key={`${evento.ocurridoEn}-${i}`} className="historial__asiento">
+            <p className="historial__marca">
+              {formatearFechaLarga(evento.ocurridoEn.slice(0, 10))}
+              {' · '}
+              {new Date(evento.ocurridoEn).toLocaleTimeString('es-CO', {
+                hour: '2-digit', minute: '2-digit',
+              })}
+              {evento.autorNombre
+                ? ` · ${evento.autorNombre}${evento.autorRol
+                  ? ` (${ROLES[evento.autorRol] ?? evento.autorRol})` : ''}`
+                : ' · sin registro de quién: viene del histórico importado'}
+            </p>
+            <p className="historial__cambio">{frase(evento)}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
 
 export function Documento() {
   const { pedidoId = '' } = useParams();
@@ -89,15 +282,57 @@ export function Documento() {
   const [trabajando, setTrabajando] = useState(false);
   const [aviso, setAviso] = useState<{ tipo: 'exito' | 'error'; mensaje: string } | null>(null);
 
-  const esBorrador = pedido?.estado === 'borrador';
+  const esCreado = pedido?.estado === 'creado';
+  const rol = perfil?.rol ?? 'mostrador';
+
+  /*
+   * Las mismas dos reglas que el servidor, repetidas aquí para no ofrecer un
+   * botón que va a dar error. La que manda es la de `api/`, y la de más al
+   * fondo la de `puede_editar_pedido` en SQL: esto es aviso, no permiso.
+   */
+  const puedeEditar = pedido
+    ? (pedido.estado === 'creado'
+      || (pedido.estado === 'enviado' && puede(rol, 'modificarEnviados'))
+      || (pedido.estado === 'confirmado' && puede(rol, 'anularEnviados')))
+    : false;
+
+  // Confirmar solo existe sobre un enviado, y solo para quien tiene el encargo
+  // de hablar con el proveedor.
+  const puedeConfirmar = pedido?.estado === 'enviado' && puede(rol, 'confirmarPedidos');
 
   /**
-   * Confirmar recarga el pedido en vez de retocar el estado en local.
+   * Enviar recarga el pedido en vez de retocar el estado en local.
    *
-   * Lo que devuelve el servidor es la verdad —incluida la hora de
-   * confirmación, que la pone la base— y `recargar` deja la pantalla contando
-   * exactamente lo que hay guardado. Adivinarlo aquí abriría la puerta a que
-   * la pantalla dijera «confirmado» sobre algo que no llegó a guardarse.
+   * Lo que devuelve el servidor es la verdad —incluida la hora de envío, que
+   * la pone la base— y `recargar` deja la pantalla contando exactamente lo que
+   * hay guardado. Adivinarlo aquí abriría la puerta a que la pantalla dijera
+   * «enviado» sobre algo que no llegó a guardarse.
+   */
+  const enviar = useCallback(async () => {
+    if (!pedido) return;
+    setTrabajando(true);
+    setAviso(null);
+    try {
+      await enviarPedido(pedido.id);
+      recargar();
+      setAviso({
+        tipo: 'exito',
+        mensaje: 'Pedido enviado. Se avisó a administración para imprimirlo y firmarlo.',
+      });
+    } catch (fallo) {
+      setAviso({ tipo: 'error', mensaje: (fallo as Error).message });
+    } finally {
+      setTrabajando(false);
+    }
+  }, [pedido, recargar]);
+
+  /**
+   * Confirmar. Mismo patrón que enviar: recargar, no adivinar.
+   *
+   * Pasa por el modal de confirmación y no por `window.confirm`, por lo mismo
+   * que la cancelación de una reserva: el texto del navegador no se puede
+   * redactar y el cuadro sale donde el navegador quiere, a veces lejos de
+   * donde estaba mirando quien lo pidió.
    */
   const confirmar = useCallback(async () => {
     if (!pedido) return;
@@ -108,7 +343,7 @@ export function Documento() {
       recargar();
       setAviso({
         tipo: 'exito',
-        mensaje: 'Pedido confirmado. Se avisó a administración para imprimirlo y firmarlo.',
+        mensaje: 'Pedido confirmado. Queda cerrado y ya no se edita.',
       });
     } catch (fallo) {
       setAviso({ tipo: 'error', mensaje: (fallo as Error).message });
@@ -117,17 +352,24 @@ export function Documento() {
     }
   }, [pedido, recargar]);
 
+  /** Lo que el modal tiene delante. `null` mientras está cerrado. */
+  const [confirmacion, setConfirmacion] = useState<PeticionConfirmacion | null>(null);
+
+  const pedirConfirmacion = useCallback(() => {
+    setConfirmacion({
+      titulo: 'Confirmar el pedido',
+      detalle: 'Queda cerrado con las cantidades que tiene ahora, como lo que '
+        + 'el proveedor va a entregar, y a partir de aquí ya no se puede editar.',
+      textoConfirmar: 'Sí, confirmarlo',
+      // Primario y no peligro: no destruye nada, es el paso normal del día.
+      tono: 'primario',
+      alConfirmar: () => { void confirmar(); },
+    });
+  }, [confirmar]);
+
   return (
     <>
       <main className="contenedor pagina">
-        {perfil && (
-          <BarraSesion
-            perfil={perfil}
-            alSalir={salir}
-            sede={pedido?.cafeteriaNombre}
-            volver={{ a: '/pedidos', texto: '← Todos los proveedores' }}
-          />
-        )}
 
         {cargando && <BloqueEstado tipo="cargando" titulo="Cargando el pedido…" />}
 
@@ -148,85 +390,105 @@ export function Documento() {
               tenerlos fuera evita además que hereden sus estilos de tabla.
             */}
             <section className="encabezado-reserva no-imprimir">
-              <div>
-                <p className="encabezado-reserva__ubicacion">
-                  Pedido n.º {pedido.id}
-                  <span className="separador" aria-hidden="true">·</span>
-                  {ESTADOS[pedido.estado] ?? pedido.estado}
-                </p>
-                <h1 className="encabezado-reserva__titulo">{pedido.proveedorNombre}</h1>
-                <p className="encabezado-reserva__meta">
-                  {pedido.cafeteriaNombre}
-                  <span className="separador" aria-hidden="true">·</span>
-                  {formatearFechaLarga(pedido.fechaElaboracion)}
-                </p>
-              </div>
-
-              {/* `.filtros__acciones` y no `.tabla__acciones`: el segundo es
-                  un ayudante de CELDA —`width: 1%` y `white-space: nowrap`— y
-                  ese nowrap impedía que los botones se envolvieran, así que en
-                  una ventana estrecha se salían de la página. */}
-              <div className="filtros__acciones">
-                {/*
-                  Un borrador ofrece corregir y confirmar; uno confirmado, solo
-                  imprimir. Los botones que no aplican no se enseñan
-                  deshabilitados: un botón apagado invita a preguntarse qué
-                  falta para encenderlo, y aquí no falta nada — es que ya no
-                  toca.
-                */}
-                {esBorrador && (
-                  <Link
-                    className="boton boton--secundario"
-                    to={`/pedidos/editar/${pedido.id}`}
-                  >
-                    Editar
-                  </Link>
-                )}
-
-                <button
-                  type="button"
-                  className={`boton ${esBorrador ? 'boton--secundario' : 'boton--primario'}`}
-                  onClick={() => window.print()}
-                >
-                  Imprimir o guardar PDF
-                </button>
-
-                {esBorrador && (
-                  <button
-                    type="button"
-                    className="boton boton--primario"
-                    onClick={confirmar}
-                    disabled={trabajando}
-                    aria-busy={trabajando}
-                  >
-                    {trabajando ? 'Confirmando…' : 'Confirmar pedido'}
-                  </button>
-                )}
+              <div className="encabezado-reserva__texto">
+                {/* El número comparte renglón con el enlace. Sin el estado:
+                    lo dicen los tres pasos de abajo, con lo que falta. */}
+                {/* Al HISTORIAL y no a la lista de proveedores: desde un
+                    pedido, «volver» es a los demás pedidos. Y es el único
+                    destino que sirve para los tres roles — el auxiliar no
+                    tiene acceso a la lista de proveedores. */}
+                <BarraVolver
+                  volver={{ a: '/pedidos/historial', texto: '← Todos los pedidos' }}
+                  contexto={`Pedido n.º ${pedido.id}`}
+                />
+                <div className="encabezado-reserva__linea">
+                  <h1 className="encabezado-reserva__titulo">{pedido.proveedorNombre}</h1>
+                  <p className="encabezado-reserva__meta">
+                    {pedido.cafeteriaNombre}
+                    <span className="separador" aria-hidden="true">·</span>
+                    {formatearFechaLarga(pedido.fechaElaboracion)}
+                  </p>
+                </div>
               </div>
             </section>
 
             {/*
-              El aviso de que esto todavía no ha salido de la cafetería. Va
-              fuera del documento y con `.no-imprimir`: en el papel no pinta
-              nada, y de hecho un borrador impreso con un cartel de «borrador»
-              encima sería confuso — el papel es justo lo que se usa para
-              revisarlo.
+              El estado va fuera del documento y con `.no-imprimir`: en el
+              papel no pinta nada, y de hecho un pedido impreso con un cartel de
+              «creado» encima sería confuso — el papel es justo lo que se
+              usa para revisarlo.
             */}
-            {esBorrador && (
-              <p className="aviso aviso--aviso no-imprimir" role="status">
-                Este pedido es un borrador: todavía no le ha llegado a
-                administración. Imprímelo o revísalo en pantalla, corrígelo si
-                hace falta, y confírmalo cuando esté bien.
-              </p>
-            )}
+            <LineaEstado
+              estado={pedido.estado}
+              acciones={(
+                /* `.filtros__acciones` y no `.tabla__acciones`: el segundo es
+                   un ayudante de CELDA —`width: 1%` y `white-space: nowrap`— y
+                   ese nowrap impedía que los botones se envolvieran, así que en
+                   una ventana estrecha se salían de la página. */
+                <div className="filtros__acciones">
+                  {/*
+                    Un pedido recién creado ofrece corregir y enviar; uno
+                    enviado, modificar y confirmar. Los botones que no aplican
+                    no se enseñan deshabilitados: un botón apagado invita a
+                    preguntarse qué falta para encenderlo, y aquí no falta
+                    nada — es que ya no toca.
+                  */}
+                  {puedeEditar && (
+                    <Link
+                      className="boton boton--secundario"
+                      to={`/pedidos/editar/${pedido.id}`}
+                    >
+                      {esCreado ? 'Editar' : 'Modificar'}
+                    </Link>
+                  )}
 
-            {pedido.estado === 'anulado' && (
-              <p className="aviso aviso--error no-imprimir" role="status">
-                Este pedido está anulado. Se conserva para el historial, pero no
-                hay que atenderlo.
-              </p>
-            )}
+                  {/*
+                    Imprimir es la acción principal solo cuando no hay otra: en
+                    un pedido creado manda «Enviar» y en uno enviado manda
+                    «Confirmar». Dos botones primarios juntos no jerarquizan
+                    nada — dejan al ojo eligiendo entre dos verdes iguales.
+                  */}
+                  <button
+                    type="button"
+                    className={`boton ${esCreado || puedeConfirmar
+                      ? 'boton--secundario' : 'boton--primario'}`}
+                    onClick={() => window.print()}
+                  >
+                    Imprimir o guardar PDF
+                  </button>
 
+                  {esCreado && (
+                    <button
+                      type="button"
+                      className="boton boton--primario"
+                      onClick={enviar}
+                      disabled={trabajando}
+                      aria-busy={trabajando}
+                    >
+                      {trabajando ? 'Enviando…' : 'Enviar a administración'}
+                    </button>
+                  )}
+
+                  {puedeConfirmar && (
+                    <button
+                      type="button"
+                      className="boton boton--primario"
+                      onClick={pedirConfirmacion}
+                      disabled={trabajando}
+                      aria-busy={trabajando}
+                    >
+                      {trabajando ? 'Confirmando…' : 'Confirmar pedido'}
+                    </button>
+                  )}
+                </div>
+              )}
+            />
+
+            {/*
+              Esto SÍ sigue siendo una caja, y a propósito: no describe el
+              estado, informa del resultado de algo que se acaba de pulsar. Un
+              error al confirmar tiene que interrumpir; el estado, no.
+            */}
             {aviso && (
               <p className={`aviso aviso--${aviso.tipo} no-imprimir`} role="status">
                 {aviso.mensaje}
@@ -234,9 +496,16 @@ export function Documento() {
             )}
 
             <Hoja pedido={pedido} />
+
+            <Historia eventos={pedido.eventos} />
           </>
         )}
       </main>
+
+      <ModalConfirmacion
+        peticion={confirmacion}
+        alCerrar={() => setConfirmacion(null)}
+      />
 
       {/* Sin `<Pie>`: el pie institucional ya está dentro del documento, y
           repetirlo debajo diría dos veces lo mismo con dos formatos. */}

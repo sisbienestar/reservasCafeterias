@@ -9,6 +9,10 @@
  * Las columnas cambian según `tipoDocumento`, que lo dice el PROVEEDOR y no
  * esta pantalla. Ver `CONTRATO.md` §3.
  *
+ * Las columnas de después del despacho —devuelta, adicional y total de
+ * salida— NO están aquí, y no es un olvido: se rellenan a mano sobre el papel
+ * impreso. `Documento.tsx` las sigue sacando, en blanco, que es su sitio.
+ *
  * Tampoco hay «limpiar»: cada pedido nuevo parte de un formulario en blanco,
  * así que la macro que borraba las cantidades para reutilizar la plantilla ya
  * no tiene nada que hacer.
@@ -23,19 +27,24 @@ import {
 } from '../../servicios/pedidosServicio.js';
 import { usePeticion } from '../../utiles/usePeticion.js';
 import { BloqueEstado } from '../../componentes/BloqueEstado.js';
-import { BarraSesion } from '../../componentes/BarraSesion.js';
+import { BarraVolver } from '../../componentes/BarraVolver.js';
 import { Pie } from '../../componentes/Pie.js';
 import { useHoy, useSesion } from '../../contexto/Sesion.js';
 import { formatearFechaLarga } from '../../utiles/fechas.js';
 
-/** Lo tecleado en un renglón. Cadenas, no números: es lo que hay en el input. */
-interface Casillas {
-  solicitada: string;
-  devuelta: string;
-  adicional: string;
-}
+/*
+ * Lo tecleado en un renglón: UNA cantidad, la solicitada. Cadena y no número,
+ * porque es lo que hay en el input.
+ *
+ * Hubo un momento en que esto eran tres casillas —solicitada, devuelta y
+ * adicional—. Las dos últimas son columnas del FBE.04 que rellena EL ALMACÉN
+ * a mano DESPUÉS de despachar, así que pedírselas a quien elabora el pedido
+ * era pedirle un dato que en ese momento no existe. Siguen en la base y
+ * siguen saliendo IMPRESAS en blanco, que es donde se escriben.
+ */
+type Casillas = string;
 
-const VACIO: Casillas = { solicitada: '', devuelta: '', adicional: '' };
+const VACIO: Casillas = '';
 
 /**
  * Una casilla vacía es `null`, no cero.
@@ -129,12 +138,7 @@ export function Pedido() {
     if (!original) return;
 
     setCasillas(Object.fromEntries(original.lineas.map((linea) => [
-      linea.productoId,
-      {
-        solicitada: String(linea.cantidadSolicitada),
-        devuelta: linea.cantidadDevuelta === null ? '' : String(linea.cantidadDevuelta),
-        adicional: linea.cantidadAdicional === null ? '' : String(linea.cantidadAdicional),
-      },
+      linea.productoId, String(linea.cantidadSolicitada),
     ])));
 
     setLugarEntrega(original.lugarEntrega);
@@ -143,11 +147,8 @@ export function Pedido() {
     setSedeElegida(original.cafeteriaId);
   }, [original]);
 
-  const escribir = useCallback((productoId: number, campo: keyof Casillas, valor: string) => {
-    setCasillas((antes) => ({
-      ...antes,
-      [productoId]: { ...(antes[productoId] ?? VACIO), [campo]: valor },
-    }));
+  const escribir = useCallback((productoId: number, valor: string) => {
+    setCasillas((antes) => ({ ...antes, [productoId]: valor }));
   }, []);
 
   const secciones = useMemo(
@@ -158,27 +159,44 @@ export function Pedido() {
   /** Los renglones que de verdad van al pedido: los que tienen cantidad. */
   const lineas = useMemo<LineaNueva[]>(() => {
     const salida: LineaNueva[] = [];
-    for (const [id, valores] of Object.entries(casillas)) {
-      const solicitada = aNumero(valores.solicitada);
+    for (const [id, texto] of Object.entries(casillas)) {
+      const solicitada = aNumero(texto);
       if (solicitada === null || solicitada === 0) continue;
+      /*
+       * Devuelta y adicional van SIEMPRE en blanco desde aquí, también en un
+       * FBE.04. No es que se pierdan: es que a la hora de elaborar el pedido
+       * todavía no existen —las escribe el almacén sobre el papel, después de
+       * despachar—, y una casilla vacía dice exactamente eso, mientras que un
+       * cero diría «se miró y no hubo devolución».
+       */
       salida.push({
         productoId: Number(id),
         cantidadSolicitada: solicitada,
-        cantidadDevuelta: esAlmacen ? aNumero(valores.devuelta) : null,
-        cantidadAdicional: esAlmacen ? aNumero(valores.adicional) : null,
+        cantidadDevuelta: null,
+        cantidadAdicional: null,
       });
     }
     return salida;
-  }, [casillas, esAlmacen]);
+  }, [casillas]);
 
   /**
    * De qué sede es el pedido.
    *
-   * El mostrador no decide: manda la suya y el servidor se la impone de todas
-   * formas —`sedePermitida`—, así que aquí solo se manda para que el pedido
-   * salga completo. Administración sí elige, y hasta que elija no hay sede.
+   * EDITANDO no se decide nada: el pedido ya tiene la suya y no se puede
+   * cambiar —`pedidos.actualizar` ni siquiera acepta el campo—. Antes esta
+   * línea no distinguía los dos casos y calculaba la sede igual para corregir
+   * que para crear; con el auxiliar administrativo, que no tiene sede, eso
+   * dejaba abrir el formulario y luego se negaba a guardar con un «tu cuenta
+   * no tiene una sede asignada» que además era irrelevante: no hacía falta
+   * ninguna sede para lo que se estaba haciendo.
+   *
+   * CREANDO sí importa. El mostrador no elige: manda la suya y el servidor se
+   * la impone igualmente —`sedePermitida`—, así que aquí solo va para que el
+   * pedido salga completo. Administración elige, y hasta que elija no hay.
    */
-  const sedeDelPedido = esAdmin ? sedeElegida : (perfil?.cafeteriaId ?? '');
+  const sedeDelPedido = original
+    ? original.cafeteriaId
+    : (esAdmin ? sedeElegida : (perfil?.cafeteriaId ?? ''));
 
   /** El nombre de esa sede, cuando se conoce. Solo administración carga la lista. */
   const nombreDeSede = (sedes ?? []).find((s) => s.id === sedeDelPedido)?.nombre;
@@ -186,7 +204,8 @@ export function Pedido() {
   const guardar = useCallback(async () => {
     if (!proveedor || !perfil) return;
 
-    if (!sedeDelPedido) {
+    // Solo al crear: corrigiendo, la sede viene del pedido y no falta nunca.
+    if (!original && !sedeDelPedido) {
       setAviso({
         tipo: 'error',
         mensaje: esAdmin
@@ -238,18 +257,6 @@ export function Pedido() {
   return (
     <>
       <main className="contenedor pagina">
-        {perfil && (
-          <BarraSesion
-            perfil={perfil}
-            alSalir={salir}
-            // La sede DEL PEDIDO, que en administración es la elegida y cambia
-            // con el desplegable. Sin elegir no se pone nada: mejor un hueco
-            // que un nombre que no es el que se va a guardar.
-            sede={nombreDeSede}
-            volver={{ a: '/pedidos', texto: '← Todos los proveedores' }}
-          />
-        )}
-
         {cargando && <BloqueEstado tipo="cargando" titulo="Cargando el catálogo…" />}
 
         {(error || errorPedido) && (
@@ -264,22 +271,25 @@ export function Pedido() {
         {proveedor && (
           <>
             <section className="encabezado-reserva">
-              <div>
-                <p className="encabezado-reserva__ubicacion">
-                  {editando && original
-                    ? `Corrigiendo el borrador n.º ${original.id}`
+              <div className="encabezado-reserva__texto">
+                <BarraVolver
+                  volver={{ a: '/pedidos', texto: '← Todos los proveedores' }}
+                  contexto={editando && original
+                    ? `Corrigiendo el pedido n.º ${original.id}`
                     : `${esAlmacen ? 'Almacén interno' : 'Proveedor externo'} · Código ${proveedor.tipoDocumento}`}
-                </p>
-                <h1 className="encabezado-reserva__titulo">{proveedor.nombre}</h1>
-                <p className="encabezado-reserva__meta">
-                  {formatearFechaLarga(hoy)}
-                  {proveedor.categoriaFija && (
-                    <>
-                      <span className="separador" aria-hidden="true">·</span>
-                      {proveedor.categoriaFija}
-                    </>
-                  )}
-                </p>
+                />
+                <div className="encabezado-reserva__linea">
+                  <h1 className="encabezado-reserva__titulo">{proveedor.nombre}</h1>
+                  <p className="encabezado-reserva__meta">
+                    {formatearFechaLarga(hoy)}
+                    {proveedor.categoriaFija && (
+                      <>
+                        <span className="separador" aria-hidden="true">·</span>
+                        {proveedor.categoriaFija}
+                      </>
+                    )}
+                  </p>
+                </div>
               </div>
 
               <button
@@ -391,9 +401,6 @@ export function Pedido() {
                     <th scope="col">{esAlmacen ? 'Nombre del producto' : 'Descripción del producto'}</th>
                     <th scope="col">Unidad</th>
                     <th scope="col">{esAlmacen ? 'Cant. solicitada' : 'Cant. pedida'}</th>
-                    {esAlmacen && <th scope="col">Cant. devuelta</th>}
-                    {esAlmacen && <th scope="col">Cant. adicional</th>}
-                    {esAlmacen && <th scope="col">Total salida</th>}
                   </tr>
                 </thead>
 
@@ -406,16 +413,13 @@ export function Pedido() {
                     */}
                     {seccion.categoria && (
                       <tr className="tabla__fila--seccion">
-                        <th scope="colgroup" colSpan={esAlmacen ? 8 : 4}>{seccion.categoria}</th>
+                        <th scope="colgroup" colSpan={esAlmacen ? 5 : 4}>{seccion.categoria}</th>
                       </tr>
                     )}
 
                     {seccion.productos.map((producto) => {
-                      const valores = casillas[producto.id] ?? VACIO;
-                      const solicitada = aNumero(valores.solicitada) ?? 0;
-                      const devuelta = aNumero(valores.devuelta) ?? 0;
-                      const adicional = aNumero(valores.adicional) ?? 0;
-                      const pedido = solicitada > 0;
+                      const texto = casillas[producto.id] ?? VACIO;
+                      const pedido = (aNumero(texto) ?? 0) > 0;
 
                       return (
                         <tr key={producto.id} className={pedido ? 'tabla__fila--nueva' : undefined}>
@@ -431,56 +435,12 @@ export function Pedido() {
                               min="0"
                               step="0.01"
                               inputMode="decimal"
-                              value={valores.solicitada}
+                              value={texto}
                               disabled={guardando}
                               aria-label={`Cantidad de ${producto.nombre}`}
-                              onChange={(e) => escribir(producto.id, 'solicitada', e.target.value)}
+                              onChange={(e) => escribir(producto.id, e.target.value)}
                             />
                           </td>
-
-                          {esAlmacen && (
-                            <td>
-                              <input
-                                className="campo__control cantidad"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                inputMode="decimal"
-                                value={valores.devuelta}
-                                disabled={guardando}
-                                aria-label={`Cantidad devuelta de ${producto.nombre}`}
-                                onChange={(e) => escribir(producto.id, 'devuelta', e.target.value)}
-                              />
-                            </td>
-                          )}
-
-                          {esAlmacen && (
-                            <td>
-                              <input
-                                className="campo__control cantidad"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                inputMode="decimal"
-                                value={valores.adicional}
-                                disabled={guardando}
-                                aria-label={`Cantidad adicional de ${producto.nombre}`}
-                                onChange={(e) => escribir(producto.id, 'adicional', e.target.value)}
-                              />
-                            </td>
-                          )}
-
-                          {/*
-                            El total NO es un campo: lo calcula la base de
-                            datos con una columna generada. Aquí se enseña el
-                            mismo cálculo para que se vea al teclear, pero
-                            escribible daría dos fuentes para un solo número.
-                          */}
-                          {esAlmacen && (
-                            <td className="tabla__numero">
-                              {pedido ? solicitada - devuelta + adicional : '—'}
-                            </td>
-                          )}
                         </tr>
                       );
                     })}

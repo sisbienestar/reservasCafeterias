@@ -1,0 +1,138 @@
+[
+ {
+  "nombre": "AGUACATE",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "ARVEJA VERDE DESGRANADA",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "BANANO URABA",
+  "unidad": "UNIDAD"
+ },
+ {
+  "nombre": "BROCOLI",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "CALABACIN AMARILLO",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "CALABACIN VERDE",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "CEBOLLA CABEZONA BLANCA",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "CEBOLLA CABEZONA ROJA",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "CEBOLLA JUNCA",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "CHAMPIÑONES",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "CILANTRO",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "COLIFLOR",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "ESPINACAS",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "FRESA",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "LECHUGA CRESPA",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "MARACUYA",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "MANGO TOMMI",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "MANZANA ROJA",
+  "unidad": "UNIDAD"
+ },
+ {
+  "nombre": "MANZANA VERDE",
+  "unidad": "UNIDAD"
+ },
+ {
+  "nombre": "MAZORCA DESGRANDA",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "MELON",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "NARANJA VALENCIA",
+  "unidad": "UNIDAD"
+ },
+ {
+  "nombre": "PAPAYA",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "PEPINO COHOMBRO",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "PERAS",
+  "unidad": "UNIDAD"
+ },
+ {
+  "nombre": "PEREJIL",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "PIÑA OROMIEL",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "PIÑA OROMIEL PELADA",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "REPOLLO MORADO",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "TOMATE MANZANO VERDE",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "TOMATE ROJO CHONTO MADURO",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "TOMATE ROJO CHONTO PINTON",
+  "unidad": "LIBRAS"
+ },
+ {
+  "nombre": "LIMONES",
+  "unidad": "UNIDAD"
+ },
+ {
+  "nombre": "ZANAHORIA",
+  "unidad": "LIBRAS"
+ }
+]

@@ -44,10 +44,17 @@ administración.
 | `/reservas/admin` | Administración de reservas | rol `admin` |
 | `/pedidos` | Almacenes y proveedores | con sesión |
 | `/pedidos/:proveedorId` | El formulario de pedido | con sesión, y con sede |
-| `/pedidos/editar/:pedidoId` | El mismo formulario, con un borrador dentro | con sesión, y solo su sede |
+| `/pedidos/editar/:pedidoId` | El mismo formulario, con un pedido dentro | con sesión, y solo su sede |
 | `/pedidos/historial` | Los pedidos hechos, filtrables | con sesión; el mostrador solo ve su sede |
 | `/pedidos/admin` | Proveedores, productos y cuentas | rol `admin` |
 | `/pedidos/documento/:pedidoId` | El pedido, listo para imprimir | con sesión |
+
+**Hay tres roles.** `mostrador` lleva SIEMPRE una sede y solo ve la suya.
+`admin` y `auxiliar` —«Auxiliar Administrativo Cafeterías»— van SIN sede y las
+ven todas; el auxiliar vive solo en pedidos, donde modifica las cantidades a lo
+que el proveedor va a entregar. El código decide alcance por `cafeteriaId` nulo
+o no, **nunca enumerando roles**: así un rol nuevo sin sede no se queda fuera en
+silencio.
 
 `/reserva/:cafeteriaId` y `/admin` son las direcciones de antes y siguen
 redirigiendo: el mostrador tiene la suya guardada en el navegador.
@@ -80,14 +87,40 @@ pintar nada. **Si esas tablas no existen, NO ARRANCA**: ver `09-admin-general.sq
 
 ### El ciclo de un pedido
 
-`borrador` → `confirmado` → (`anulado`). Se elabora, se revisa impreso, se
-corrige si hace falta y se confirma; al confirmar deja de ser editable y se
-avisa por correo a las cuentas `admin`, que son quienes imprimen y firman.
+`creado` → `enviado` → `confirmado`, y `anulado` desde cualquiera de los tres.
+Se elabora, se revisa impreso, se corrige y se envía; al enviar se avisa por
+correo a las cuentas `admin`, que son quienes imprimen y firman.
 
-Dos cosas que no se deshacen: **un confirmado no vuelve a borrador** —puede
-haber papel circulando— y **el aviso nunca tumba la confirmación**. Ver
+**`confirmado` es el pedido ya listo.** Existe porque lo que se pide no
+siempre es lo que el proveedor puede traer: entre enviar y confirmar hay una
+ventana para cuadrar las cantidades con lo que va a llegar de verdad. Pasar por
+ahí no implica que se haya cambiado nada — muchos llegan enteros y se confirman
+tal cual.
+
+**La pantalla y la base usan LAS MISMAS PALABRAS, y eso costó llegar.** Los
+estados se llamaron `borrador/confirmado/definitivo` en la base mientras la
+pantalla decía «Creado/Enviado/Confirmado», así que «Confirmado» en una captura
+no era `confirmado` en la base. Duró tres días: la primera petición que llegó
+—«pon en confirmado los pedidos hasta el 21»— ya era ambigua. Lo unificó
+`supabase/16-unificar-estados.sql`, y su cabecera explica por qué el ORDEN de
+los renombrados no era negociable.
+
+Quién edita en cada estado es una matriz, y está escrita tres veces a
+propósito: `puede_editar_pedido` en SQL —la que manda—, `EDITORES` en
+`api/_nucleo/acciones/pedidos.ts` para poder explicar el porqué, y los botones
+de `Documento.tsx` para no ofrecer lo que va a fallar. Si cambia, cambian las
+tres. Está en `CONTRATO.md`.
+
+Tres cosas que no se deshacen: **un enviado no vuelve a creado y un confirmado
+no vuelve a enviado** —puede haber papel circulando—, **un anulado
+no lo edita nadie, ni administración** —es un pedido que se decidió que no
+existe— y **el aviso nunca tumba la confirmación**. Ver
 `api/_nucleo/notificaciones.ts`: no lanza jamás, y añadir Slack o Telegram es
 otra función en su lista `CANALES`.
+
+Todo lo que le pasa a un pedido deja asiento en `pedido_evento`, y llega dentro
+del propio pedido en `eventos[]`. Copia el nombre y el rol de quien lo hizo **en
+ese momento**, por lo mismo que `producto_nombre` en las líneas.
 
 El correo sale por la API HTTPS de Resend, sin dependencias. Necesita
 `RESEND_API_KEY` y `RESEND_REMITENTE` en el entorno; sin ellas no envía y **no
@@ -142,6 +175,29 @@ npm run local        # backend en :3001 y frontend en :5173
 ```
 
 **Un solo comando, y Ctrl+C para los dos.**
+
+> ### Si la API «no reconoce» una acción que sí existe, el backend está rancio
+>
+> `ACCION_DESCONOCIDA` sobre una acción que está escrita en `enrutador.ts`
+> significa una sola cosa: **el proceso de `:3001` se arrancó antes de que se
+> escribiera**. No recarga solo. Ha pasado dos veces —con `pedidos.analisis` y
+> con `pedidos.enviar`— y las dos se buscó el fallo en el sitio equivocado.
+>
+> Se distingue en un segundo preguntándole a él qué conoce:
+>
+> ```bash
+> curl -s -X POST http://localhost:3001/api \
+>   -H "Content-Type: application/json" \
+>   -d '{"accion":"la.que.falla","params":{}}'
+> ```
+>
+> `NO_AUTENTICADO` quiere decir que la conoce y el problema es otro.
+> `ACCION_DESCONOCIDA` quiere decir que hay que matarlo y volver a levantarlo.
+>
+> Su pariente, cuando lo que no cuadra son los DATOS y no la acción: *la base
+> va por detrás del código*, porque falta pegar un archivo de `supabase/`. Eso
+> ya se dice solo — `traducirError` reconoce el `PGRST202` de PostgREST y
+> responde con el nombre de la función que falta.
 
 > ### Si la app carga pero los datos no llegan, lee esto primero
 >

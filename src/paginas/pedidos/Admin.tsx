@@ -16,17 +16,19 @@ import { Link } from 'react-router-dom';
 import {
   SeccionCuentas, SeccionProductos, SeccionProveedores,
 } from '../../componentes/pedidos/CatalogoPedidos.js';
-import { BarraSesion } from '../../componentes/BarraSesion.js';
+import { Analisis } from '../../componentes/pedidos/analisis/Analisis.js';
+import { BarraVolver } from '../../componentes/BarraVolver.js';
 import { ModalConfirmacion, type PeticionConfirmacion } from '../../componentes/ModalConfirmacion.js';
 import { Pie } from '../../componentes/Pie.js';
 import { useSesion } from '../../contexto/Sesion.js';
 
-type Pestana = 'proveedores' | 'productos' | 'cuentas';
+type Pestana = 'proveedores' | 'productos' | 'cuentas' | 'analisis';
 
 const PESTANAS: { id: Pestana; texto: string }[] = [
   { id: 'proveedores', texto: 'Proveedores' },
   { id: 'productos', texto: 'Productos' },
   { id: 'cuentas', texto: 'Cuentas' },
+  { id: 'analisis', texto: 'Análisis' },
 ];
 
 export function Admin() {
@@ -62,11 +64,12 @@ export function Admin() {
 
   return (
     <>
-      <main className="contenedor pagina">
+      {/* El análisis compara tablas anchas y mapas de calor: a 1080 px
+          cada tabla traería su propia barra de desplazamiento. Las demás
+          pestañas son formularios y listas, que se leen mejor estrechas. */}
+      <main className={pestana === "analisis" ? "contenedor contenedor--ancho pagina" : "contenedor pagina"}>
         {perfil && (
-          <BarraSesion
-            perfil={perfil}
-            alSalir={salir}
+          <BarraVolver
             volver={{ a: '/pedidos', texto: '← Ir a elaborar pedidos' }}
           />
         )}
@@ -74,8 +77,9 @@ export function Admin() {
         <section className="encabezado-admin">
           <h1 className="encabezado-admin__titulo">Administración de pedidos</h1>
           <p className="encabezado-admin__bajada">
-            El catálogo que se ve al elaborar un pedido: qué proveedores hay,
-            qué productos tiene cada uno y en qué orden salen impresos.
+            El catálogo que se ve al elaborar un pedido —qué proveedores hay,
+            qué productos tiene cada uno y en qué orden salen impresos— y el
+            análisis de lo que se ha pedido, para decidir qué y cuánto pedir.
           </p>
         </section>
 
@@ -114,6 +118,7 @@ export function Admin() {
           {pestana === 'proveedores' && <SeccionProveedores pedirConfirmacion={pedirConfirmacion} />}
           {pestana === 'productos' && <SeccionProductos pedirConfirmacion={pedirConfirmacion} />}
           {pestana === 'cuentas' && <SeccionCuentas />}
+          {pestana === 'analisis' && <Analisis />}
         </div>
 
         {pestana === 'cuentas' && (

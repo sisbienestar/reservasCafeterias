@@ -27,6 +27,7 @@ import { Pedido } from './paginas/pedidos/Pedido.js';
 import { Documento } from './paginas/pedidos/Documento.js';
 import { Historial } from './paginas/pedidos/Historial.js';
 import { Admin as PedidosAdmin } from './paginas/pedidos/Admin.js';
+import { puede } from './servicios/capacidades.js';
 import { AdminGeneral } from './paginas/AdminGeneral.js';
 
 export function App() {
@@ -127,7 +128,7 @@ export function App() {
         {/* Igual que la de reservas: sesión, y el acceso en la portada. */}
         <Route
           path="/pedidos"
-          element={<ExigeModulo modulo="pedidos"><ExigeSesion portada="/"><PedidosInicio /></ExigeSesion></ExigeModulo>}
+          element={<ExigeModulo modulo="pedidos"><ExigeSesion portada="/"><ExigeElaborar><PedidosInicio /></ExigeElaborar></ExigeSesion></ExigeModulo>}
         />
 
         {/*
@@ -169,7 +170,7 @@ export function App() {
 
         <Route
           path="/pedidos/:proveedorId"
-          element={<ExigeModulo modulo="pedidos"><ExigeSesion portada="/"><Pedido /></ExigeSesion></ExigeModulo>}
+          element={<ExigeModulo modulo="pedidos"><ExigeSesion portada="/"><ExigeElaborar><Pedido /></ExigeElaborar></ExigeSesion></ExigeModulo>}
         />
 
         {/*
@@ -279,17 +280,48 @@ function ExigeModulo({ modulo, children }: { modulo: string; children: React.Rea
   return <>{children}</>;
 }
 
+/**
+ * Cierra las pantallas de ELABORAR un pedido a quien no puede elaborarlos.
+ *
+ * Son dos: la lista de proveedores —cada tarjeta lleva a un formulario en
+ * blanco— y el formulario mismo. El auxiliar administrativo no crea pedidos,
+ * solo cuadra los que ya existen, así que entra directo al historial, que es
+ * donde está su trabajo.
+ *
+ * Va aquí y no dentro de las páginas por lo mismo que `ExigeSesion` y
+ * `ExigeModulo`: una redirección dentro del componente tendría que ir después
+ * de sus hooks para no romper las reglas de React, y entonces la pantalla ya
+ * habría pedido los datos que no va a enseñar.
+ *
+ * La cerradura de verdad sigue siendo `PERMISOS` en el servidor, que no le da
+ * `pedidos.crear`. Esto solo evita enseñar una puerta que responde que no.
+ */
+function ExigeElaborar({ children }: { children: React.ReactNode }) {
+  const { contexto } = useSesion();
+  const perfil = contexto?.perfil;
+
+  // Sin perfil todavía no se sabe: decide `ExigeSesion`, que va por fuera.
+  if (perfil && !puede(perfil.rol, 'elaborarPedidos')) {
+    return <Navigate to="/pedidos/historial" replace />;
+  }
+  return <>{children}</>;
+}
+
 function SoloSuSede({ children }: { children: React.ReactNode }) {
   const { contexto } = useSesion();
   const { cafeteriaId = '' } = useParams();
   const perfil = contexto?.perfil;
 
-  if (!perfil || perfil.rol === 'admin') return <>{children}</>;
+  // Quien no tiene sede asignada las ve todas: administración y el auxiliar
+  // administrativo. Se pregunta por la sede y no por el rol para que un rol
+  // nuevo sin sede no se quede fuera en silencio.
+  if (!perfil || !perfil.cafeteriaId) return <>{children}</>;
 
-  // El `&&` no es defensivo de más: un mostrador sin sede no puede existir
-  // —lo impide un CHECK de la tabla— pero si alguna vez existiera, redirigir
-  // a `/reservas/` daría vueltas para siempre en vez de fallar.
-  if (perfil.cafeteriaId && perfil.cafeteriaId !== cafeteriaId) {
+  // Aquí ya se sabe que tiene sede: la guarda de arriba dejó pasar a quien no
+  // la tiene. Un mostrador sin sede tampoco puede existir —lo impide un CHECK
+  // de la tabla— y si existiera, redirigir a `/reservas/` daría vueltas para
+  // siempre en vez de fallar.
+  if (perfil.cafeteriaId !== cafeteriaId) {
     return <Navigate to={`/reservas/${perfil.cafeteriaId}`} replace />;
   }
 

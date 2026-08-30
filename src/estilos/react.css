@@ -30,85 +30,14 @@
 }
 
 /* ── La sesión ──────────────────────────────────────────────────────────
-   `.barra-sesion` ya existía —la usaba administración para «← Ir a la
-   pantalla de mostrador» y «Cerrar sesión»— y es una fila con
-   `space-between`. Solo hace falta vestir el bloque de en medio, que es lo
-   nuevo: en una herramienta que comparten varios turnos, saber con qué
-   cuenta se trabaja es lo que evita registrar toda una mañana con la sesión
-   de otra sede. */
+   Este bloque vestía la identidad DENTRO de la barra de cada página. Ya no
+   está ahí: subió a la cabecera, y con ella sus estilos, que ahora viven en
+   `paginas.css` junto al resto de la cabecera.
 
-.barra-sesion { max-width: 100%; }
-
-.barra-sesion__quien {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.25;
-  text-align: right;
-  /* Empuja la identidad a la derecha haya enlace de vuelta o no, así que la
-     franja se ve igual en las tres pantallas. */
-  margin-left: auto;
-  /* Puede encogerse hasta cero antes que desbordar: es lo que permite que en
-     un móvil estrecho siga cabiendo junto al botón. */
-  min-width: 0;
-}
-
-/* El nombre se recorta con puntos suspensivos si no cabe; el rol y la sede,
-   NO. Un nombre a medias sigue identificando a la persona —quien lo lee ya
-   sabe cómo se llama—, pero media sede no sirve para nada, y comprobar la
-   sede es justo para lo que se mira esta franja. */
-.barra-sesion__nombre {
-  font-size: var(--texto-sm);
-  font-weight: var(--peso-medio);
-  color: var(--c-texto);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/*
- * La sede no se recorta, pero SÍ se parte en varias líneas.
- *
- * Esto último faltaba, y no era un detalle: «Mostrador · Cafetería
- * Administración 3» en una sola línea que no puede partirse hace la franja
- * más ancha que la pantalla, y con ella el documento entero. El síntoma no
- * apunta aquí en absoluto — se ve toda la página corrida hacia un lado, con
- * los títulos y hasta los diálogos cortados por la izquierda—, así que
- * conviene dejar dicho de dónde salía.
- *
- * `anywhere` y no `break-word`: un nombre de sede sin espacios —o el correo
- * de alguien— tiene que poder partirse igual.
- */
-.barra-sesion__rol {
-  font-size: var(--texto-xs);
-  font-weight: var(--peso-normal);
-  color: var(--c-texto-3);
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-
-/*
- * En móvil la identidad NO se esconde.
- *
- * Aquí había un `display: none` por debajo de 640 px, para ganar sitio. Era
- * un error: el móvil es justo donde va a estar el mostrador, y esta franja
- * existe para que nadie registre una mañana entera con la sesión de otra
- * sede. Esconderla ahí la deja sin ninguna utilidad.
- *
- * Lo que se hace en su lugar es dejar que la fila se parta: el enlace de
- * vuelta baja a su propia línea y la identidad se queda arriba con el botón.
- */
-@media (max-width: 640px) {
-  .barra-sesion { gap: var(--e-2); }
-
-  .barra-sesion .enlace-volver {
-    order: 1;
-    flex-basis: 100%;
-  }
-
-  /* Sin el `auto` la identidad se pegaría al botón; con `space-between` y dos
-     elementos, queda repartida a los lados, que es lo legible. */
-  .barra-sesion__quien { margin-left: 0; text-align: left; }
-}
+   Lo que queda de aquella barra es el enlace de vuelta, y de eso ya se
+   ocupaba `.barra-sesion` en admin.css — hoy `.linea-contexto`. Aquí no hacía
+   falta nada más, así que no se deja nada: una regla que no viste a nadie es
+   la que dentro de un año hace dudar de si algo la usa. */
 
 /* ── Dos huecos del marcado heredado ────────────────────────────────────
    `.encabezado-reserva` es una fila con el texto a un lado y el botón al
@@ -116,7 +45,17 @@
    de cada pastilla de radio. Los dos existían en el HTML original y no
    tenían regla propia porque no la necesitaban. */
 
-.encabezado-reserva__texto { min-width: 0; }
+/*
+ * `flex: 1 1 auto` además del `min-width: 0`, y el segundo sin el primero no
+ * bastaba: al juntar el título con su alcance en una línea, el bloque de
+ * texto se hizo lo bastante ancho como para que los botones de la derecha se
+ * cayeran a una fila propia. Con esto el texto cede sitio —el alcance baja
+ * solo cuando hace falta— y los botones se quedan donde estaban.
+ */
+.encabezado-reserva__texto {
+  min-width: 0;
+  flex: 1 1 auto;
+}
 
 .opcion__texto { user-select: none; }
 

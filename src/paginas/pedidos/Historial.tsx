@@ -19,22 +19,26 @@
 
 import { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { buscarPedidos, type FichaPedido } from '../../servicios/pedidosServicio.js';
+import {
+  buscarPedidos, PASOS_PEDIDO, ANULADO, nombreDeEstado, type FichaPedido,
+} from '../../servicios/pedidosServicio.js';
 import { getProveedores } from '../../servicios/proveedoresServicio.js';
 import { getCafeterias } from '../../servicios/cafeteriasServicio.js';
 import { usePeticion } from '../../utiles/usePeticion.js';
 import { BloqueEstado } from '../../componentes/BloqueEstado.js';
-import { BarraSesion } from '../../componentes/BarraSesion.js';
+import { BarraVolver } from '../../componentes/BarraVolver.js';
 import { Pie } from '../../componentes/Pie.js';
 import { useHoy, useSesion } from '../../contexto/Sesion.js';
 import { formatearFechaCorta, sumarDias } from '../../utiles/fechas.js';
+import { puede } from '../../servicios/capacidades.js';
 
-/** Lo que dice cada estado en pantalla. */
-const ESTADOS: Record<string, string> = {
-  borrador: 'Borrador',
-  confirmado: 'Confirmado',
-  anulado: 'Anulado',
-};
+/*
+ * Los nombres de estado los pone `pedidosServicio`, no esta pantalla.
+ *
+ * Estaban duplicados aquí y en `Documento.tsx`, y al cambiar el vocabulario
+ * del proceso el historial se quedó diciendo «Confirmado» donde el documento
+ * ya decía «Enviado». Dos listas para lo mismo siempre acaban así.
+ */
 
 /** El almacén y el proveedor externo, dicho con palabras y no con el código. */
 const QUE_ES: Record<string, string> = {
@@ -46,7 +50,15 @@ export function Historial() {
   const hoy = useHoy();
   const { contexto, salir } = useSesion();
   const perfil = contexto?.perfil ?? null;
-  const esAdmin = perfil?.rol === 'admin';
+  /*
+   * Quién ve TODAS las sedes: quien no tiene ninguna asignada.
+   *
+   * Se pregunta por la sede y no por el rol porque ya son dos los que la
+   * ven entera —administración y el auxiliar administrativo, que habla con
+   * un proveedor que reparte en varias— y enumerarlos aquí habría dejado al
+   * auxiliar viendo solo un filtro vacío.
+   */
+  const todasLasSedes = !perfil?.cafeteriaId;
 
   /*
    * El último mes, que es lo que se mira casi siempre. Abrir en «todo» sería
@@ -86,10 +98,10 @@ export function Historial() {
 
   // Las sedes solo hacen falta para el desplegable de administración.
   const consultarSedes = useCallback(
-    () => (esAdmin ? getCafeterias() : Promise.resolve([])),
-    [esAdmin],
+    () => (todasLasSedes ? getCafeterias() : Promise.resolve([])),
+    [todasLasSedes],
   );
-  const { datos: sedes } = usePeticion(consultarSedes, [esAdmin]);
+  const { datos: sedes } = usePeticion(consultarSedes, [todasLasSedes]);
 
   const pedidos = datos?.pedidos ?? [];
   const total = datos?.total ?? 0;
@@ -98,21 +110,26 @@ export function Historial() {
   return (
     <>
       <main className="contenedor pagina">
-        {perfil && (
-          <BarraSesion
-            perfil={perfil}
-            alSalir={salir}
-            volver={{ a: '/pedidos', texto: '← Todos los proveedores' }}
-          />
-        )}
-
         <section className="encabezado-reserva">
-          <div>
-            <p className="encabezado-reserva__ubicacion">Pedidos a proveedores</p>
-            <h1 className="encabezado-reserva__titulo">Historial</h1>
-            <p className="encabezado-reserva__meta">
-              {esAdmin ? 'Todas las cafeterías' : 'Los pedidos de tu sede'}
-            </p>
+          <div className="encabezado-reserva__texto">
+            {/*
+              El enlace solo para quien puede ir ahí. El auxiliar no elabora
+              pedidos, así que `/pedidos` lo devuelve a esta misma pantalla:
+              enseñarle la puerta era ofrecerle un camino que no lleva a
+              ninguna parte. Para él, el historial ES su portada.
+
+              Sin `contexto`: el sobretítulo decía «Pedidos a proveedores» y el
+              enlace ya lleva ahí. Dos renglones grises para lo mismo.
+            */}
+            {puede(perfil?.rol, 'elaborarPedidos') && (
+              <BarraVolver volver={{ a: '/pedidos', texto: '← Todos los proveedores' }} />
+            )}
+            <div className="encabezado-reserva__linea">
+              <h1 className="encabezado-reserva__titulo">Historial</h1>
+              <p className="encabezado-reserva__meta">
+                {todasLasSedes ? 'Todas las cafeterías' : 'Los pedidos de tu sede'}
+              </p>
+            </div>
           </div>
         </section>
 
@@ -141,7 +158,7 @@ export function Historial() {
             />
           </div>
 
-          {esAdmin && (
+          {todasLasSedes && (
             <div className="campo filtros__campo filtros__campo--ancho">
               <label className="campo__etiqueta" htmlFor="sede">Cafetería</label>
               <select
@@ -182,9 +199,12 @@ export function Historial() {
               onChange={(e) => setEstado(e.target.value)}
             >
               <option value="">Todos</option>
-              <option value="borrador">Borrador</option>
-              <option value="confirmado">Confirmado</option>
-              <option value="anulado">Anulado</option>
+              {/* El valor es el de la BASE y la etiqueta la de pantalla: son
+                  distintos a propósito, ver `PASOS_PEDIDO`. */}
+              {PASOS_PEDIDO.map((paso) => (
+                <option key={paso.estado} value={paso.estado}>{paso.nombre}</option>
+              ))}
+              <option value="anulado">{ANULADO.nombre}</option>
             </select>
           </div>
         </section>
@@ -231,7 +251,7 @@ export function Historial() {
                   <th scope="col">N.º</th>
                   <th scope="col">Fecha</th>
                   <th scope="col">Proveedor</th>
-                  {esAdmin && <th scope="col">Cafetería</th>}
+                  {todasLasSedes && <th scope="col">Cafetería</th>}
                   <th scope="col">Productos</th>
                   <th scope="col">Estado</th>
                   <th className="tabla__acciones" scope="col">
@@ -242,7 +262,7 @@ export function Historial() {
 
               <tbody>
                 {pedidos.map((pedido) => (
-                  <Fila key={pedido.id} pedido={pedido} conSede={esAdmin} />
+                  <Fila key={pedido.id} pedido={pedido} conSede={todasLasSedes} />
                 ))}
               </tbody>
             </table>
@@ -257,7 +277,7 @@ export function Historial() {
 
 function Fila({ pedido, conSede }: { pedido: FichaPedido; conSede: boolean }) {
   const anulado = pedido.estado === 'anulado';
-  const borrador = pedido.estado === 'borrador';
+  const sinEnviar = pedido.estado === 'creado';
 
   return (
     <tr className={anulado ? 'tabla__fila--apagada' : undefined}>
@@ -277,18 +297,18 @@ function Fila({ pedido, conSede }: { pedido: FichaPedido; conSede: boolean }) {
           nuevas habría dejado dos sistemas de color diciendo lo mismo.
         */}
         <span className={`marca-estado marca-estado--${anulado ? 'cancelada' : 'activa'}`}>
-          {ESTADOS[pedido.estado] ?? pedido.estado}
+          {nombreDeEstado(pedido.estado)}
         </span>
       </td>
       <td className="tabla__acciones">
-        {/* Un borrador no se va a mirar: se va a terminar. El botón lo dice,
-            porque la lista es donde alguien reencuentra el pedido que dejó a
+        {/* Un pedido sin enviar no se va a mirar: se va a terminar. El botón lo
+            dice: la lista es donde alguien reencuentra el pedido que dejó a
             medias y tiene que saber que le falta algo. */}
         <Link
-          className={`boton boton--sm ${borrador ? 'boton--primario' : 'boton--secundario'}`}
+          className={`boton boton--sm ${sinEnviar ? 'boton--primario' : 'boton--secundario'}`}
           to={`/pedidos/documento/${pedido.id}`}
         >
-          {borrador ? 'Revisar y confirmar' : 'Ver documento'}
+          {sinEnviar ? 'Revisar y enviar' : 'Ver documento'}
         </Link>
       </td>
     </tr>

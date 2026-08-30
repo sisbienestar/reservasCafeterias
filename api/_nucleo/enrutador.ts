@@ -19,6 +19,7 @@ import * as menu from './acciones/menu.js';
 import * as reservas from './acciones/reservas.js';
 import * as proveedores from './acciones/proveedores.js';
 import * as pedidos from './acciones/pedidos.js';
+import * as analisis from './acciones/analisis.js';
 import * as cuentas from './acciones/cuentas.js';
 import * as usuarios from './acciones/usuarios.js';
 import {
@@ -98,6 +99,7 @@ async function contexto(_params: Record<string, unknown>, sesion: Sesion | null)
       nombre: sesion.nombre,
       rol: sesion.rol,
       cafeteria_id: sesion.cafeteriaId,
+      cafeteria_nombre: sesion.cafeteriaNombre,
     },
   };
 }
@@ -122,7 +124,7 @@ const conSesion = (
   return f(p, s);
 };
 
-/** Las 43 acciones. Lo que no esté aquí es ACCION_DESCONOCIDA. */
+/** Las 45 acciones. Lo que no esté aquí es ACCION_DESCONOCIDA. */
 const ACCIONES: Record<string, Manejador> = {
   'app.contexto': contexto,
 
@@ -150,6 +152,8 @@ const ACCIONES: Record<string, Manejador> = {
   'pedidos.obtener': conSesion((p) => pedidos.obtener(p)),
   'pedidos.buscar': conSesion(pedidos.buscar),
   'pedidos.actualizar': conSesion(pedidos.actualizar),
+  'pedidos.enviar': conSesion(pedidos.enviar),
+  // Cierra el pedido: queda como lo que el proveedor va a entregar.
   'pedidos.confirmar': conSesion(pedidos.confirmar),
   'pedidos.anular': conSesion(pedidos.anular),
 
@@ -165,6 +169,13 @@ const ACCIONES: Record<string, Manejador> = {
   'productos.archivar': conSesion((p) => proveedores.archivarProducto(p)),
   'productos.reactivar': conSesion((p) => proveedores.reactivarProducto(p)),
   'productos.mover': conSesion((p) => proveedores.moverProducto(p)),
+
+  /*
+   * El análisis del histórico. Va con prefijo `pedidos.` a propósito: así
+   * MODULO_DE ya lo cubre —apagar el módulo también apaga su análisis— sin
+   * dar de alta un prefijo nuevo. Solo para `admin`: ver PERMISOS.
+   */
+  'pedidos.analisis': conSesion((p) => analisis.pedidos(p)),
 
   'cuentas.listar': conSesion(() => cuentas.listar()),
 

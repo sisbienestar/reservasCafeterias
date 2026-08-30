@@ -63,6 +63,46 @@
   --c-acento-oscuro: #00512e;
   --c-acento-suave: #e8f2ed;
 
+  /* ── Paleta categórica de las gráficas ─────────────────────────────
+   *
+   * Ocho tonos en ORDEN FIJO, uno por serie. No se ciclan: una novena serie
+   * no recibe un color inventado, se pliega en «Otros» con el gris de abajo.
+   * El orden importa —está validado por parejas contiguas— así que se asigna
+   * por posición y nunca por ranking: si un filtro deja fuera a un proveedor,
+   * los demás NO se repintan, porque el color identifica a la entidad.
+   *
+   * Comprobada contra la superficie blanca: banda de luminosidad, suelo de
+   * croma, separación entre daltonismos (ΔE mín. 9,1) y visión normal
+   * (ΔE mín. 19,6). Tres de los ocho —aqua, amarillo y magenta— quedan por
+   * debajo de 3:1 de contraste contra el blanco, y por eso TODA gráfica de
+   * este proyecto va acompañada de su tabla: el color nunca es el único
+   * portador del dato. Es la misma regla que ya seguía `Consolidado.tsx`.
+   *
+   * El verde institucional NO está en la lista: es el color de la serie
+   * ÚNICA (`--c-acento`), y usarlo también como «serie 3» haría que el mismo
+   * verde significara dos cosas distintas según la gráfica.
+   */
+  --c-serie-1: #2a78d6;
+  --c-serie-2: #eb6834;
+  --c-serie-3: #1baf7a;
+  --c-serie-4: #eda100;
+  --c-serie-5: #e87ba4;
+  --c-serie-6: #008300;
+  --c-serie-7: #4a3aa7;
+  --c-serie-8: #e34948;
+  --c-serie-otros: #86868b;
+
+  /* Rampa secuencial para el mapa de calor: UN solo tono, de claro a oscuro,
+   * porque lo que codifica es magnitud y no identidad. Termina en el verde
+   * institucional. Un arcoíris aquí haría leer un salto de color como un
+   * salto de categoría, que es justo lo que no hay. */
+  --c-rampa-0: #f4f8f6;
+  --c-rampa-1: #d3e6dc;
+  --c-rampa-2: #a7cdba;
+  --c-rampa-3: #64ab8d;
+  --c-rampa-4: #218a60;
+  --c-rampa-5: #00693c;
+
   --c-error: #b3261e;
   --c-error-suave: #fdecea;
   --c-exito: #0a6b3d;
@@ -95,6 +135,12 @@
   --transicion: 220ms cubic-bezier(0.4, 0, 0.2, 1);
 
   --ancho-contenedor: 1080px;
+
+  /* El alto de `.cabecera`, que es sticky en top:0. Cualquier otra cosa que
+   * quiera fijarse arriba tiene que empezar DEBAJO de ella, y necesita saber
+   * dónde acaba. Sale de `min-height: 66px` de `.cabecera__interior` más el
+   * píxel del borde inferior. */
+  --alto-cabecera: 67px;
 }
 
 /* ── Reset acotado ───────────────────────────────────────────────────── */

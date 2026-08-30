@@ -1,0 +1,1171 @@
+[
+  {
+    "archivo": "COCA_COLA_AGOSTO.xlsx",
+    "hoja": "AGOSTO 12",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "COCA_COLA_AGOSTO.xlsx",
+    "hoja": "AGOSTO 14",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "COCA_COLA_AGOSTO.xlsx",
+    "hoja": "AGOSTO 19",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "COCA_COLA_AGOSTO.xlsx",
+    "hoja": "AGOSTO 25",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "COLOMBINA_FEBRERO.xlsx",
+    "hoja": "SALIDAS FEBRERO17 ",
+    "proveedor": "COLOMBINA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS-FEB 2 OKSJME",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB  3 OK",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB  4 OK",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB5 OK",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB6 OK",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB9 )",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB10",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB11",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB12",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB13",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB16 ",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB17",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB18",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB19",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB20",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB23 DF",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB24",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB25",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB26",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- FEB27",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO 02",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO 03",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO 4",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO 5",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO006",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO9",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO10",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO11",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO 12",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO 13",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO 16",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO 17",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO 18",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO 19",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO 20",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO 24",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO 25",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO 26",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- MARZO 27",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- ABRIL 6",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 4
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- ABRIL 7",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- ABRIL 8",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- ABRIL 9",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- ABRIL 10",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- ABRIL 13",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- ABRIL 14",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- ABRIL 15",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- ABRIL 16",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": " RAPIFRITOS- ABRIL 17",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": " SALIDAS RAPIFRITOS- ABRIL 20",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "  SALIDAS RAPIFRITOS- ABRIL 21",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- ABRIL 22",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "  SALIDAS RAPIFRITOS- ABRIL 23",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": " SALIDAS RAPIFRITOS- ABRIL 24",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- ABRIL 27",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- ABRIL 28",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- ABRIL 29",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- ABRIL 30",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": " SALIDAS RAPIFRITOS- mayo 4",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "  SALIDAS RAPIFRITOS- mayo 5",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS-MAYO 6",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": " SALIDAS RAPIFRITOS-MAYO 7",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": " SALIDAS RAPIFRITOS-MAYO 8",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS-MAYO 11 ",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS-MAYO 12",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS-MAYO 13",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS-MAYO 14",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS-MAYO 15",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS-MAYO 19",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS-MAYO 20",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS-MAYO 21",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS-MAYO 22",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS-MAYO 25",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS-MAYO 26",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS-MAYO 27",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS-MAYO 28",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS-MAYO 29",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_14MAYO.xlsx",
+    "hoja": "SALIDAS RAPIFRITOS- JUNIO 1",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_AGOSTO.xlsx",
+    "hoja": "AGOSTO 6",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_AGOSTO.xlsx",
+    "hoja": "AGOSTO 10",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_AGOSTO.xlsx",
+    "hoja": "AGOSTO 11",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_AGOSTO.xlsx",
+    "hoja": "AGOSTO 12",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_AGOSTO.xlsx",
+    "hoja": "AGOSTO 13",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_AGOSTO.xlsx",
+    "hoja": "AGOSTO 14",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_AGOSTO.xlsx",
+    "hoja": "AGOSTO 18",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_AGOSTO.xlsx",
+    "hoja": "AGOSTO 19",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_AGOSTO.xlsx",
+    "hoja": "AGOSTO 20",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "EMPANADAS-RAPRITOS__SJME_DF_AGOSTO.xlsx",
+    "hoja": "AGOSTO 21",
+    "proveedor": "EMPANADAS_RAPRITOS",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+    "hoja": "SALIDAS COCA COLA- FEB 3 OK (2",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+    "hoja": "SALIDAS COCA COLA- FEB10OK SJM",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+    "hoja": "SALIDAS COCA COLA- FEB24",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+    "hoja": "SALIDAS COCA COLA- FEB17",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+    "hoja": "SALIDAS COCA COLA- MARZO 2",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+    "hoja": "SALIDAS COCA COLA- MARZO 6",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+    "hoja": "SALIDAS COCA COLA- MARZO 10",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+    "hoja": "SALIDAS COCA COLA- MARZO 11",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+    "hoja": "SALIDAS COCA COLA- MARZO 17",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+    "hoja": "SALIDAS COCA COLA- MARZO 24",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+    "hoja": "SALIDAS COCA COLA- MARZO25",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+    "hoja": "SALIDAS COCA COLA- ABRIL 06",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+    "hoja": "SALIDAS COCA COLA- ABRIL 29",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+    "hoja": "SALIDAS COCA COLA- ABRIL 30",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+    "hoja": "SALIDAS COCA COLA- MAYO 12",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+    "hoja": "SALIDAS COCA COLA MAYO 19",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "ENE_-_MARZO_COCA_COLA.xlsx",
+    "hoja": "SALIDA COCA COLA MAYO 26",
+    "proveedor": "COCA_COLA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "FAMA_AGOSTO.xlsx",
+    "hoja": "AGOSTO 12",
+    "proveedor": "FAMA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "FAMA_AGOSTO.xlsx",
+    "hoja": "AGOSTO 19",
+    "proveedor": "FAMA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "FAMA_FEBRERO.xlsx",
+    "hoja": "SALIDAS FAMA- FEB 4 BE Y CT (2",
+    "proveedor": "FAMA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "FAMA_FEBRERO.xlsx",
+    "hoja": "SALIDAS FAMA-FEB 11CT PEN",
+    "proveedor": "FAMA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "FAMA_FEBRERO.xlsx",
+    "hoja": "SALIDAS FAMA-FEB 18BE Y CT (2",
+    "proveedor": "FAMA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "FAMA_FEBRERO.xlsx",
+    "hoja": "SALIDAS FAMA-FEB 25 BE Y CT  (2",
+    "proveedor": "FAMA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "FAMA_FEBRERO.xlsx",
+    "hoja": "SALIDAS FAMA-MARZO  BE Y CT  (2",
+    "proveedor": "FAMA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "FAMA_FEBRERO.xlsx",
+    "hoja": "SALIDAS FAMA-MARZO 11 BE YCT",
+    "proveedor": "FAMA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "FAMA_FEBRERO.xlsx",
+    "hoja": "SALIDAS FAMA-MARZO 18 BE,CT,A3",
+    "proveedor": "FAMA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "FAMA_FEBRERO.xlsx",
+    "hoja": "SALIDAS FAMA-ABRIL28 BE,CT,A3",
+    "proveedor": "FAMA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "FAMA_FEBRERO.xlsx",
+    "hoja": "SALIDAS FAMA-6 MAYO ",
+    "proveedor": "FAMA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "FAMA_FEBRERO.xlsx",
+    "hoja": "SALIDAS FAMA-13 MAYO",
+    "proveedor": "FAMA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "FAMA_FEBRERO.xlsx",
+    "hoja": "SALIDAS FAMA 20 MAYO",
+    "proveedor": "FAMA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "FAMA_FEBRERO.xlsx",
+    "hoja": "SALIDAS FAMA 27 MAYO",
+    "proveedor": "FAMA",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "FEBRERO__VICKY_.xlsx",
+    "hoja": "VIKCYDF",
+    "proveedor": "VICKY",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "FEBRERO__VICKY_.xlsx",
+    "hoja": "VIKCYDF (CF)",
+    "proveedor": "VICKY",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "FEBRERO__VICKY_.xlsx",
+    "hoja": "VIKCYDF 3",
+    "proveedor": "VICKY",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "NEOFRUT_AGOSTO.xlsx",
+    "hoja": "AGOSTO 10",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "NEOFRUT_AGOSTO.xlsx",
+    "hoja": "AGOSTO 18",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  },
+  {
+    "archivo": "_NEOFRUT_XLS_CONVERTED.xlsx",
+    "hoja": "NEOFRUT MARZO 16 (2)",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_XLS_CONVERTED.xlsx",
+    "hoja": "NEOFRUTFEB 9 CT Y BE",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "_NEOFRUT_XLS_CONVERTED.xlsx",
+    "hoja": "NEOFRUT ENER CT-PRO-BE-A3",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 4
+  },
+  {
+    "archivo": "_NEOFRUT_XLS_CONVERTED.xlsx",
+    "hoja": "NEOFRUT FEB 13",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_XLS_CONVERTED.xlsx",
+    "hoja": "NEOFRUT FEB 16",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_XLS_CONVERTED.xlsx",
+    "hoja": "NEOFRUT FEB 23",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_XLS_CONVERTED.xlsx",
+    "hoja": "NEOFRUT FEB 24",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_XLS_CONVERTED.xlsx",
+    "hoja": "NEOFRUT MARZO 3",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "_NEOFRUT_XLS_CONVERTED.xlsx",
+    "hoja": "NEOFRUT MARZO 9",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_XLS_CONVERTED.xlsx",
+    "hoja": "NEOFRUT MARZO 11",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_XLS_CONVERTED.xlsx",
+    "hoja": "NEOFRUT MARZO 16",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_XLS_CONVERTED.xlsx",
+    "hoja": "NEOFRUT MARZO 17",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_XLS_CONVERTED.xlsx",
+    "hoja": "NEOFRUT MARZO 24",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_XLS_CONVERTED.xlsx",
+    "hoja": "NEOFRUT ABRIL 06",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "_NEOFRUT_XLS_CONVERTED.xlsx",
+    "hoja": "NEOFRUT MAYO 5",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_XLS_CONVERTED.xlsx",
+    "hoja": "NEOFRUT MAYO 6",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_XLS_CONVERTED.xlsx",
+    "hoja": "NEOFRUT MAYO 7 11",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT MARZO 16 (2)",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUTFEB 9 CT Y BE",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT ENER CT-PRO-BE-A3",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 4
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT FEB 13",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT FEB 16",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT FEB 23",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT FEB 24",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT MARZO 3",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT MARZO 9",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT MARZO 11",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT MARZO 16",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT MARZO 17",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT MARZO 24",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT ABRIL 06",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT MAYO 5",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT MAYO 6",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 1
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT MAYO 7 11 (2)",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT MAYO 7 11",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT MAYO 19",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT MAYO 25",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 2
+  },
+  {
+    "archivo": "_NEOFRUT_.xlsm",
+    "hoja": "NEOFRUT JUNIO 1",
+    "proveedor": "NEOFRUT",
+    "tipo_detectado": "bloque_diario",
+    "num_bloques": 3
+  }
+]

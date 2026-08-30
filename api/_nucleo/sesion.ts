@@ -19,7 +19,18 @@
 import { publico, servicio, desempaquetar } from './supabase.js';
 import { ErrorNegocio, romper } from './sobre.js';
 
-export type Rol = 'mostrador' | 'admin';
+/**
+ * Los tres roles.
+ *
+ * `auxiliar` es «Auxiliar Administrativo Cafeterías», y existe por un paso del
+ * proceso que antes no tenía dueño: lo que se pide no siempre es lo que el
+ * proveedor puede traer, y alguien tiene que cuadrar el pedido con lo que va a
+ * llegar de verdad. Ver `supabase/15-pedido-definitivo.sql`.
+ *
+ * Va SIN sede, como el administrador: el mismo camión reparte en varias, y un
+ * auxiliar atado a una no podría modificar el pedido de las demás.
+ */
+export type Rol = 'mostrador' | 'auxiliar' | 'admin';
 
 /** La fila de `perfil` tal como sale de Postgres, antes de pasar a camelCase. */
 interface FilaPerfil {
@@ -27,6 +38,9 @@ interface FilaPerfil {
   nombre: string | null;
   rol: string;
   cafeteria_id: string | null;
+  /* El nombre de la sede, traído con la fila del perfil. Recurso incrustado
+   * de PostgREST: un viaje, no dos. */
+  cafeteria: { nombre: string } | null;
 }
 
 export interface Sesion {
@@ -35,6 +49,16 @@ export interface Sesion {
   rol: Rol;
   /** La sede de quien atiende el mostrador. `null` en los administradores. */
   cafeteriaId: string | null;
+  /**
+   * El NOMBRE de esa sede. Vacío en quien no tiene ninguna.
+   *
+   * Lo necesita la cabecera, que enseña con qué cuenta se está trabajando en
+   * todas las pantallas: «camilo-torres» ahí se lee como un error y no como
+   * un dato. Antes lo pasaba cada página desde lo que tuviera cargado, y eso
+   * hacía que en un pedido de otra sede la barra dijera la sede DEL PEDIDO
+   * como si fuera la de la persona.
+   */
+  cafeteriaNombre: string;
 }
 
 /**
@@ -63,8 +87,33 @@ const PERMISOS: Record<Rol, readonly string[]> = {
     'pedidos.obtener',
     'pedidos.buscar',
     'pedidos.actualizar',
-    'pedidos.confirmar',
+    'pedidos.enviar',
     'pedidos.anular',
+  ],
+  /*
+   * El auxiliar vive en el módulo de pedidos y en ningún sitio más.
+   *
+   * Ve el historial de TODAS las sedes —el proveedor es común— y edita lo que
+   * la matriz de `16-unificar-estados.sql` le deja: los creados y los
+   * enviados, pero no uno ya confirmado, que es su propio punto de no retorno.
+   * `pedidos.confirmar` es el gesto que lo cierra.
+   *
+   * NO tiene `pedidos.crear` ni `pedidos.enviar`: su encargo empieza cuando el
+   * pedido ya salió de la cafetería. Tampoco `pedidos.anular` — dar de baja
+   * algo que puede llevar papel firmado circulando es decisión de
+   * administración, y para su trabajo no hace falta anular sino corregir
+   * cantidades. Ni el análisis, que es una herramienta de decisión de compra.
+   */
+  auxiliar: [
+    'app.contexto',
+    'cafeterias.listar',
+    'cafeterias.obtener',
+    'proveedores.listar',
+    'proveedores.obtener',
+    'pedidos.obtener',
+    'pedidos.buscar',
+    'pedidos.actualizar',
+    'pedidos.confirmar',
   ],
   admin: [
     'app.contexto',
@@ -88,8 +137,12 @@ const PERMISOS: Record<Rol, readonly string[]> = {
     'pedidos.obtener',
     'pedidos.buscar',
     'pedidos.actualizar',
+    'pedidos.enviar',
     'pedidos.confirmar',
     'pedidos.anular',
+    // El análisis cruza las sedes por definición: compara lo que pide cada
+    // una. Por eso no está en `mostrador`, que solo ve la suya.
+    'pedidos.analisis',
     'proveedores.crear',
     'proveedores.actualizar',
     'proveedores.archivar',
@@ -197,7 +250,7 @@ export async function identificar(autorizacion: string | undefined | null): Prom
   const perfil = desempaquetar<FilaPerfil | null>(
     await servicio()
       .from('perfil')
-      .select('usuario_id, nombre, rol, cafeteria_id')
+      .select('usuario_id, nombre, rol, cafeteria_id, cafeteria(nombre)')
       .eq('usuario_id', data.user.id)
       .maybeSingle(),
   );
@@ -212,6 +265,7 @@ export async function identificar(autorizacion: string | undefined | null): Prom
     nombre: perfil.nombre ?? '',
     rol: perfil.rol as Rol,
     cafeteriaId: perfil.cafeteria_id ?? null,
+    cafeteriaNombre: perfil.cafeteria?.nombre ?? '',
   };
 }
 
@@ -231,7 +285,7 @@ export function autorizar(sesion: Sesion, accion: string): void {
  * no se puede creer — basta con cambiar el valor en las herramientas de
  * desarrollo para leer los móviles de otra sede.
  *
- * El administrador sí elige, y sin valor puede verlas todas.
+ * El administrador y el auxiliar sí eligen, y sin valor pueden verlas todas.
  */
 export function sedePermitida(sesion: Sesion, pedida: unknown): string | null {
   if (sesion.rol === 'mostrador') return sesion.cafeteriaId;
@@ -239,9 +293,17 @@ export function sedePermitida(sesion: Sesion, pedida: unknown): string | null {
   return texto || null;
 }
 
-/** Lanza si esta sesión no puede tocar algo de esa sede. */
+/**
+ * Lanza si esta sesión no puede tocar algo de esa sede.
+ *
+ * La condición es «tener sede» y no «ser admin»: los dos roles sin sede la ven
+ * entera, y escribirlo por el `cafeteriaId` en vez de enumerando roles hace
+ * que un cuarto rol sin sede funcione el día que exista, en vez de quedarse
+ * fuera en silencio. Lo que cada uno puede HACER lo decide `PERMISOS`; esto
+ * solo decide DÓNDE.
+ */
 export function exigirSede(sesion: Sesion, cafeteriaId: string): void {
-  if (sesion.rol === 'admin') return;
+  if (sesion.cafeteriaId === null) return;
   if (sesion.cafeteriaId !== cafeteriaId) {
     romper('NO_AUTORIZADO', 'Esa reserva es de otra cafetería.');
   }

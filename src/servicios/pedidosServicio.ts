@@ -42,12 +42,64 @@ export interface Pedido {
   lugarEntrega: string;
   /** El nombre de quien lo elaboró. Vacío si su cuenta ya no existe. */
   elaboradoPor: string;
-  /** `borrador` | `confirmado` | `anulado`. */
+  /** `creado` | `enviado` | `confirmado` | `anulado`. */
   estado: string;
-  /** Cuándo pasó a administración. Vacío mientras sea borrador. */
+  /** Cuándo salió hacia administración. Vacío mientras esté solo creado. */
+  enviadoEn: string | null;
+  /** Cuándo quedó confirmado y cerrado. Vacío hasta entonces. */
   confirmadoEn: string | null;
   lineas: LineaPedido[];
+  /** Qué le ha pasado al pedido, del último al primero. */
+  eventos: EventoPedido[];
 }
+
+/** Un asiento del historial del pedido. */
+export interface EventoPedido {
+  ocurridoEn: string;
+  accion: 'creado' | 'editado' | 'enviado' | 'confirmado' | 'anulado';
+  /** Vacío en los asientos reconstruidos de la carga histórica. */
+  autorNombre: string;
+  autorRol: string;
+  /** En las ediciones, desde qué estado y cuántos renglones quedaron. */
+  detalle: { estado?: string; renglones?: number; desde?: string; reconstruido?: boolean };
+}
+
+/**
+ * Los tres pasos del pedido.
+ *
+ * `estado` es LA MISMA palabra que guarda la base, y eso ahora es una promesa
+ * y no una casualidad: hubo tres días en que no coincidían —la base decía
+ * `confirmado` donde la pantalla decía «Enviado», y `definitivo` donde decía
+ * «Confirmado»— y la primera petición que llegó ya fue ambigua. Lo unificó
+ * `supabase/16-unificar-estados.sql`.
+ *
+ * Si algún día vuelven a separarse, aquí es donde se traduce. Mientras
+ * coincidan, `nombre` es solo la mayúscula.
+ */
+export interface PasoPedido {
+  /** El estado tal como lo guarda la base. */
+  estado: string;
+  /** Cómo se llama en pantalla. */
+  nombre: string;
+  /** Qué hay que hacer ahora. Solo se enseña la del paso actual. */
+  queSigue: string;
+}
+
+export const PASOS_PEDIDO: PasoPedido[] = [
+  { estado: 'creado', nombre: 'Creado', queSigue: 'Revisa y envía a administración' },
+  { estado: 'enviado', nombre: 'Enviado', queSigue: 'Valida y confirma el pedido' },
+  { estado: 'confirmado', nombre: 'Confirmado', queSigue: 'Pedido definitivo' },
+];
+
+/** El anulado no es un paso: se salió del camino. Se nombra aparte. */
+export const ANULADO = { nombre: 'Anulado', queSigue: 'Se conserva solo para el historial' };
+
+/** El nombre visible de un estado, venga de donde venga. */
+export function nombreDeEstado(estado: string): string {
+  if (estado === 'anulado') return ANULADO.nombre;
+  return PASOS_PEDIDO.find((p) => p.estado === estado)?.nombre ?? estado;
+}
+
 
 /** Lo que la pantalla manda por cada renglón que tiene cantidad. */
 export interface LineaNueva {
@@ -84,8 +136,17 @@ interface FilaPedido {
   fecha_elaboracion: string; fecha_entrega?: string | null;
   hora_entrega?: string | null; lugar_entrega?: string;
   elaborado_por?: string;
-  estado?: string; confirmado_en?: string | null;
+  estado?: string; enviado_en?: string | null; confirmado_en?: string | null;
   lineas?: FilaLinea[];
+  eventos?: FilaEvento[];
+}
+
+interface FilaEvento {
+  ocurrido_en: string;
+  accion: string;
+  autor_nombre?: string;
+  autor_rol?: string;
+  detalle?: Record<string, unknown> | null;
 }
 
 /** NUMERIC llega como cadena. Vacío se queda vacío: no es cero. */
@@ -127,9 +188,21 @@ function normalizar(fila: FilaPedido): Pedido {
     horaEntrega: fila.hora_entrega ? fila.hora_entrega.slice(0, 5) : null,
     lugarEntrega: fila.lugar_entrega ?? '',
     elaboradoPor: fila.elaborado_por ?? '',
-    estado: fila.estado ?? 'borrador',
+    estado: fila.estado ?? 'creado',
+    enviadoEn: fila.enviado_en ?? null,
     confirmadoEn: fila.confirmado_en ?? null,
     lineas: (fila.lineas ?? []).map(normalizarLinea),
+    eventos: (fila.eventos ?? []).map(normalizarEvento),
+  };
+}
+
+function normalizarEvento(fila: FilaEvento): EventoPedido {
+  return {
+    ocurridoEn: fila.ocurrido_en,
+    accion: fila.accion as EventoPedido['accion'],
+    autorNombre: fila.autor_nombre ?? '',
+    autorRol: fila.autor_rol ?? '',
+    detalle: (fila.detalle ?? {}) as EventoPedido['detalle'],
   };
 }
 
@@ -219,7 +292,7 @@ export async function buscarPedidos(filtros: {
       id: fila.id,
       fechaElaboracion: fila.fecha_elaboracion,
       fechaEntrega: fila.fecha_entrega ?? null,
-      estado: fila.estado ?? 'borrador',
+      estado: fila.estado ?? 'creado',
       tipoDocumento: fila.tipo_documento === 'FBE.04' ? 'FBE.04' : 'FBE.34',
       proveedorId: fila.proveedor_id,
       proveedorNombre: fila.proveedor_nombre ?? '',
@@ -231,7 +304,7 @@ export async function buscarPedidos(filtros: {
 }
 
 /**
- * Corrige un borrador.
+ * Corrige un pedido.
  *
  * No lleva proveedor ni cafetería: no son editables, y dejarlos fuera de la
  * firma evita que una pantalla futura los cambie por descuido. Es la misma
@@ -258,14 +331,25 @@ export async function actualizarPedido(id: number, datos: {
   return normalizar(fila);
 }
 
-/** Pasa un borrador a administración. El aviso lo manda el servidor. */
+/** Envía a administración un pedido creado. El aviso lo manda el servidor. */
+export async function enviarPedido(id: number): Promise<Pedido> {
+  return normalizar(await pedir<FilaPedido>('pedidos.enviar', { id }));
+}
+
+/**
+ * Confirma un pedido enviado: queda cerrado y definitivo.
+ *
+ * Lo hace el auxiliar administrativo o administración, y solo desde
+ * `enviado`. A partir de aquí el pedido ya no se toca — salvo administración,
+ * que puede en cualquier momento.
+ */
 export async function confirmarPedido(id: number): Promise<Pedido> {
   return normalizar(await pedir<FilaPedido>('pedidos.confirmar', { id }));
 }
 
 /**
- * Anula un pedido. Un borrador lo anula quien lo elabora; uno confirmado,
- * solo administración.
+ * Anula un pedido. Uno recién creado lo anula quien lo elabora; en cuanto se
+ * envió, solo administración.
  */
 export async function anularPedido(id: number): Promise<Pedido> {
   return normalizar(await pedir<FilaPedido>('pedidos.anular', { id }));

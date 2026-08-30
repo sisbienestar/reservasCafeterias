@@ -15,7 +15,7 @@
 import type { ReactNode } from 'react';
 import type { ResumenReservas } from '../../servicios/reservasServicio.js';
 import { formatearFechaCorta, lunesDeSemana } from '../../utiles/fechas.js';
-import { GraficaBarras, GraficaColumnas, Indicador, type DatoColumna } from './graficas.js';
+import { GraficaBarras, GraficaColumnas, Indicador, type DatoColumna } from '../graficas/index.js';
 
 /** Cuántos días caben en la gráfica diaria antes de pasar a semanas. */
 const TOPE_DIAS = 45;

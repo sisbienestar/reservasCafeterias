@@ -40,7 +40,7 @@ interface FilaPerfil {
   cafeteria: { nombre: string } | null;
 }
 
-const ROLES: Rol[] = ['mostrador', 'admin'];
+const ROLES: Rol[] = ['mostrador', 'auxiliar', 'admin'];
 
 /** Lo mínimo que Supabase acepta, dicho aquí para poder explicarlo mejor. */
 const MINIMO_CONTRASENA = 8;
@@ -101,7 +101,8 @@ export async function listar(): Promise<UsuarioContrato[]> {
 function leerRolYSede(params: Record<string, unknown>) {
   const rol = String(params.rol ?? '').trim() as Rol;
   if (!ROLES.includes(rol)) {
-    romper('DATOS_INCOMPLETOS', 'El rol tiene que ser «mostrador» o «admin».');
+    romper('DATOS_INCOMPLETOS',
+      `El rol tiene que ser ${ROLES.map((r) => `«${r}»`).join(', ')}.`);
   }
 
   const cafeteriaId = String(params.cafeteria_id ?? '').trim();
@@ -109,9 +110,11 @@ function leerRolYSede(params: Record<string, unknown>) {
   if (rol === 'mostrador' && !cafeteriaId) {
     romper('DATOS_INCOMPLETOS', 'Una cuenta de mostrador tiene que atender una cafetería.');
   }
-  if (rol === 'admin' && cafeteriaId) {
-    romper('DATOS_INCOMPLETOS',
-      'Administración ve todas las cafeterías, así que no se le asigna ninguna.');
+  if (rol !== 'mostrador' && cafeteriaId) {
+    romper('DATOS_INCOMPLETOS', rol === 'admin'
+      ? 'Administración ve todas las cafeterías, así que no se le asigna ninguna.'
+      : 'El auxiliar administrativo trabaja con todas las cafeterías: el mismo ' +
+        'proveedor reparte en varias, así que no se le asigna ninguna.');
   }
 
   return { rol, cafeteria_id: rol === 'mostrador' ? cafeteriaId : null };

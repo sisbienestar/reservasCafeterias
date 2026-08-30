@@ -16,7 +16,10 @@
     "verificar": "node --env-file=.env.local supabase/verificar.mjs",
     "permisos": "node --env-file=.env.local pruebas/permisos.mjs",
     "local": "node pruebas/local.mjs",
-    "sembrar-pedidos": "node --env-file=.env.local supabase/sembrar-pedidos.mjs"
+    "sembrar-pedidos": "node --env-file=.env.local supabase/sembrar-pedidos.mjs",
+    "verificar-analisis": "node --env-file=.env.local supabase/verificar-analisis.mjs",
+    "capturas": "node --env-file=.env.local pruebas/capturas.mjs",
+    "sql": "node supabase/revisar-sql.mjs"
   },
   "devDependencies": {
     "@types/node": "^26.4.0",
@@ -24,6 +27,8 @@
     "@types/react-dom": "^19.2.5",
     "@vitejs/plugin-react": "^4.7.0",
     "jsdom": "^24.0.0",
+    "libpg-query": "^17.7.4",
+    "playwright-core": "^1.62.1",
     "tsx": "^4.23.12",
     "typescript": "^7.0.2",
     "vite": "^6.4.3"

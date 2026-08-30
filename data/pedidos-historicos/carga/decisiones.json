@@ -1,0 +1,570 @@
+[
+ {
+  "clave": "rapifritos|EMPANADA POLLO QUESO FRITA",
+  "via": "nuevo",
+  "veces": 205,
+  "grupo_nombre": "EMPANADA POLLO QUESO FRITA"
+ },
+ {
+  "clave": "rapifritos|FLAUTA POLLO QUESO CHAMPINONES FRITA",
+  "via": "nuevo",
+  "veces": 224,
+  "grupo_nombre": "FLAUTA POLLO QUESO CHAMPIÑONES FRITA"
+ },
+ {
+  "clave": "rapifritos|EMPANADA DE YUCA (CARNE Y POLLO)",
+  "via": "nuevo",
+  "veces": 207,
+  "grupo_nombre": "EMPANADA DE YUCA (CARNE Y POLLO)"
+ },
+ {
+  "clave": "rapifritos|PAPA DE (POLLO CARNE Y MEDIO HUEVO)",
+  "via": "nuevo",
+  "veces": 228,
+  "grupo_nombre": "PAPA DE (POLLO CARNE Y MEDIO HUEVO)"
+ },
+ {
+  "clave": "cocacola|AGUA BRISA PET GAS 600 ML X 24",
+  "via": "exacto",
+  "veces": 7,
+  "producto": "AGUA BRISA PET GAS 600 ML X 24",
+  "producto_id": 129
+ },
+ {
+  "clave": "cocacola|AGUA BRISA LIMA LIMON 600 ML X 6",
+  "via": "nuevo",
+  "veces": 3,
+  "grupo_nombre": "AGUA BRISA LIMA LIMON 600 ML X 6"
+ },
+ {
+  "clave": "cocacola|COCACOLA PET 400 ML X 12",
+  "via": "exacto",
+  "veces": 27,
+  "producto": "COCACOLA  PET 400 ML X 12",
+  "producto_id": 131
+ },
+ {
+  "clave": "cocacola|COCACOLA PET SIN AZUCAR 400 ML X 12",
+  "via": "exacto",
+  "veces": 13,
+  "producto": "COCACOLA PET SIN AZUCAR 400 ML X 12",
+  "producto_id": 132
+ },
+ {
+  "clave": "cocacola|FUZE TEA MANGO- MANZANILL X 400 ML X 6",
+  "via": "exacto",
+  "veces": 9,
+  "producto": "FUZE TEA  MANGO- MANZANILL  X 400 ML X  6",
+  "producto_id": 134
+ },
+ {
+  "clave": "cocacola|FUZE TEA DURAZNO X 400 ML X 6",
+  "via": "exacto",
+  "veces": 18,
+  "producto": "FUZE TEA DURAZNO X 400 ML X  6",
+  "producto_id": 136
+ },
+ {
+  "clave": "cocacola|FUZE TEA LIMON X 400 ML X 6",
+  "via": "exacto",
+  "veces": 16,
+  "producto": "FUZE TEA LIMON X 400 ML X 6",
+  "producto_id": 137
+ },
+ {
+  "clave": "cocacola|JUGO DEL VALLE 500 MANGO X 6",
+  "via": "exacto",
+  "veces": 13,
+  "producto": "JUGO DEL VALLE 500 MANGO  X 6",
+  "producto_id": 138
+ },
+ {
+  "clave": "cocacola|JUGO DEL VALLE 500 MANGO FRESA X 6",
+  "via": "exacto",
+  "veces": 8,
+  "producto": "JUGO DEL VALLE 500 MANGO FRESA  X 6",
+  "producto_id": 139
+ },
+ {
+  "clave": "cocacola|JUGO DEL VALLE 500 MORA X 6",
+  "via": "exacto",
+  "veces": 17,
+  "producto": "JUGO DEL VALLE 500 MORA X 6",
+  "producto_id": 141
+ },
+ {
+  "clave": "cocacola|JUGO DEL VALLE TETRA X 24 MANGO",
+  "via": "exacto",
+  "veces": 4,
+  "producto": "JUGO DEL VALLE TETRA X 24 MANGO",
+  "producto_id": 142
+ },
+ {
+  "clave": "cocacola|JUGO DEL VALLE TETRA X 24 MANGO FRESA",
+  "via": "exacto",
+  "veces": 1,
+  "producto": "JUGO DEL VALLE TETRA X 24 MANGO FRESA",
+  "producto_id": 143
+ },
+ {
+  "clave": "cocacola|JUGO DEL VALLE TETRA X 24 PINA MANDARINA",
+  "via": "exacto",
+  "veces": 2,
+  "producto": "JUGO DEL VALLE TETRA X 24 PIÑA MANDARINA",
+  "producto_id": 145
+ },
+ {
+  "clave": "cocacola|KOLA ROMAN 400 ML X 12",
+  "via": "exacto",
+  "veces": 4,
+  "producto": "KOLA ROMAN  400 ML X 12",
+  "producto_id": 146
+ },
+ {
+  "clave": "cocacola|POWER ADE X 500 ML AZUL X 6",
+  "via": "exacto",
+  "veces": 13,
+  "producto": "POWER ADE x 500 ML AZUL X 6",
+  "producto_id": 147
+ },
+ {
+  "clave": "cocacola|POWER ADE X 500 ML ROJO X 6",
+  "via": "exacto",
+  "veces": 10,
+  "producto": "POWER ADE x 500 ML ROJO X 6",
+  "producto_id": 148
+ },
+ {
+  "clave": "cocacola|SPRITE PET 400 ML X 12",
+  "via": "exacto",
+  "veces": 6,
+  "producto": "SPRITE PET 400 ML X 12",
+  "producto_id": 149
+ },
+ {
+  "clave": "cocacola|AGUA BRISA PET 600 ML X 24",
+  "via": "exacto",
+  "veces": 26,
+  "producto": "AGUA BRISA PET 600 ML X 24",
+  "producto_id": 128
+ },
+ {
+  "clave": "cocacola|CUATRO PET 400 ML X 12",
+  "via": "exacto",
+  "veces": 5,
+  "producto": "CUATRO PET 400 ML X 12",
+  "producto_id": 133
+ },
+ {
+  "clave": "rapifritos|EMPANADA HAWAIANA FRITA",
+  "via": "nuevo",
+  "veces": 109,
+  "grupo_nombre": "EMPANADA HAWAIANA FRITA"
+ },
+ {
+  "clave": "ramo|BARRITA CHOCORRAMO",
+  "via": "exacto",
+  "veces": 24,
+  "producto": "BARRITA CHOCORRAMO",
+  "producto_id": 211
+ },
+ {
+  "clave": "ramo|BROWNIE AREQUIPE X 6 UND X 65 GR",
+  "via": "exacto",
+  "veces": 23,
+  "producto": "BROWNIE AREQUIPE X 6 UND X 65 GR",
+  "producto_id": 212
+ },
+ {
+  "clave": "ramo|CHOCORRAMO TJDA X 65 GR",
+  "via": "exacto",
+  "veces": 25,
+  "producto": "CHOCORRAMO TJDA X 65 GR",
+  "producto_id": 213
+ },
+ {
+  "clave": "ramo|GALA TAJADA X 60 GR",
+  "via": "exacto",
+  "veces": 18,
+  "producto": "GALA TAJADA X 60 GR",
+  "producto_id": 214
+ },
+ {
+  "clave": "ramo|GANSITO X 6 X 37 GR",
+  "via": "exacto",
+  "veces": 24,
+  "producto": "GANSITO X 6 X 37 GR",
+  "producto_id": 215
+ },
+ {
+  "clave": "ramo|LECHERITA X 8 GALLETAS",
+  "via": "exacto",
+  "veces": 23,
+  "producto": "LECHERITA X 8 GALLETAS",
+  "producto_id": 216
+ },
+ {
+  "clave": "rapifritos|EMPANADA MIXTA DE TRIGO",
+  "via": "nuevo",
+  "veces": 106,
+  "grupo_nombre": "EMPANADA MIXTA DE TRIGO"
+ },
+ {
+  "clave": "neofrut|PULPA DE MARACUYA",
+  "via": "nuevo",
+  "veces": 28,
+  "grupo_nombre": "PULPA DE MARACUYA"
+ },
+ {
+  "clave": "neofrut|PULPA DE LULO",
+  "via": "nuevo",
+  "veces": 28,
+  "grupo_nombre": "PULPA DE LULO"
+ },
+ {
+  "clave": "neofrut|PULPA DE MANGO",
+  "via": "nuevo",
+  "veces": 28,
+  "grupo_nombre": "PULPA DE MANGO"
+ },
+ {
+  "clave": "neofrut|PULPA DE LIMON",
+  "via": "nuevo",
+  "veces": 25,
+  "grupo_nombre": "PULPA DE LIMON"
+ },
+ {
+  "clave": "neofrut|PULPA DE FRESA",
+  "via": "nuevo",
+  "veces": 26,
+  "grupo_nombre": "PULPA DE FRESA"
+ },
+ {
+  "clave": "neofrut|PULPA DE DURAZNO",
+  "via": "nuevo",
+  "veces": 23,
+  "grupo_nombre": "PULPA DE DURAZNO"
+ },
+ {
+  "clave": "neofrut|PULPA DE MORA",
+  "via": "nuevo",
+  "veces": 28,
+  "grupo_nombre": "PULPA DE MORA"
+ },
+ {
+  "clave": "cocacola|AGUA GAS BRISA LIMON 600 ML X 6",
+  "via": "nuevo",
+  "veces": 5,
+  "grupo_nombre": "AGUA GAS BRISA LIMON 600 ML X 6"
+ },
+ {
+  "clave": "cocacola|FUZE TEA MANZANA - LIMONARIA X 400 ML X 6",
+  "via": "exacto",
+  "veces": 5,
+  "producto": "FUZE TEA  MANZANA - LIMONARIA  X 400 ML X  6",
+  "producto_id": 135
+ },
+ {
+  "clave": "ramo|GALLETAS LIMONCITAS X 8",
+  "via": "exacto",
+  "veces": 9,
+  "producto": "GALLETAS LIMONCITAS X 8",
+  "producto_id": 217
+ },
+ {
+  "clave": "neofrut|PULPA DE NARANJA",
+  "via": "nuevo",
+  "veces": 28,
+  "grupo_nombre": "PULPA DE NARANJA"
+ },
+ {
+  "clave": "almacen-colombina|BOM BOM BUM 24",
+  "via": "alias",
+  "veces": 1,
+  "producto": "BOM BOM BUM",
+  "producto_id": 202
+ },
+ {
+  "clave": "almacen-colombina|CHOCOBREAK 50",
+  "via": "alias",
+  "veces": 1,
+  "producto": "CHOCOBREAK",
+  "producto_id": 204
+ },
+ {
+  "clave": "almacen-colombina|CREMA MUU 12",
+  "via": "alias",
+  "veces": 1,
+  "producto": "CREMA MUU",
+  "producto_id": 205
+ },
+ {
+  "clave": "almacen-colombina|MAX COCO WAFER 10",
+  "via": "alias",
+  "veces": 1,
+  "producto": "MAX COCO WAFER",
+  "producto_id": 207
+ },
+ {
+  "clave": "almacen-colombina|NUCITA 18",
+  "via": "alias",
+  "veces": 1,
+  "producto": "NUCITA",
+  "producto_id": 209
+ },
+ {
+  "clave": "vicky|CHICHARRON CARNUDO NATURAL 30 G BOLSA X 6",
+  "via": "alias",
+  "veces": 1,
+  "producto": "CHICHARRON CARNUDO NAT",
+  "producto_id": 77
+ },
+ {
+  "clave": "vicky|MIXTO BBQ 40 G BOLSA X 6",
+  "via": "alias",
+  "veces": 1,
+  "producto": "MIXTON BBQ",
+  "producto_id": 79
+ },
+ {
+  "clave": "vicky|TROCILLO SABOR POLLO 25 G",
+  "via": "alias",
+  "veces": 1,
+  "producto": "TROCILLOS",
+  "producto_id": 85
+ },
+ {
+  "clave": "vicky|PLATANO VERDE KAHOY 60 G",
+  "via": "nuevo",
+  "veces": 1,
+  "grupo_nombre": "PLATANO VERDE KAHOY 60 g"
+ },
+ {
+  "clave": "vicky|PAPA POLLO X7",
+  "via": "alias",
+  "veces": 4,
+  "producto": "PAPA POLLO",
+  "producto_id": 83
+ },
+ {
+  "clave": "vicky|PAPA CEBOLLITAS",
+  "via": "nuevo",
+  "veces": 1,
+  "grupo_nombre": "PAPA CEBOLLITAS"
+ },
+ {
+  "clave": "neofrut|PULPA DE PINA",
+  "via": "nuevo",
+  "veces": 23,
+  "grupo_nombre": "PULPA DE PIÑA"
+ },
+ {
+  "clave": "neofrut|PULPA DURAZNO",
+  "via": "nuevo",
+  "veces": 1,
+  "grupo_nombre": "PULPA DE DURAZNO"
+ },
+ {
+  "clave": "vicky|ROSQUILLAS DE QUESO X6",
+  "via": "alias",
+  "veces": 3,
+  "producto": "ROSQUILLAS DE QUESO",
+  "producto_id": 84
+ },
+ {
+  "clave": "vicky|TROCILLOS X6",
+  "via": "alias",
+  "veces": 3,
+  "producto": "TROCILLOS",
+  "producto_id": 85
+ },
+ {
+  "clave": "vicky|PLATANO SALADO X6",
+  "via": "alias",
+  "veces": 3,
+  "producto": "PLATANO SALADO",
+  "producto_id": 86
+ },
+ {
+  "clave": "vicky|PLATANO AGRIDULCE",
+  "via": "exacto",
+  "veces": 3,
+  "producto": "PLATANO AGRIDULCE",
+  "producto_id": 87
+ },
+ {
+  "clave": "vicky|CHICHARRON CARNUDO NAT X6",
+  "via": "alias",
+  "veces": 1,
+  "producto": "CHICHARRON CARNUDO NAT",
+  "producto_id": 77
+ },
+ {
+  "clave": "vicky|CHICHARRON CARNUDO PICANTE X6",
+  "via": "alias",
+  "veces": 1,
+  "producto": "CHICHARRON CARNUDO PICANTE",
+  "producto_id": 78
+ },
+ {
+  "clave": "vicky|PAPA MAYONESA X6",
+  "via": "alias",
+  "veces": 1,
+  "producto": "PAPA MAYONESA",
+  "producto_id": 81
+ },
+ {
+  "clave": "vicky|PAPA BBQX6",
+  "via": "alias",
+  "veces": 1,
+  "producto": "PAPA BBQ",
+  "producto_id": 82
+ },
+ {
+  "clave": "cocacola|AGUA GAS BRISA LIMON 600 ML X6",
+  "via": "nuevo",
+  "veces": 1,
+  "grupo_nombre": "AGUA GAS BRISA LIMON 600 ML X 6"
+ },
+ {
+  "clave": "cocacola|AGUA GAS BRISA LIMON 600 ML X 24",
+  "via": "exacto",
+  "veces": 6,
+  "producto": "AGUA GAS BRISA LIMON 600 ML X 24",
+  "producto_id": 130
+ },
+ {
+  "clave": "cocacola|FUZE TEA NEGRO - LIMON X 400 ML X 6",
+  "via": "nuevo",
+  "veces": 2,
+  "grupo_nombre": "FUZE TEA NEGRO LIMON X 400 ML X 6"
+ },
+ {
+  "clave": "cocacola|FUZE TEA MANZANA X 400 ML X 6",
+  "via": "parecido",
+  "veces": 4,
+  "producto": "FUZE TEA  MANZANA - LIMONARIA  X 400 ML X  6",
+  "producto_id": 135
+ },
+ {
+  "clave": "cocacola|JUGO DEL VALLE 500 MANGO PINA MANDARINA X 6",
+  "via": "exacto",
+  "veces": 1,
+  "producto": "JUGO DEL VALLE 500 MANGO PIÑA MANDARINA X 6",
+  "producto_id": 140
+ },
+ {
+  "clave": "cocacola|AGUA GAS BRISA LIMON 600 ML 6",
+  "via": "nuevo",
+  "veces": 4,
+  "grupo_nombre": "AGUA GAS BRISA LIMON 600 ML X 6"
+ },
+ {
+  "clave": "ramo|LIMONCITAS X8 GALLETAS",
+  "via": "alias",
+  "veces": 7,
+  "producto": "GALLETAS LIMONCITAS X 8",
+  "producto_id": 217
+ },
+ {
+  "clave": "cocacola|COCACOLA ZERO PET 400 ML X 12",
+  "via": "nuevo",
+  "veces": 2,
+  "grupo_nombre": "COCACOLA ZERO 400 ML X 12"
+ },
+ {
+  "clave": "cocacola|FUZE TEA MANGO X 400 ML X 6",
+  "via": "parecido",
+  "veces": 3,
+  "producto": "FUZE TEA  MANGO- MANZANILL  X 400 ML X  6",
+  "producto_id": 134
+ },
+ {
+  "clave": "cocacola|FUZE TEA NEGRO LIMON X 400 ML X 6",
+  "via": "nuevo",
+  "veces": 7,
+  "grupo_nombre": "FUZE TEA NEGRO LIMON X 400 ML X 6"
+ },
+ {
+  "clave": "cocacola|AGUA GAS BRISA 600 ML 6",
+  "via": "nuevo",
+  "veces": 5,
+  "grupo_nombre": "AGUA GAS BRISA 600 ML 6"
+ },
+ {
+  "clave": "cocacola|COCACOLA ZERO 400 ML X 12",
+  "via": "nuevo",
+  "veces": 7,
+  "grupo_nombre": "COCACOLA ZERO 400 ML X 12"
+ },
+ {
+  "clave": "cocacola|GASEOSA CUATRO PET 400ML",
+  "via": "alias",
+  "veces": 3,
+  "producto": "CUATRO PET 400 ML X 12",
+  "producto_id": 133
+ },
+ {
+  "clave": "cocacola|GASEOSA KOLA ROMAN PET 400ML",
+  "via": "alias",
+  "veces": 2,
+  "producto": "KOLA ROMAN  400 ML X 12",
+  "producto_id": 146
+ },
+ {
+  "clave": "cocacola|AGUA BRISA LIMON 600 ML 6",
+  "via": "nuevo",
+  "veces": 3,
+  "grupo_nombre": "AGUA BRISA LIMÓN 600 ML 6"
+ },
+ {
+  "clave": "cocacola|GASEOSA SPRITE PET 400ML",
+  "via": "alias",
+  "veces": 2,
+  "producto": "SPRITE PET 400 ML X 12",
+  "producto_id": 149
+ },
+ {
+  "clave": "cocacola|JUGO DEL VALLE 188 MANGO FRESA X24",
+  "via": "nuevo",
+  "veces": 1,
+  "grupo_nombre": "JUGO DEL VALLE 188 MANGO FRESA X24"
+ },
+ {
+  "clave": "ramo|GALA X 60 GR",
+  "via": "alias",
+  "veces": 4,
+  "producto": "GALA TAJADA X 60 GR",
+  "producto_id": 214
+ },
+ {
+  "clave": "cocacola|JUGO DEL VALLE 188 ML MORA X24",
+  "via": "nuevo",
+  "veces": 1,
+  "grupo_nombre": "JUGO DEL VALLE 188 ML MORA X24"
+ },
+ {
+  "clave": "cocacola|JUGO DEL VALLE 188 ML MANGO FRESA X24",
+  "via": "nuevo",
+  "veces": 1,
+  "grupo_nombre": "JUGO DEL VALLE 188 MANGO FRESA X24"
+ },
+ {
+  "clave": "cocacola|JUGO DEL VALLE 500 ML MORA X24",
+  "via": "nuevo",
+  "veces": 1,
+  "grupo_nombre": "JUGO DEL VALLE 500 ML MORA X24"
+ },
+ {
+  "clave": "cocacola|AGUA BRISA LIMON -MANZANA 600 ML 6",
+  "via": "nuevo",
+  "veces": 1,
+  "grupo_nombre": "AGUA BRISA LIMON -MANZANA 600 ML 6"
+ },
+ {
+  "clave": "cocacola|POWER 500ML X6",
+  "via": "nuevo",
+  "veces": 1,
+  "grupo_nombre": "POWER 500ML X6"
+ }
+]

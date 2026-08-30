@@ -423,7 +423,8 @@
    */
   .cabecera,
   .pie,
-  .barra-sesion,
+  .linea-contexto,
+  .franja-version,
   .no-imprimir { display: none !important; }
 
   /* El navegador no imprime fondos por defecto, y las cabeceras de la tabla
@@ -440,7 +441,14 @@
        lleve al pie del papel y no al de una caja de mil píxeles. */
     min-height: 100vh;
     margin: 0;
-    padding: 0;
+    /*
+     * El margen del papel va AQUÍ y no en `@page`, y ese traslado es todo el
+     * arreglo de las cabeceras del navegador. Ver el comentario de `@page`.
+     * Con `box-sizing: border-box` —global, en base.css— este relleno se come
+     * hacia dentro del `100vh` de arriba, así que las firmas siguen cayendo
+     * donde caían.
+     */
+    padding: 14mm;
     border: none;
     border-radius: 0;
   }
@@ -452,5 +460,21 @@
      página son columnas de números sin decir de qué son. */
   .documento__tabla thead { display: table-header-group; }
 
-  @page { margin: 14mm; }
+  /*
+   * SIN MARGEN DE PÁGINA, y no es un descuido: es lo que quita la fecha, el
+   * título, la dirección y el «1/1» que el navegador imprimía arriba y abajo.
+   *
+   * Esos textos no los pone la aplicación. Los dibuja Chrome DENTRO del margen
+   * que declara `@page`, así que mientras aquí hubiera 14 mm había un cajón
+   * donde escribirlos. En cuanto el margen es cero no queda sitio y no se
+   * dibujan. El margen blanco del papel no se pierde: se ha mudado al
+   * `padding` de `.documento`, que es contenido y el navegador no puede pisar.
+   *
+   * Queda una cosa fuera de nuestro alcance, y conviene saberla: el navegador
+   * tiene además su propia casilla «Encabezados y pies de página» en el
+   * diálogo de impresión. Ninguna página web puede tocarla. Lo que esto hace
+   * es dejarla sin espacio donde escribir, que es todo lo que se puede hacer
+   * desde aquí.
+   */
+  @page { margin: 0; }
 }

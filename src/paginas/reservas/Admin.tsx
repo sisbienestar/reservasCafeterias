@@ -34,7 +34,7 @@ import { ModalTicket } from '../../componentes/ModalTicket.js';
 import { TablaAdminReservas } from '../../componentes/admin/TablaAdminReservas.js';
 import { Consolidado } from '../../componentes/admin/Consolidado.js';
 import { Catalogo } from '../../componentes/admin/Catalogo.js';
-import { BarraSesion } from '../../componentes/BarraSesion.js';
+import { BarraVolver } from '../../componentes/BarraVolver.js';
 import { Pie } from '../../componentes/Pie.js';
 
 const ETIQUETAS: Record<string, string> = {
@@ -272,9 +272,7 @@ export function Admin() {
     <>
     <main className="contenedor pagina" id="contenido">
       {contexto?.perfil && (
-        <BarraSesion
-          perfil={contexto.perfil}
-          alSalir={salir}
+        <BarraVolver
           volver={{ a: '/reservas', texto: '← Ir a la pantalla de mostrador' }}
         />
       )}

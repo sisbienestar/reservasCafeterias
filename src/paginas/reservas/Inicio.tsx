@@ -16,7 +16,7 @@ import { getCafeterias } from '../../servicios/cafeteriasServicio.js';
 import { usePeticion } from '../../utiles/usePeticion.js';
 import { TarjetaCafeteria } from '../../componentes/TarjetaCafeteria.js';
 import { BloqueEstado } from '../../componentes/BloqueEstado.js';
-import { BarraSesion } from '../../componentes/BarraSesion.js';
+import { BarraVolver } from '../../componentes/BarraVolver.js';
 import { Pie } from '../../componentes/Pie.js';
 import { useHoy, useSesion } from '../../contexto/Sesion.js';
 import { formatearFechaLarga } from '../../utiles/fechas.js';
@@ -34,9 +34,7 @@ export function Inicio() {
         {/* Aquí siempre hay sesión, así que la barra siempre se pinta. El
             `&&` se queda porque `perfil` es opcional en el tipo. */}
         {contexto?.perfil && (
-          <BarraSesion
-            perfil={contexto.perfil}
-            alSalir={salir}
+          <BarraVolver
             volver={{ a: '/', texto: '← Módulos' }}
           />
         )}
