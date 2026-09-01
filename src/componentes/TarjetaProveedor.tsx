@@ -17,19 +17,6 @@ import { MedioTarjeta } from './MedioTarjeta.js';
 /** Lo que en el nombre de un proveedor no lo distingue de los demás. */
 const GENERICAS = /^(almacén|almacen|proveedor|distribuidora)$/i;
 
-/**
- * El sobretítulo dice de qué tipo es, no su código.
- *
- * «FBE.04» es lo que sale impreso en el documento, pero en una rejilla donde
- * hay que elegir no significa nada: quien pide sabe si está pidiendo al
- * almacén de la Universidad o a un proveedor de fuera, y eso es lo que
- * distingue a las nueve tarjetas entre sí.
- */
-const QUE_ES: Record<string, string> = {
-  'FBE.04': 'Almacén interno',
-  'FBE.34': 'Proveedor externo',
-};
-
 export function TarjetaProveedor({ proveedor }: { proveedor: Proveedor }) {
   return (
     <Link className="tarjeta tarjeta--compacta" to={`/pedidos/${proveedor.id}`}>
@@ -39,7 +26,21 @@ export function TarjetaProveedor({ proveedor }: { proveedor: Proveedor }) {
       />
 
       <div className="tarjeta__cuerpo">
-        <p className="tarjeta__ubicacion">{QUE_ES[proveedor.tipoDocumento]}</p>
+        {/*
+          El sobretítulo es la CATEGORÍA, y antes decía «Almacén interno» o
+          «Proveedor externo» según el tipo de documento. Dejó de poder
+          decirlo: desde que todos los pedidos se imprimen en FBE.04, ese tipo
+          es el mismo para los once proveedores y la frase habría llamado
+          almacén de la Universidad a Ramo y a Coca-Cola.
+
+          La categoría sí los reparte —alimentos, aseo, desechables— y además
+          es la casilla que va marcada con X en la hoja que se firma. Un
+          proveedor sin categoría se queda sin sobretítulo antes que con uno
+          falso: la imagen y el nombre ya lo identifican.
+        */}
+        {proveedor.categoriaFija && (
+          <p className="tarjeta__ubicacion">{proveedor.categoriaFija}</p>
+        )}
         <h2 className="tarjeta__nombre">{proveedor.nombre}</h2>
       </div>
 

@@ -367,13 +367,16 @@
 /* ── Observaciones y firmas ──────────────────────────────────────────── */
 
 /*
- * Vacío a propósito: es el hueco donde se escribe a mano al recibir la
- * mercancía, y ese momento pasa fuera de la aplicación.
+ * Puede venir con texto o en blanco, y las dos cosas son normales: lo que se
+ * anota al elaborar el pedido sale impreso, y lo que se descubre al recibir se
+ * sigue escribiendo con bolígrafo encima del papel.
+ *
+ * Por eso el `min-height` NO baja aunque haya texto: el hueco para la mano
+ * tiene que seguir estando. A mano hacen falta bastantes más milímetros que a
+ * una fuente de once puntos.
  *
  * Va SEPARADO de la tabla —recuadro propio y aire por encima— y no pegado a
- * su último renglón: unido parecía una fila más del pedido. Y alto de sobra,
- * porque lo que se escribe ahí se escribe con bolígrafo y a mano hacen falta
- * bastantes más milímetros que a una fuente de once puntos.
+ * su último renglón: unido parecía una fila más del pedido.
  */
 .documento__observaciones {
   border: 1px solid #000;
@@ -381,6 +384,19 @@
   padding: var(--e-2) var(--e-3);
   min-height: 110px;
   font-size: 11px;
+}
+
+/*
+ * `pre-line` y no `normal`: quien teclea dos avisos en dos renglones espera
+ * verlos en dos renglones. Colapsa los espacios de más, que es lo que sobra
+ * al pegar texto de otro sitio, y respeta los saltos, que es lo que no sobra.
+ */
+.documento__observaciones-texto {
+  margin: var(--e-1) 0 0;
+  white-space: pre-line;
+  /* El rótulo «Observaciones:» es la etiqueta del recuadro; lo escrito es el
+     dato, y en negrita se distingue sin necesitar una línea que los separe. */
+  font-weight: 700;
 }
 
 /*
@@ -455,6 +471,11 @@
 
   /* Un renglón partido entre dos hojas se lee como dos pedidos distintos. */
   .documento__tabla tr { break-inside: avoid; }
+
+  /* Y el recuadro de observaciones tampoco se parte: la mitad de un aviso al
+     final de una hoja y la otra mitad al principio de la siguiente es peor
+     que empezarlo en la segunda. */
+  .documento__observaciones { break-inside: avoid; }
 
   /* Y la cabecera de la tabla se repite en cada hoja: sin esto, la segunda
      página son columnas de números sin decir de qué son. */

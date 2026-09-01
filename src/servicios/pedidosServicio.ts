@@ -40,6 +40,11 @@ export interface Pedido {
   fechaEntrega: string | null;
   horaEntrega: string | null;
   lugarEntrega: string;
+  /**
+   * Lo que va escrito en el recuadro «Observaciones» de la hoja. Vacío = el
+   * recuadro sale en blanco, para escribir a mano al recibir.
+   */
+  observaciones: string;
   /** El nombre de quien lo elaboró. Vacío si su cuenta ya no existe. */
   elaboradoPor: string;
   /** `creado` | `enviado` | `confirmado` | `anulado`. */
@@ -117,6 +122,8 @@ export interface PedidoNuevo {
   fechaEntrega?: string | null;
   horaEntrega?: string | null;
   lugarEntrega?: string;
+  /** El recuadro «Observaciones» de la hoja. Vacío lo deja en blanco. */
+  observaciones?: string;
   lineas: LineaNueva[];
 }
 
@@ -135,6 +142,7 @@ interface FilaPedido {
   tipo_documento?: string; categoria_marcada?: string;
   fecha_elaboracion: string; fecha_entrega?: string | null;
   hora_entrega?: string | null; lugar_entrega?: string;
+  observaciones?: string;
   elaborado_por?: string;
   estado?: string; enviado_en?: string | null; confirmado_en?: string | null;
   lineas?: FilaLinea[];
@@ -187,6 +195,7 @@ function normalizar(fila: FilaPedido): Pedido {
     // trabajan en HH:MM: los segundos de una hora de entrega no significan nada.
     horaEntrega: fila.hora_entrega ? fila.hora_entrega.slice(0, 5) : null,
     lugarEntrega: fila.lugar_entrega ?? '',
+    observaciones: fila.observaciones ?? '',
     elaboradoPor: fila.elaborado_por ?? '',
     estado: fila.estado ?? 'creado',
     enviadoEn: fila.enviado_en ?? null,
@@ -221,6 +230,7 @@ export async function crearPedido(datos: PedidoNuevo): Promise<Pedido> {
     fecha_entrega: datos.fechaEntrega ?? null,
     hora_entrega: datos.horaEntrega ?? null,
     lugar_entrega: datos.lugarEntrega ?? '',
+    observaciones: datos.observaciones ?? '',
     lineas: datos.lineas.map((l) => ({
       producto_id: l.productoId,
       cantidad_solicitada: l.cantidadSolicitada,
@@ -314,6 +324,7 @@ export async function actualizarPedido(id: number, datos: {
   fechaEntrega?: string | null;
   horaEntrega?: string | null;
   lugarEntrega?: string;
+  observaciones?: string;
   lineas: LineaNueva[];
 }): Promise<Pedido> {
   const fila = await pedir<FilaPedido>('pedidos.actualizar', {
@@ -321,6 +332,9 @@ export async function actualizarPedido(id: number, datos: {
     fecha_entrega: datos.fechaEntrega ?? null,
     hora_entrega: datos.horaEntrega ?? null,
     lugar_entrega: datos.lugarEntrega ?? '',
+    // Sin `?? ''`: omitirlo es «no las toques», y vaciarlo es «bórralas». El
+    // formulario manda siempre el campo, así que borrar borra de verdad.
+    observaciones: datos.observaciones,
     lineas: datos.lineas.map((l) => ({
       producto_id: l.productoId,
       cantidad_solicitada: l.cantidadSolicitada,

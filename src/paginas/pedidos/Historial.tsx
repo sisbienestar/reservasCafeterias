@@ -40,12 +40,6 @@ import { puede } from '../../servicios/capacidades.js';
  * ya decía «Enviado». Dos listas para lo mismo siempre acaban así.
  */
 
-/** El almacén y el proveedor externo, dicho con palabras y no con el código. */
-const QUE_ES: Record<string, string> = {
-  'FBE.04': 'Almacén',
-  'FBE.34': 'Proveedor',
-};
-
 export function Historial() {
   const hoy = useHoy();
   const { contexto, salir } = useSesion();
@@ -283,10 +277,13 @@ function Fila({ pedido, conSede }: { pedido: FichaPedido; conSede: boolean }) {
     <tr className={anulado ? 'tabla__fila--apagada' : undefined}>
       <td className="tabla__numero">{pedido.id}</td>
       <td className="tabla__fecha">{formatearFechaCorta(pedido.fechaElaboracion)}</td>
-      <td className="tabla__nombre">
-        {pedido.proveedorNombre}
-        <span className="tabla__detalle">{QUE_ES[pedido.tipoDocumento]}</span>
-      </td>
+      {/*
+        Solo el nombre. Debajo iba «Almacén» o «Proveedor», sacado del tipo de
+        documento, y desde que todos los pedidos se imprimen en FBE.04 esa
+        línea diría «Almacén» en las 362 filas: una columna que repite la
+        misma palabra no reparte nada y ocupa el sitio del nombre.
+      */}
+      <td className="tabla__nombre">{pedido.proveedorNombre}</td>
       {conSede && <td className="tabla__menu">{pedido.cafeteriaNombre}</td>}
       <td className="tabla__numero">{pedido.renglones}</td>
       <td>

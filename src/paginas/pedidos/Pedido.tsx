@@ -47,6 +47,16 @@ type Casillas = string;
 const VACIO: Casillas = '';
 
 /**
+ * Lo que cabe en el recuadro «Observaciones» de la hoja.
+ *
+ * El mismo número que `MAX_OBSERVACIONES` en `api/_nucleo/acciones/pedidos.ts`
+ * y que el CHECK `pedido_observaciones_cabe`. Aquí es un `maxLength`, o sea un
+ * aviso ANTES de teclear el carácter mil uno; quien manda sigue siendo el
+ * servidor.
+ */
+const MAX_OBSERVACIONES = 1000;
+
+/**
  * Una casilla vacía es `null`, no cero.
  *
  * Es la misma distinción que hace el servidor: en las columnas del almacén,
@@ -122,6 +132,7 @@ export function Pedido() {
   const [lugarEntrega, setLugarEntrega] = useState('');
   const [fechaEntrega, setFechaEntrega] = useState('');
   const [horaEntrega, setHoraEntrega] = useState('');
+  const [observaciones, setObservaciones] = useState('');
 
   const [guardando, setGuardando] = useState(false);
   const [aviso, setAviso] = useState<{ tipo: 'exito' | 'error'; mensaje: string } | null>(null);
@@ -144,6 +155,7 @@ export function Pedido() {
     setLugarEntrega(original.lugarEntrega);
     setFechaEntrega(original.fechaEntrega ?? '');
     setHoraEntrega(original.horaEntrega ?? '');
+    setObservaciones(original.observaciones);
     setSedeElegida(original.cafeteriaId);
   }, [original]);
 
@@ -229,6 +241,7 @@ export function Pedido() {
           fechaEntrega: esAlmacen ? null : (fechaEntrega || null),
           horaEntrega: esAlmacen ? null : (horaEntrega || null),
           lugarEntrega,
+          observaciones,
           lineas,
         })
         : await crearPedido({
@@ -238,6 +251,7 @@ export function Pedido() {
           fechaEntrega: esAlmacen ? null : (fechaEntrega || null),
           horaEntrega: esAlmacen ? null : (horaEntrega || null),
           lugarEntrega,
+          observaciones,
           lineas,
         });
       /*
@@ -252,7 +266,7 @@ export function Pedido() {
       setGuardando(false);
     }
   }, [proveedor, perfil, original, esAdmin, sedeDelPedido, hoy, esAlmacen,
-      fechaEntrega, horaEntrega, lugarEntrega, lineas, navegar]);
+      fechaEntrega, horaEntrega, lugarEntrega, observaciones, lineas, navegar]);
 
   return (
     <>
@@ -274,9 +288,14 @@ export function Pedido() {
               <div className="encabezado-reserva__texto">
                 <BarraVolver
                   volver={{ a: '/pedidos', texto: '← Todos los proveedores' }}
+                  // Sin «Almacén interno / Proveedor externo»: ese par salía
+                  // del tipo de documento, y desde que todos los pedidos se
+                  // imprimen en FBE.04 llamaría almacén de la Universidad a
+                  // Ramo o a Coca-Cola. Queda el código, que es un dato del
+                  // papel y no una afirmación sobre quién es el proveedor.
                   contexto={editando && original
                     ? `Corrigiendo el pedido n.º ${original.id}`
-                    : `${esAlmacen ? 'Almacén interno' : 'Proveedor externo'} · Código ${proveedor.tipoDocumento}`}
+                    : `Formato ${proveedor.tipoDocumento}`}
                 />
                 <div className="encabezado-reserva__linea">
                   <h1 className="encabezado-reserva__titulo">{proveedor.nombre}</h1>
@@ -448,6 +467,41 @@ export function Pedido() {
                 ))}
               </table>
             </div>
+
+            {/*
+              Las observaciones van DEBAJO de la tabla, y no arriba con la
+              sede y el lugar de entrega, porque ese es su sitio en la hoja:
+              en el FBE.04 el recuadro está entre los productos y las firmas.
+              Lo que se anota ahí se anota mirando lo que se acaba de pedir
+              —«el jueves es festivo», «la mitad para Campestre»—, así que
+              pedirlo antes de teclear las cantidades sería preguntarlo antes
+              de que haya nada que observar.
+
+              Sin `required` y sin marca de campo obligatorio: la mayoría de
+              los pedidos no tienen nada que observar, y hasta hoy el recuadro
+              se imprimía siempre en blanco.
+            */}
+            <section className="campo bloque-tabla" aria-label="Observaciones">
+              <label className="campo__etiqueta" htmlFor="observaciones-pedido">
+                Observaciones
+              </label>
+              <textarea
+                id="observaciones-pedido"
+                className="campo__control"
+                value={observaciones}
+                disabled={guardando}
+                maxLength={MAX_OBSERVACIONES}
+                rows={4}
+                placeholder="Opcional. Lo que escribas aquí sale impreso en el recuadro «Observaciones» de la hoja."
+                onChange={(e) => setObservaciones(e.target.value)}
+              />
+              <span className="campo__ayuda">
+                Se imprime en la hoja. Déjalo en blanco si el recuadro se va a
+                rellenar a mano al recibir la mercancía.
+                {observaciones.length > MAX_OBSERVACIONES - 100
+                  && ` · Quedan ${MAX_OBSERVACIONES - observaciones.length} caracteres.`}
+              </span>
+            </section>
 
           </>
         )}

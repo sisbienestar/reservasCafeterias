@@ -277,18 +277,29 @@ formulario, y es la misma disciplina de un viaje por gesto que sigue
 alfabético: quien pide recorre la hoja con el dedo en el orden de siempre.
 
 `tipo_documento` decide qué columnas tiene el formulario y el documento
-impreso: `FBE.04` para los almacenes internos —solicitada, devuelta, adicional
-y total de salida— y `FBE.34` para los proveedores externos, que solo llevan
-cantidad pedida.
+impreso: `FBE.04` —solicitada, devuelta, adicional y total de salida— y
+`FBE.34`, que solo lleva cantidad pedida.
+
+**Hoy todos los proveedores son `FBE.04`.** Se unificó el 1 de septiembre de
+2026: la hoja institucional que se firma es una sola, y el histórico se
+reescribió para que un pedido viejo se reimprima igual que uno nuevo. El
+`FBE.34` NO se ha borrado —sigue siendo un valor válido, sigue teniendo su
+plantilla en `Documento.tsx` y se puede elegir desde el panel— pero hoy no lo
+usa nadie. Ver `supabase/17-observaciones-y-formato-unico.sql`.
+
+Esa unificación deja el par «almacén interno / proveedor externo» sin poder
+leerse del tipo de documento, y **no hay ningún otro campo que lo diga**. Las
+pantallas que lo enseñaban dejaron de hacerlo antes que llamar almacén de la
+Universidad a Ramo o a Coca-Cola.
 
 ### Pedidos
 
 | Acción | Params | Devuelve |
 |---|---|---|
-| `pedidos.crear` | `proveedor_id`, `cafeteria_id`, `fecha_elaboracion`, `fecha_entrega?`, `hora_entrega?`, `lugar_entrega?`, `lineas[]` | `Pedido` con sus `lineas[]` |
+| `pedidos.crear` | `proveedor_id`, `cafeteria_id`, `fecha_elaboracion`, `fecha_entrega?`, `hora_entrega?`, `lugar_entrega?`, `observaciones?`, `lineas[]` | `Pedido` con sus `lineas[]` |
 | `pedidos.obtener` | `id` | `Pedido` con sus `lineas[]` |
 | `pedidos.buscar` | `desde`, `hasta`, `proveedor_id?`, `cafeteria_id?`, `estado?`, `limite?` | `{total, pedidos[]}` — la FICHA de cada uno, sin sus líneas |
-| `pedidos.actualizar` | `id`, `fecha_entrega?`, `hora_entrega?`, `lugar_entrega?`, `lineas[]` | `Pedido` — según la matriz de abajo |
+| `pedidos.actualizar` | `id`, `fecha_entrega?`, `hora_entrega?`, `lugar_entrega?`, `observaciones?`, `lineas[]` | `Pedido` — según la matriz de abajo |
 | `pedidos.enviar` | `id` | `Pedido` en `enviado`, y avisa a administración |
 | `pedidos.confirmar` | `id` | `Pedido` en `confirmado`. Lo cierra, y NO manda correo |
 | `pedidos.anular` | `id` | `Pedido` en `anulado` |
@@ -342,6 +353,29 @@ generada, la calcula Postgres como `solicitada − devuelta + adicional`.
 El texto que se imprime —nombre, código y unidad de cada producto— **no viaja
 en los parámetros**: lo copia `crear_pedido` desde el catálogo. El cliente dice
 qué producto y cuánto; qué dice el papel lo decide la base de datos.
+
+`observaciones` es lo que sale impreso en el recuadro «Observaciones» de la
+hoja. Es opcional, se recorta por los extremos y **no puede pasar de 1000
+caracteres**: lo que va ahí cabe en un recuadro de una hoja carta, y un texto
+más largo empujaría las firmas a una segunda página. El tope está escrito tres
+veces —el CHECK `pedido_observaciones_cabe`, `MAX_OBSERVACIONES` en `api/` y el
+`maxLength` del formulario— y la que manda es la primera.
+
+En `pedidos.actualizar`, **omitir `observaciones` no es lo mismo que mandarlo
+vacío**: omitirlo las deja como estaban y `''` las borra. La pantalla manda
+siempre el campo, así que vaciar el área de texto las vacía de verdad; una
+llamada futura que solo cuadre cantidades no borra de paso lo que alguien
+anotó.
+
+Las observaciones se corrigen con **la misma matriz** que las cantidades —la de
+más abajo—, y no con una propia: son parte del mismo documento y se descubre
+que faltan en el mismo momento, al revisarlo impreso.
+
+En un `FBE.04`, `pedidos.actualizar` **no escribe `fecha_entrega` ni
+`hora_entrega`: las conserva**. Esa plantilla no tiene esas casillas, así que
+el formulario no las ofrece y manda `null`; escribir ese `null` borraría, al
+primer guardado, la fecha de entrega que traen dentro los pedidos heredados del
+`FBE.34`. Lo decide el tipo del pedido, no lo que llegue por el cable.
 
 `pedidos.buscar` devuelve la **ficha** de cada pedido —fecha, proveedor, sede,
 estado y cuántos renglones lleva—, no sus líneas: un listado de treinta pedidos

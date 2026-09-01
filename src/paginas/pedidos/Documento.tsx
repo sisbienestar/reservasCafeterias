@@ -62,10 +62,10 @@ const CATEGORIAS = ['Alimentos y bebidas', 'Aseo y productos químicos', 'Desech
  * cabe en esa casilla, y quitarlo cambiaría el formato.
  */
 const SERVICIOS =
-  'Hace referencia los servicios: Comedores Desayuno, Comedores Almuerzo, ' +
+  'Hace referencia a los servicios: Comedores Desayuno, Comedores Almuerzo, ' +
   'Comedores Cena, Combo Saludable Almuerzo, Cafetería Humanitas, Cafetería ' +
-  'Alakonia, Cafetería Bienestar Bien, Cafetería Campestre, La Cafetería ' +
-  'Bienestar Almuerzos, Bandeja, Desayuno, Mostrador, Servicios Especiales, etc.';
+  'Akademia, Cafetería Bien estar Bien, Cafetería Campestre, La Cafetería ' +
+  'Bienestar Almuerzos, Bandejas, Desayuno, Mostrador, Servicios Especiales, etc.';
 
 /** Sin decimales cuando no los hay: «3», no «3.00». En una hoja de pedido cansa. */
 const cantidad = (valor: number | null): string =>
@@ -520,10 +520,12 @@ export function Documento() {
  * casilla que a veces se rellena a mano al recibir el pedido, y en la hoja
  * original está en blanco. Entonces salen los tres huecos, no un guion.
  *
- * Los rótulos son «Día», «Mes» y «Año», no «dd/mm/aaaa». En la plantilla de
- * papel esas abreviaturas decían el FORMATO en el que había que escribir a
- * mano; aquí la fecha la pone la aplicación ya formateada, así que lo único
- * que queda por decir es qué es cada número.
+ * Los rótulos NO son los mismos en las dos formas, y es deliberado. La
+ * apilada del FBE.04 dice «dd», «mm» y «aaaa», literal de su plantilla: esa
+ * hoja se firma y tiene que parecerse a la aprobada. La forma en línea es un
+ * arreglo nuestro para el FBE.34 —esa casilla no cabía apilada— y ahí sí se
+ * dicen los rótulos con palabras, porque la abreviatura pegada al número no
+ * se distinguiría del número.
  */
 function CasillaFecha({
   titulo,
@@ -568,10 +570,20 @@ function CasillaFecha({
     <table className="documento__fecha">
       <thead>
         <tr><th colSpan={3}>{titulo}</th></tr>
+        {/*
+          «dd», «mm» y «aaaa», literal de la plantilla FBE.04.
+
+          Estuvieron un tiempo como «Día», «Mes» y «Año», con el argumento de
+          que la abreviatura decía el FORMATO en el que había que escribir a
+          mano y aquí la fecha ya la pone la aplicación. El argumento era
+          bueno y no manda: esta es una hoja institucional con código y
+          versión, y lo que se firma tiene que parecerse a la plantilla
+          aprobada, no a nuestra mejora.
+        */}
         <tr>
-          <th scope="col">Día</th>
-          <th scope="col">Mes</th>
-          <th scope="col">Año</th>
+          <th scope="col">dd</th>
+          <th scope="col">mm</th>
+          <th scope="col">aaaa</th>
         </tr>
       </thead>
       <tbody>
@@ -855,9 +867,23 @@ function Hoja({ pedido }: { pedido: PedidoGuardado }) {
       */}
 
       {/* ── Observaciones ────────────────────────────────────────────── */}
-      {/* Sin contenido a propósito: en las dos plantillas es el hueco donde se
-          escribe a mano al recibir, y ese momento pasa fuera de la app. */}
-      <div className="documento__observaciones">Observaciones:</div>
+      {/*
+        El recuadro sigue siendo alto aunque venga con texto: lo que se
+        escribe en la aplicación no agota su uso. Se anota lo que se sabe al
+        elaborar el pedido —«el jueves es festivo»— y queda sitio para lo que
+        se descubre al recibir, que se sigue escribiendo a mano encima del
+        papel.
+
+        `white-space: pre-line` en el CSS, no `<br>`: quien lo teclea puede
+        separar dos avisos en dos renglones, y los saltos que puso tienen que
+        salir donde los puso.
+      */}
+      <div className="documento__observaciones">
+        Observaciones:
+        {pedido.observaciones && (
+          <p className="documento__observaciones-texto">{pedido.observaciones}</p>
+        )}
+      </div>
 
       {/*
         Las firmas SOLO en el FBE.04: la hoja del FBE.34 termina en

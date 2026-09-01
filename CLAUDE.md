@@ -85,6 +85,37 @@ administración tampoco, o apagar un módulo cerraría la puerta para encenderlo
 Los tres llegan dentro de `app.contexto`, que la aplicación ya espera antes de
 pintar nada. **Si esas tablas no existen, NO ARRANCA**: ver `09-admin-general.sql`.
 
+### Una sola hoja: el FBE.04
+
+**Todos los pedidos se imprimen con el FBE.04**, sean del almacén o de un
+proveedor de fuera. Antes había dos plantillas y el proveedor elegía; desde
+`supabase/17-observaciones-y-formato-unico.sql` (1 de septiembre de 2026) la
+hoja que se firma es una sola, y el histórico se reescribió para que un pedido
+viejo se reimprima igual que uno nuevo.
+
+**El FBE.34 no se borró.** Sigue siendo un valor válido de la columna, sigue
+teniendo su plantilla en `Documento.tsx` y se puede elegir desde el panel de
+proveedores. Simplemente hoy no lo usa nadie.
+
+Dos consecuencias que cuesta ver hasta que muerden:
+
+- **«Almacén interno» y «proveedor externo» ya no se pueden deducir de nada.**
+  Era `tipo_documento`, y ahora es el mismo para los once proveedores. Las tres
+  pantallas que lo enseñaban dejaron de hacerlo antes que llamar almacén de la
+  Universidad a Ramo o a Coca-Cola. Si algún día hace falta la distinción, es
+  una columna nueva, no una lectura del formato.
+- **Un FBE.04 SÍ puede llevar fecha y hora de entrega guardadas**, aunque su
+  plantilla no tenga dónde imprimirlas. Las traen los dos pedidos heredados del
+  FBE.34, y `actualizar_pedido` las conserva en vez de escribir el `null` que
+  manda un formulario que no las ofrece. Guardar y imprimir son dos cosas.
+
+**«Observaciones» es un campo del pedido**, editable con las mismas llaves que
+las cantidades y con el mismo tope escrito tres veces —el CHECK
+`pedido_observaciones_cabe`, `MAX_OBSERVACIONES` en `api/` y el `maxLength` del
+formulario—. Sale impreso dentro del recuadro, y el recuadro sigue siendo alto
+aunque venga con texto: lo que se anota al elaborar no agota lo que se escribe
+a mano al recibir.
+
 ### El ciclo de un pedido
 
 `creado` → `enviado` → `confirmado`, y `anulado` desde cualquiera de los tres.

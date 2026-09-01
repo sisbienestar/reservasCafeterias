@@ -29,6 +29,36 @@ interface LineaEntrante {
 const HORA = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 /**
+ * Lo que cabe en el recuadro «Observaciones» del papel.
+ *
+ * El mismo número que el CHECK `pedido_observaciones_cabe` de
+ * `supabase/17-observaciones-y-formato-unico.sql`. Se repite aquí para poder
+ * decir qué pasó: ese CHECK saltando sale como ERROR_INTERNO.
+ */
+const MAX_OBSERVACIONES = 1000;
+
+/**
+ * Las observaciones tal como llegan por el cable.
+ *
+ * Ausentes devuelve `null`, y eso NO es lo mismo que la cadena vacía: en
+ * `actualizar_pedido`, `null` significa «déjalas como están» y `''` significa
+ * «bórralas». La pantalla manda siempre el campo, así que vaciarlo lo vacía;
+ * una llamada futura que solo cuadre cantidades no borra de paso lo que
+ * alguien anotó.
+ */
+function leerObservaciones(valor: unknown): string | null {
+  if (valor === null || valor === undefined) return null;
+
+  const texto = String(valor).trim();
+  if (texto.length > MAX_OBSERVACIONES) {
+    romper('PEDIDO_INVALIDO',
+      `Las observaciones no pueden pasar de ${MAX_OBSERVACIONES} caracteres: `
+      + `no cabrían en el recuadro de la hoja. Van ${texto.length}.`);
+  }
+  return texto;
+}
+
+/**
  * Los cuatro estados, en el orden en que le pasan a un pedido.
  *
  * El mismo CHECK que `pedido_estado_valido`. En una lista y no repetidos en
@@ -151,6 +181,7 @@ export async function crear(params: Record<string, unknown>, sesion: Sesion) {
     p_fecha_entrega: fechaEntrega,
     p_hora_entrega: horaEntrega,
     p_lugar_entrega: String(params.lugar_entrega ?? '').trim() || cafeteria.nombre,
+    p_observaciones: leerObservaciones(params.observaciones) ?? '',
     p_creado_por: sesion.usuarioId,
     p_lineas: lineas,
   });
@@ -471,12 +502,21 @@ function exigirEditable(estado: string, rol: Rol): void {
 }
 
 /**
- * Corrige un pedido: las cantidades y los datos de entrega.
+ * Corrige un pedido: las cantidades, las observaciones y los datos de entrega.
  *
  * NO recibe `proveedor_id` ni `cafeteria_id`, y no es un olvido: cambiar el
  * proveedor invalidaría todos los renglones de golpe, y cambiar la sede
  * convertiría el pedido de una cafetería en el de otra. Eso no es corregir,
  * es otro pedido — se anula este y se elabora.
+ *
+ * Las observaciones se corrigen con las mismas llaves que las cantidades: son
+ * parte del mismo documento y se descubre que faltan en el mismo momento, al
+ * revisarlo impreso. No hay una segunda matriz que mantener.
+ *
+ * En un FBE.04 la fecha y la hora de entrega salen de aquí en NULL —esa
+ * plantilla no tiene esas casillas— y `actualizar_pedido` NO las escribe: las
+ * conserva. Es lo que impide que corregir un pedido heredado del FBE.34 le
+ * borre la fecha de entrega que traía dentro.
  */
 export async function actualizar(params: Record<string, unknown>, sesion: Sesion) {
   const id = idDe(params);
@@ -513,6 +553,7 @@ export async function actualizar(params: Record<string, unknown>, sesion: Sesion
     p_fecha_entrega: fechaEntrega,
     p_hora_entrega: horaEntrega,
     p_lugar_entrega: String(params.lugar_entrega ?? '').trim(),
+    p_observaciones: leerObservaciones(params.observaciones),
     p_lineas: lineas,
     // Para el asiento del historial. El rol va aparte del usuario porque la
     // función lo necesita para su propia cerradura, y no debe fiarse de

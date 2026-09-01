@@ -25,9 +25,19 @@ import type { PeticionConfirmacion } from '../ModalConfirmacion.js';
 /** Las tres casillas del encabezado FBE.04. Las mismas que valida el servidor. */
 const CATEGORIAS_FIJAS = ['Alimentos y bebidas', 'Aseo y productos químicos', 'Desechables'];
 
+/**
+ * Cada código, con el nombre de la hoja que imprime.
+ *
+ * Decía «Almacén interno» y «Proveedor externo», que era lo que separaba a los
+ * dos formatos cuando cada uno tenía sus proveedores. Ya no los separa: TODOS
+ * los pedidos se imprimen en FBE.04, incluidos los de Ramo, Vicky y Coca-Cola,
+ * que son de fuera. Aquí el código sigue siendo una elección real —el FBE.34
+ * queda disponible— así que lo que hace falta decir es qué hoja sale, no a
+ * quién se le pide.
+ */
 const QUE_ES: Record<string, string> = {
-  'FBE.04': 'Almacén interno',
-  'FBE.34': 'Proveedor externo',
+  'FBE.04': 'Control de pedido y salidas de almacén',
+  'FBE.34': 'Pedido diario adicional',
 };
 
 interface Props {

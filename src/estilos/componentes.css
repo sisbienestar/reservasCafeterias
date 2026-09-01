@@ -622,6 +622,17 @@
   background: var(--c-error-suave);
 }
 
+/* Reutiliza el control de siempre; solo cambia lo que un área de texto no
+   puede heredar. `resize: vertical` y no libre: a lo ancho se saldría de su
+   columna, y lo que hace falta es sitio para más renglones, no para más
+   línea. */
+textarea.campo__control {
+  min-height: 96px;
+  font-family: inherit;
+  line-height: var(--interlinea-texto);
+  resize: vertical;
+}
+
 select.campo__control {
   appearance: none;
   cursor: pointer;
