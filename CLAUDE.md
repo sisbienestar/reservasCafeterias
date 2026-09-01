@@ -149,6 +149,21 @@ existe— y **el aviso nunca tumba la confirmación**. Ver
 `api/_nucleo/notificaciones.ts`: no lanza jamás, y añadir Slack o Telegram es
 otra función en su lista `CANALES`.
 
+**Anular y eliminar no son lo mismo, y confundirlos cuesta un pedido.** Anular
+es la respuesta de negocio —el pedido existió, se decidió que no valía, y queda
+en el historial diciéndolo— y la tienen el mostrador sobre lo suyo en `creado` y
+administración sobre cualquiera. Eliminar (`pedidos.eliminar`, **solo `admin`**)
+borra la fila: se lleva por delante las líneas y `pedido_evento` por CASCADE, y
+el pedido sale del análisis. Es para lo que nunca debió estar en el histórico
+—el pedido de prueba, el duplicado de un doble clic—, no para lo que salió mal.
+
+Por eso, y solo por eso, **un borrado se anota en `registro`** aunque
+`09-admin-general.sql` diga que ahí no van pedidos: esa frase razona que los
+pedidos ya tienen rastro propio, y un pedido borrado deja de tenerlo. Sin ese
+asiento, uno desaparecido sería indistinguible de uno que nunca existió.
+
+El auxiliar no tiene ninguna de las dos.
+
 Todo lo que le pasa a un pedido deja asiento en `pedido_evento`, y llega dentro
 del propio pedido en `eventos[]`. Copia el nombre y el rol de quien lo hizo **en
 ese momento**, por lo mismo que `producto_nombre` en las líneas.

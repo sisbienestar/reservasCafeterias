@@ -42,8 +42,19 @@ export type Capacidad =
   | 'modificarEnviados'
   /** Dar por definitivo un pedido enviado. */
   | 'confirmarPedidos'
+  /** Dejar sin efecto un pedido. El de uno mismo, recién creado. */
+  | 'anularPedidos'
   /** Dejar sin efecto un pedido que ya se envió. */
   | 'anularEnviados'
+  /**
+   * Borrar un pedido de la base, con su historial dentro.
+   *
+   * NO es «anular con otro nombre». Anular deja el pedido en el listado
+   * diciendo que se decidió que no valía; esto lo hace desaparecer, y es para
+   * lo que nunca debió estar ahí —el pedido de prueba, el duplicado de un
+   * doble clic—. Por eso es de administración y de nadie más.
+   */
+  | 'eliminarPedidos'
   /** El catálogo de proveedores y productos, y las cuentas del módulo. */
   | 'administrarCatalogo'
   /** El análisis del histórico. Cruza sedes por definición. */
@@ -52,7 +63,7 @@ export type Capacidad =
 const CAPACIDADES: Record<Rol, readonly Capacidad[]> = {
   /* El mostrador elabora y confirma lo suyo, y ahí acaba: en cuanto el pedido
      sale de la cafetería puede haber papel circulando. */
-  mostrador: ['elaborarPedidos'],
+  mostrador: ['elaborarPedidos', 'anularPedidos'],
 
   /* El auxiliar administrativo NO elabora: su encargo empieza cuando el pedido
      ya está enviado y el proveedor dice qué puede traer. Aquí es donde irán
@@ -63,7 +74,9 @@ const CAPACIDADES: Record<Rol, readonly Capacidad[]> = {
     'elaborarPedidos',
     'modificarEnviados',
     'confirmarPedidos',
+    'anularPedidos',
     'anularEnviados',
+    'eliminarPedidos',
     'administrarCatalogo',
     'verAnalisis',
   ],

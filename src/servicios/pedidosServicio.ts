@@ -368,3 +368,18 @@ export async function confirmarPedido(id: number): Promise<Pedido> {
 export async function anularPedido(id: number): Promise<Pedido> {
   return normalizar(await pedir<FilaPedido>('pedidos.anular', { id }));
 }
+
+/**
+ * Borra un pedido de la base. Solo administración, y no se deshace.
+ *
+ * Devuelve el pedido que YA NO EXISTE, para poder decir con palabras qué se
+ * acaba de borrar. Lo que llega es lo último que se va a saber de él: la
+ * pantalla que lo pida tiene que haber terminado con ese objeto antes de
+ * volver a consultar nada, porque `pedidos.obtener` sobre ese id ya responde
+ * PEDIDO_NO_ENCONTRADO.
+ *
+ * NO es «anular con otro nombre»: ver `eliminarPedidos` en `capacidades.ts`.
+ */
+export async function eliminarPedido(id: number): Promise<Pedido> {
+  return normalizar(await pedir<FilaPedido>('pedidos.eliminar', { id }));
+}

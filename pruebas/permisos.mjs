@@ -63,19 +63,20 @@ async function pedir(accion, params, token) {
 /* ── 1 · Sin sesion ──────────────────────────────────────────────────── */
 
 titulo('Sin sesion: lo publico se sirve');
-// La portada enseña las sedes del campus antes de entrar. Es la unica accion
-// de datos que se sirve sin sesion, y no lleva nada de nadie.
-const portada = await pedir('cafeterias.listar', {}, null);
-ok(portada.ok === true, `cafeterias.listar → ${portada.ok ? 'sirve' : portada.error.codigo}`);
-ok(Array.isArray(portada.data) && portada.data.every((c) => c.activa),
-   `y SOLO las activas (${(portada.data ?? []).length})`);
-
-// Aunque se pida lo contrario: una sede archivada es informacion de
-// administracion, y fiarse del parametro habria bastado para sacarla.
-const conInactivas = await pedir('cafeterias.listar', { incluir_inactivas: true }, null);
-ok(conInactivas.ok === true && conInactivas.data.length === portada.data.length,
-   `incluir_inactivas se IGNORA sin sesion (${conInactivas.data?.length} = ${portada.data.length})`);
-
+/*
+ * `app.contexto` es lo UNICO publico. Ver ACCIONES_PUBLICAS en sesion.ts.
+ *
+ * Aqui habia tres comprobaciones sobre `cafeterias.listar` sin sesion, de
+ * cuando `/reservas` era la portada y enseñaba las sedes del campus antes de
+ * entrar. Dejo de serlo al pasar la portada a la lista de MODULOS, que no
+ * enseña ninguna sede, y desde entonces esta suite se caia en la tercera
+ * linea —leia `.length` de un `data` que ya no venia— y no llegaba a correr
+ * NI UNA de las pruebas de permisos, que son su motivo de existir.
+ *
+ * Lo que comprobaban no se pierde: `cafeterias.listar` pasa a la lista de
+ * cerradas de abajo, y lo de `incluir_inactivas` baja a la seccion del
+ * mostrador, que es donde ahora se puede pedir.
+ */
 const ctxAnonimo = await pedir('app.contexto', {}, null);
 ok(ctxAnonimo.ok === true, 'app.contexto se sirve sin sesion');
 ok(ctxAnonimo.data?.perfil === null, `y el perfil viene vacio → ${JSON.stringify(ctxAnonimo.data?.perfil)}`);
@@ -84,7 +85,11 @@ ok(/^\d{4}-\d{2}-\d{2}$/.test(ctxAnonimo.data?.hoy ?? ''),
 
 titulo('Sin sesion: lo demas, cerrado');
 for (const accion of ['reservas.buscar', 'reservas.crear', 'reservas.delDia',
-                      'reservas.cancelar', 'menu.semana', 'cafeterias.crear']) {
+                      'reservas.cancelar', 'menu.semana', 'cafeterias.crear',
+                      // Desde que la portada son los MODULOS, esta tambien:
+                      // a quien le compra Bienestar y donde tiene sedes ya no
+                      // se cuenta antes de entrar.
+                      'cafeterias.listar']) {
   const s = await pedir(accion, {}, null);
   ok(s.ok === false && s.error.codigo === 'NO_AUTENTICADO',
      `${accion} → ${s.ok ? 'DEJO PASAR' : s.error.codigo}`);
@@ -149,12 +154,31 @@ for (const [accion, params] of [
   ok(s.ok === true, `${accion} → ${s.ok ? 'ok' : s.error.codigo}`);
 }
 
+/*
+ * Una sede archivada es informacion de administracion, y fiarse del parametro
+ * habria bastado para sacarla. Se pide con el token del mostrador porque sin
+ * sesion ya no se puede pedir nada de esto.
+ */
+const activas = await pedir('cafeterias.listar', {}, token);
+ok(Array.isArray(activas.data) && activas.data.every((c) => c.activa),
+   `cafeterias.listar da SOLO las activas (${(activas.data ?? []).length})`);
+
+const conInactivas = await pedir('cafeterias.listar', { incluir_inactivas: true }, token);
+ok(conInactivas.ok === true && conInactivas.data?.length === activas.data?.length,
+   `y incluir_inactivas se IGNORA para el mostrador `
+   + `(${conInactivas.data?.length} = ${activas.data?.length})`);
+
 /* ── 4 · Lo que NO puede ─────────────────────────────────────────────── */
 
 titulo('Lo que el mostrador NO puede: es administracion');
+// `pedidos.eliminar` borra la fila de verdad, con sus lineas y su historial.
+// El mostrador anula —eso si puede, y deja rastro— pero no borra: si esta
+// linea deja de fallar, un mostrador puede hacer desaparecer un pedido del
+// historico sin que quede constancia de que existio.
 for (const accion of ['reservas.cancelar', 'reservas.buscar', 'menu.semana',
                       'menu.guardarSemana', 'cafeterias.crear', 'cafeterias.archivar',
-                      'cafeterias.actualizar', 'cafeterias.reactivar']) {
+                      'cafeterias.actualizar', 'cafeterias.reactivar',
+                      'pedidos.eliminar']) {
   const s = await pedir(accion, {}, token);
   ok(s.ok === false && s.error.codigo === 'NO_AUTORIZADO',
      `${accion} → ${s.ok ? 'DEJO PASAR' : s.error.codigo}`);

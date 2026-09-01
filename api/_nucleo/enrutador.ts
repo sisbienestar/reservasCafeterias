@@ -156,6 +156,10 @@ const ACCIONES: Record<string, Manejador> = {
   // Cierra el pedido: queda como lo que el proveedor va a entregar.
   'pedidos.confirmar': conSesion(pedidos.confirmar),
   'pedidos.anular': conSesion(pedidos.anular),
+  // Borrado de verdad, y solo `admin`: ver PERMISOS. No sustituye a `anular`
+  // —lo normal es anular, que deja rastro— sino que limpia lo que nunca debió
+  // estar en el histórico. Queda anotado en `registro`.
+  'pedidos.eliminar': conSesion(pedidos.eliminar),
 
   // El panel del módulo. Todas son solo para `admin`: ver PERMISOS.
   'proveedores.crear': conSesion((p) => proveedores.crear(p)),

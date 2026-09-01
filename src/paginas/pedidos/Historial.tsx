@@ -18,7 +18,7 @@
  */
 
 import { useCallback, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   buscarPedidos, PASOS_PEDIDO, ANULADO, nombreDeEstado, type FichaPedido,
 } from '../../servicios/pedidosServicio.js';
@@ -101,6 +101,23 @@ export function Historial() {
   const total = datos?.total ?? 0;
   const hayFiltros = Boolean(sede || proveedor || estado);
 
+  /*
+   * El aviso de algo que pasó en OTRA pantalla.
+   *
+   * Hoy solo lo manda el documento al eliminar un pedido, y tiene que llegar
+   * así: para cuando el servidor contesta, la pantalla que lo pidió ya no se
+   * está viendo —el pedido no existe, no hay documento que pintar— así que
+   * decirlo allí sería escribirlo en una hoja que nadie va a leer.
+   *
+   * Se lee del estado de la navegación y no de un parámetro de la dirección:
+   * no forma parte de la dirección del historial, y refrescar con F5 no debe
+   * volver a anunciar un borrado de hace un rato.
+   */
+  const { state } = useLocation();
+  const avisoDeLlegada = typeof (state as { aviso?: unknown })?.aviso === 'string'
+    ? (state as { aviso: string }).aviso
+    : null;
+
   return (
     <>
       <main className="contenedor pagina">
@@ -126,6 +143,13 @@ export function Historial() {
             </div>
           </div>
         </section>
+
+        {/* `role="status"` y no `alert`: informa de algo que ya terminó bien,
+            no interrumpe nada. Es el mismo trato que le da el documento a sus
+            avisos. */}
+        {avisoDeLlegada && (
+          <p className="aviso aviso--exito" role="status">{avisoDeLlegada}</p>
+        )}
 
         <section className="filtros" aria-label="Filtros del historial">
           <div className="campo filtros__campo">

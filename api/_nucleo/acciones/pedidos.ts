@@ -16,6 +16,9 @@ import { romper } from '../sobre.js';
 import { ES_FECHA, LIMITE_DETALLE, MAX_DIAS_RANGO, diasEntre } from '../dominio.js';
 import { sedePermitida, type Rol, type Sesion } from '../sesion.js';
 import { notificarPedido, type PedidoNotificable } from '../notificaciones.js';
+// El asiento de un borrado. Vive en `aplicacion` porque `registro` es de la
+// aplicación y no de este módulo: ver el comentario de `eliminar`.
+import { registrar } from './aplicacion.js';
 
 /** Lo que la pantalla manda por cada renglón con cantidad. */
 interface LineaEntrante {
@@ -671,4 +674,81 @@ export async function anular(params: Record<string, unknown>, sesion: Sesion) {
 
   if (error) traducirDelSql(error);
   return data;
+}
+
+/**
+ * Borra un pedido de la base. SOLO administración, y no se deshace.
+ *
+ * ── Por qué existe, teniendo `anular` ────────────────────────────────────
+ *
+ * No son lo mismo y no se sustituyen. **Anular es la respuesta de negocio**:
+ * el pedido existió, se decidió que no valía, y queda en el historial diciendo
+ * eso. Es lo que hay que usar el 99 % de las veces, y por eso lo puede hacer
+ * quien elabora.
+ *
+ * Esto otro es una **herramienta de limpieza**: el pedido de prueba, el que se
+ * elaboró dos veces por un doble clic, el que nunca debió estar en el
+ * histórico. Anularlo lo dejaría en el listado para siempre explicando algo
+ * que no pasó. Por eso es de administración y de nadie más.
+ *
+ * ── Qué se lleva por delante ─────────────────────────────────────────────
+ *
+ * Las líneas y los asientos de `pedido_evento` caen con él: los dos apuntan
+ * aquí con `ON DELETE CASCADE`. O sea que **desaparece también su historial**,
+ * que es justo lo que distingue esto de anular. También sale del análisis, que
+ * lee `pedido` directamente.
+ *
+ * ── Y por eso queda anotado en `registro` ────────────────────────────────
+ *
+ * `09-admin-general.sql` dice que el registro NO anota pedidos, porque ya
+ * tienen su propio rastro en `pedido_evento`. Esta es la excepción exacta que
+ * describe esa frase al revés: un pedido borrado deja de tener rastro propio,
+ * porque su rastro se borra con él. Sin este asiento, un pedido desaparecido
+ * sería indistinguible de uno que nunca existió.
+ *
+ * Se lee ANTES de borrar y con el detalle dentro: después no hay a quién
+ * preguntarle qué llevaba.
+ */
+export async function eliminar(params: Record<string, unknown>, sesion: Sesion) {
+  const id = idDe(params);
+
+  /*
+   * El detalle completo, y no la ficha: es lo último que se va a saber de este
+   * pedido. Cuántos renglones llevaba y de qué proveedor era es la diferencia
+   * entre un asiento que sirve para responder «¿y el pedido 312?» y uno que
+   * solo dice que alguien borró un número.
+   */
+  const pedido = desempaquetar<{
+    id: number; proveedor_id: string; proveedor_nombre: string;
+    cafeteria_id: string; cafeteria_nombre: string;
+    fecha_elaboracion: string; estado: string; elaborado_por: string;
+    lineas: unknown[];
+  } | null>(await servicio().rpc('detalle_pedido', { p_id: id }));
+
+  if (!pedido) romper('PEDIDO_NO_ENCONTRADO', `No existe el pedido ${id}.`);
+
+  // Redundante mientras solo `admin` tenga la acción —no tiene sede, así que
+  // esto pasa siempre— y aquí sigue por si algún día la tiene alguien con
+  // sede: borrar el pedido de otra cafetería no debería depender de que nadie
+  // se acuerde de esta línea.
+  exigirSede(sesion, pedido.cafeteria_id);
+
+  const { error } = await servicio().from('pedido').delete().eq('id', id);
+  if (error) throw error;
+
+  await registrar(sesion, 'pedidos.eliminar', String(id), {
+    proveedor: pedido.proveedor_nombre,
+    cafeteria: pedido.cafeteria_nombre,
+    fecha_elaboracion: pedido.fecha_elaboracion,
+    estado: pedido.estado,
+    elaborado_por: pedido.elaborado_por,
+    renglones: Array.isArray(pedido.lineas) ? pedido.lineas.length : 0,
+  });
+
+  /*
+   * Devuelve el pedido que YA NO ESTÁ, no un `{ok:true}`. La pantalla acaba de
+   * borrar algo y lo que necesita para decirlo con palabras —«Se eliminó el
+   * pedido n.º 312 de Almacén Aseo»— es exactamente esto.
+   */
+  return pedido;
 }

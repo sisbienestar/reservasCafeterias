@@ -18,6 +18,16 @@
    ========================================================================== */
 
 /*
+ * El ancho de una carta menos los márgenes. Fijo a propósito: lo que se ve en
+ * pantalla tiene que ser lo que sale por la impresora.
+ *
+ * En una variable porque lo usan DOS cosas: la hoja y la fila de botones que
+ * va debajo. Con el número repetido, cambiar uno dejaría los botones
+ * descuadrados justo por la derecha, que es el borde contra el que se alinean.
+ */
+:root { --ancho-documento: 820px; }
+
+/*
  * Columna flexible, y no un bloque normal, por una sola razón: las firmas
  * llevan `margin-top: auto` y así se van al pie de la hoja en vez de quedarse
  * pegadas debajo de la tabla. Un pedido de seis renglones dejaría si no las
@@ -28,9 +38,7 @@
   flex-direction: column;
   background: #fff;
   color: #000;
-  /* El ancho de una carta menos los márgenes. Fijo a propósito: lo que se ve
-     en pantalla tiene que ser lo que sale por la impresora. */
-  max-width: 820px;
+  max-width: var(--ancho-documento);
   /* Y el alto de una carta menos sus márgenes, para que en PANTALLA se vea
      ya dónde va a caer el pie. En impresión lo sustituye `100vh`. */
   min-height: 1000px;

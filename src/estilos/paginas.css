@@ -409,6 +409,29 @@
 .pasos-pedido--anulado .pasos-pedido__nombre { font-weight: var(--peso-fuerte); }
 .pasos-pedido--anulado .pasos-pedido__que { margin-top: 0; color: var(--c-texto-3); }
 
+/*
+ * Anular y eliminar, debajo del documento y alineados con SU borde derecho.
+ *
+ * `--ancho-documento` sale de `documento.css`, que es quien manda en la
+ * geometría de la hoja. Sin esos dos valores la fila se alinearía con el
+ * borde del contenedor —bastante más ancho— y los botones quedarían flotando
+ * a la derecha de la nada. El orden de carga da igual: una variable se
+ * resuelve al calcular el valor, no al leer el archivo.
+ *
+ * Va aquí y no en `documento.css` porque no se imprime: aquella hoja es el
+ * papel, y esto es la aplicación alrededor. Es el mismo reparto que ya sigue
+ * `.pasos-pedido`, aquí arriba.
+ */
+.acciones-pedido {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--e-3);
+  max-width: var(--ancho-documento);
+  /* El hueco de arriba lo pone ya el `margin-bottom` de `.documento`. */
+  margin: 0 auto var(--e-6);
+}
+
 /* El aviso ocupa el hueco entre el encabezado y la tabla solo cuando existe;
    `hidden` lo saca del flujo y no deja un salto en blanco. */
 #aviso:not([hidden]) { margin-bottom: var(--e-6); }

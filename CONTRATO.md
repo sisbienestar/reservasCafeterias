@@ -303,6 +303,7 @@ Universidad a Ramo o a Coca-Cola.
 | `pedidos.enviar` | `id` | `Pedido` en `enviado`, y avisa a administración |
 | `pedidos.confirmar` | `id` | `Pedido` en `confirmado`. Lo cierra, y NO manda correo |
 | `pedidos.anular` | `id` | `Pedido` en `anulado` |
+| `pedidos.eliminar` | `id` | El `Pedido` que **ya no existe**. Solo `admin` |
 
 ### El panel del módulo · solo `admin`
 
@@ -429,6 +430,38 @@ pedido.
 
 Un **anulado no lo edita nadie**, ni administración: es un pedido que se decidió
 que no existe, y editarlo sería resucitarlo por la puerta de atrás.
+
+#### Anular y eliminar no son lo mismo
+
+| | `pedidos.anular` | `pedidos.eliminar` |
+|---|---|---|
+| Quién | `mostrador` el suyo en `creado`; `admin` en cualquiera | **solo `admin`** |
+| Qué pasa | el pedido queda en `anulado` | la fila se borra de la base |
+| Historial | sigue, y con el asiento de quién lo anuló | **desaparece**: `pedido_evento` cae por CASCADE |
+| Análisis | sigue saliendo, como anulado | deja de existir |
+| Rastro | `pedido_evento` | `registro`, y solo eso |
+
+**Anular es la respuesta de negocio** y es lo que hay que usar casi siempre: el
+pedido existió, se decidió que no valía, y queda diciéndolo. **Eliminar es una
+herramienta de limpieza** — el pedido de prueba, el duplicado de un doble clic,
+lo que nunca debió estar en el histórico. Anular eso lo dejaría en el listado
+para siempre explicando algo que no pasó.
+
+`pedidos.eliminar` **queda anotado en `registro`** con el proveedor, la sede, la
+fecha, el estado y cuántos renglones llevaba, leídos ANTES de borrar.
+`09-admin-general.sql` dice que el registro no anota pedidos porque ya tienen su
+propio rastro; esta es la excepción exacta que esa frase describe al revés, y la
+razón por la que hay que mantenerla: un pedido borrado deja de tener rastro
+propio, porque su rastro se borra con él. Sin ese asiento, un pedido
+desaparecido sería indistinguible de uno que nunca existió.
+
+**No hay guarda de estado.** Se puede eliminar un `confirmado` igual que un
+`anulado`. Lo que separa el clic del borrado es el modal, que enseña el número,
+el proveedor, la sede, la fecha, los renglones y el estado: un «¿seguro?»
+genérico se acepta sin leer, y eso sí se lee.
+
+Auxiliar administrativo: **ni una ni otra**. Su encargo es cuadrar cantidades
+con lo que el proveedor va a traer, no dar de baja pedidos.
 
 La matriz está escrita tres veces —`puede_editar_pedido` en SQL, `EDITORES` en
 `api/`, y los botones del documento— y la que manda es la primera. Las otras dos

@@ -14,9 +14,9 @@
  */
 
 import { useCallback, useState, type ReactNode } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
-  getPedido, enviarPedido, confirmarPedido,
+  getPedido, enviarPedido, confirmarPedido, anularPedido, eliminarPedido,
   PASOS_PEDIDO, ANULADO, nombreDeEstado,
   type Pedido as PedidoGuardado, type EventoPedido,
 } from '../../servicios/pedidosServicio.js';
@@ -144,6 +144,17 @@ function LineaEstado({ estado, acciones }: { estado: string; acciones?: ReactNod
     /*
      * Un anulado no está en ningún paso: se salió del camino. Enseñar los tres
      * con alguno en verde diría que sigue avanzando, que es justo lo contrario.
+     */
+    /*
+     * Sin `acciones`, y eso incluye «Imprimir».
+     *
+     * No es un descuido heredado: el cartel de anulado lleva `.no-imprimir`,
+     * así que un anulado impreso sale con la MISMA cara que uno válido. Un
+     * papel que no puede decir que no vale no debería poder salir de aquí.
+     *
+     * Los dos botones que sí tiene un anulado —eliminar, y anular si aún no lo
+     * está— viven ahora debajo del documento, en `.acciones-pedido`, que se
+     * pinta en todos los estados.
      */
     return (
       <p className="pasos-pedido pasos-pedido--anulado no-imprimir">
@@ -273,6 +284,7 @@ function Historia({ eventos }: { eventos: EventoPedido[] }) {
 
 export function Documento() {
   const { pedidoId = '' } = useParams();
+  const navegar = useNavigate();
   const { contexto, salir } = useSesion();
   const perfil = contexto?.perfil ?? null;
 
@@ -299,6 +311,31 @@ export function Documento() {
   // Confirmar solo existe sobre un enviado, y solo para quien tiene el encargo
   // de hablar con el proveedor.
   const puedeConfirmar = pedido?.estado === 'enviado' && puede(rol, 'confirmarPedidos');
+
+  /*
+   * Anular. Las mismas dos reglas que `pedidos.anular` en el servidor: un
+   * pedido ya anulado no se vuelve a anular, y en cuanto salió de la cafetería
+   * la decisión es de administración, porque puede haber papel firmado
+   * circulando.
+   *
+   * Son DOS capacidades y no una: `anularPedidos` dice si el rol tiene esa
+   * acción siquiera —el auxiliar no la tiene, su encargo es corregir
+   * cantidades, no dar de baja— y `anularEnviados` dice si además llega a los
+   * que ya salieron. Sin la primera, al auxiliar se le habría pintado el botón
+   * sobre un pedido creado y el servidor le habría contestado NO_AUTORIZADO.
+   */
+  const puedeAnular = pedido
+    ? (pedido.estado !== 'anulado'
+      && puede(rol, 'anularPedidos')
+      && (pedido.estado === 'creado' || puede(rol, 'anularEnviados')))
+    : false;
+
+  /*
+   * Eliminar es de administración y de nadie más, en CUALQUIER estado —incluido
+   * el anulado, que es de hecho el caso normal: primero se anula y luego, si
+   * además sobra del histórico, se borra—.
+   */
+  const puedeEliminar = puede(rol, 'eliminarPedidos');
 
   /**
    * Enviar recarga el pedido en vez de retocar el estado en local.
@@ -352,6 +389,63 @@ export function Documento() {
     }
   }, [pedido, recargar]);
 
+  /**
+   * Anular. Mismo patrón que los dos de arriba: recargar, no adivinar.
+   *
+   * El pedido SIGUE en pantalla después de anularlo, y a propósito: se queda
+   * viendo el documento con el cartel de anulado encima, que es la
+   * confirmación de que pasó. Sacar de la pantalla lo que se acaba de tocar
+   * obliga a volver a buscarlo para comprobarlo.
+   */
+  const anular = useCallback(async () => {
+    if (!pedido) return;
+    setTrabajando(true);
+    setAviso(null);
+    try {
+      await anularPedido(pedido.id);
+      recargar();
+      setAviso({
+        tipo: 'exito',
+        mensaje: 'Pedido anulado. Queda en el historial, sin efecto.',
+      });
+    } catch (fallo) {
+      setAviso({ tipo: 'error', mensaje: (fallo as Error).message });
+    } finally {
+      setTrabajando(false);
+    }
+  }, [pedido, recargar]);
+
+  /**
+   * Eliminar. El único que NO recarga: no hay nada que volver a leer.
+   *
+   * Sale al historial, y con `replace`: dejar esta dirección en el camino de
+   * vuelta llevaría al botón de atrás a un pedido que ya no existe, y la
+   * pantalla contestaría con un error donde había un documento hace un
+   * segundo.
+   *
+   * El aviso viaja al historial en el estado de la navegación en vez de
+   * pintarse aquí, porque aquí ya no se va a ver nada: para cuando el servidor
+   * responde, lo que hay que decir hay que decirlo en la pantalla siguiente.
+   */
+  const eliminar = useCallback(async () => {
+    if (!pedido) return;
+    setTrabajando(true);
+    setAviso(null);
+    try {
+      const borrado = await eliminarPedido(pedido.id);
+      navegar('/pedidos/historial', {
+        replace: true,
+        state: {
+          aviso: `Se eliminó el pedido n.º ${borrado.id} de ${borrado.proveedorNombre}`
+            + ` (${borrado.cafeteriaNombre}). No se puede recuperar.`,
+        },
+      });
+    } catch (fallo) {
+      setAviso({ tipo: 'error', mensaje: (fallo as Error).message });
+      setTrabajando(false);
+    }
+  }, [pedido, navegar]);
+
   /** Lo que el modal tiene delante. `null` mientras está cerrado. */
   const [confirmacion, setConfirmacion] = useState<PeticionConfirmacion | null>(null);
 
@@ -366,6 +460,46 @@ export function Documento() {
       alConfirmar: () => { void confirmar(); },
     });
   }, [confirmar]);
+
+  const pedirAnulacion = useCallback(() => {
+    if (!pedido) return;
+    setConfirmacion({
+      titulo: `Anular el pedido n.º ${pedido.id}`,
+      detalle: 'Queda sin efecto y ya no lo edita nadie, ni administración. '
+        + 'Sigue en el historial y en el análisis, diciendo que se anuló. '
+        + 'Si hay papel circulando con este pedido, ese papel deja de valer.',
+      textoConfirmar: 'Sí, anularlo',
+      // Peligro y no primario: no es un paso del día, y no se deshace.
+      tono: 'peligro',
+      alConfirmar: () => { void anular(); },
+    });
+  }, [pedido, anular]);
+
+  /**
+   * El modal de eliminar dice QUÉ se va a borrar, no solo que se va a borrar.
+   *
+   * Es la única defensa real que tiene esto: la acción no se deshace, no
+   * depende del estado y la puede hacer administración sobre cualquiera de los
+   * 362 pedidos. Un «¿seguro?» genérico se acepta sin leer; el número, el
+   * proveedor, la sede y cuántos renglones lleva se leen, y un pedido
+   * equivocado se reconoce ahí.
+   */
+  const pedirEliminacion = useCallback(() => {
+    if (!pedido) return;
+    setConfirmacion({
+      titulo: `Eliminar el pedido n.º ${pedido.id}`,
+      detalle: `${pedido.proveedorNombre} · ${pedido.cafeteriaNombre} · `
+        + `${formatearFechaLarga(pedido.fechaElaboracion)} · `
+        + `${pedido.lineas.length} ${pedido.lineas.length === 1 ? 'renglón' : 'renglones'} · `
+        + `${nombreDeEstado(pedido.estado)}. `
+        + 'Desaparece de la base con sus renglones y su historial, y sale del '
+        + 'análisis. NO se puede recuperar. Si lo que quieres es dejarlo sin '
+        + 'efecto pero que conste, anúlalo en vez de esto.',
+      textoConfirmar: 'Sí, eliminarlo para siempre',
+      tono: 'peligro',
+      alConfirmar: () => { void eliminar(); },
+    });
+  }, [pedido, eliminar]);
 
   return (
     <>
@@ -480,6 +614,9 @@ export function Documento() {
                       {trabajando ? 'Confirmando…' : 'Confirmar pedido'}
                     </button>
                   )}
+
+                  {/* Anular y eliminar NO están aquí: van debajo del
+                      documento. Ver `.acciones-pedido`. */}
                 </div>
               )}
             />
@@ -496,6 +633,48 @@ export function Documento() {
             )}
 
             <Hoja pedido={pedido} />
+
+            {/*
+              Lo que deshace el pedido, DEBAJO del documento y pegado a su
+              borde derecho.
+
+              Estaba arriba, en la barra de estado, junto a «Enviar» y
+              «Confirmar». Ahí hacía dos cosas mal: pesaba lo mismo que los
+              botones que se pulsan a diario, y estaba de camino hacia ellos.
+              Aquí hay que pasar el documento entero para llegar, que para lo
+              que no se deshace es exactamente la fricción correcta — y de
+              paso se llega habiendo visto lo que se va a anular o borrar.
+
+              Pequeños (`boton--sm`) por lo mismo: no son la acción de la
+              pantalla, son la salida de emergencia.
+            */}
+            {(puedeAnular || puedeEliminar) && (
+              <div className="acciones-pedido no-imprimir">
+                {puedeAnular && (
+                  <button
+                    type="button"
+                    className="boton boton--sm boton--neutro"
+                    onClick={pedirAnulacion}
+                    disabled={trabajando}
+                    aria-busy={trabajando}
+                  >
+                    {trabajando ? 'Anulando…' : 'Anular pedido'}
+                  </button>
+                )}
+
+                {puedeEliminar && (
+                  <button
+                    type="button"
+                    className="boton boton--sm boton--peligro"
+                    onClick={pedirEliminacion}
+                    disabled={trabajando}
+                    aria-busy={trabajando}
+                  >
+                    {trabajando ? 'Eliminando…' : 'Eliminar pedido'}
+                  </button>
+                )}
+              </div>
+            )}
 
             <Historia eventos={pedido.eventos} />
           </>

@@ -106,6 +106,22 @@
   background: color-mix(in srgb, var(--c-error) 85%, #000);
 }
 
+/*
+ * Gris oscuro, con el peso de un botón lleno pero sin el rojo.
+ *
+ * Es para «Anular un pedido», y la distinción con `--peligro` es la del
+ * negocio: anular no destruye nada —el pedido se queda en el historial
+ * diciendo que se anuló— mientras que eliminar sí. Pintar los dos de rojo
+ * habría dicho que dan igual de miedo, y entonces el rojo del que sí borra
+ * deja de avisar. Es el mismo argumento que ya explica `--peligro` sobre por
+ * qué no se usa en las filas de una tabla.
+ */
+.boton--neutro {
+  background: var(--c-texto-2);
+  color: #fff;
+}
+.boton--neutro:hover:not(:disabled) { background: var(--c-texto); }
+
 /* Destructivo pero secundario: dentro del modal de edición no debe competir
    con «Guardar cambios». El peso lo lleva el diálogo de confirmación. */
 .boton--peligro-plano {

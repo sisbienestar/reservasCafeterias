@@ -140,6 +140,11 @@ const PERMISOS: Record<Rol, readonly string[]> = {
     'pedidos.enviar',
     'pedidos.confirmar',
     'pedidos.anular',
+    // Borrar un pedido de la base, con su historial dentro. SOLO aquí, y no
+    // por desconfianza del mostrador: anular es la respuesta de negocio y la
+    // tienen los dos. Esto es la herramienta de limpieza para lo que nunca
+    // debió estar en el histórico, y lo que se lleva por delante no vuelve.
+    'pedidos.eliminar',
     // El análisis cruza las sedes por definición: compara lo que pide cada
     // una. Por eso no está en `mostrador`, que solo ve la suya.
     'pedidos.analisis',
