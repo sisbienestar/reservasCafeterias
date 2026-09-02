@@ -11,6 +11,12 @@ const GENERICAS = /^(cafetería|cafeteria|comedor|autoservicio)$/i;
 /**
  * La tarjeta entera es un enlace: navegar a la reserva es la única acción que
  * ofrece, y así funciona con teclado y con clic medio sin escribir nada.
+ *
+ * `/reservas` va escrito dentro, y vuelve a estarlo a propósito. Llegó a
+ * recibir el prefijo por parámetro cuando el control de salidas iba a tener su
+ * propia rejilla de sedes; esa rejilla se quitó —allí no hay nada que elegir,
+ * el cierre son las cuatro a la vez— y el parámetro se quedó sin usar. Una
+ * flexibilidad que solo tiene un caso es una pregunta de más en cada lectura.
  */
 export function TarjetaCafeteria({ cafeteria }: { cafeteria: Cafeteria }) {
   return (

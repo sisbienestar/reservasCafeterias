@@ -20,6 +20,7 @@ import * as reservas from './acciones/reservas.js';
 import * as proveedores from './acciones/proveedores.js';
 import * as pedidos from './acciones/pedidos.js';
 import * as analisis from './acciones/analisis.js';
+import * as salidas from './acciones/salidas.js';
 import * as cuentas from './acciones/cuentas.js';
 import * as usuarios from './acciones/usuarios.js';
 import {
@@ -124,7 +125,7 @@ const conSesion = (
   return f(p, s);
 };
 
-/** Las 45 acciones. Lo que no esté aquí es ACCION_DESCONOCIDA. */
+/** Las 54 acciones. Lo que no esté aquí es ACCION_DESCONOCIDA. */
 const ACCIONES: Record<string, Manejador> = {
   'app.contexto': contexto,
 
@@ -183,6 +184,23 @@ const ACCIONES: Record<string, Manejador> = {
 
   'cuentas.listar': conSesion(() => cuentas.listar()),
 
+  // ── Módulo: control de salidas ────────────────────────────────────
+  //
+  // El cierre de caja. NO cruza con pedidos: son dos cosas distintas y la
+  // palabra «salida» significa algo diferente en cada una. Ver
+  // supabase/19-control-salidas.sql.
+  'salidas.guardar': conSesion(salidas.guardar),
+  'salidas.obtener': conSesion(salidas.obtener),
+  'salidas.buscar': conSesion(salidas.buscar),
+  // El día entero, cruzando sedes: alimenta el impreso. Solo `admin`, por lo
+  // mismo que `pedidos.analisis`.
+  'salidas.dia': conSesion((p) => salidas.dia(p)),
+  'salidasProductos.listar': conSesion((p) => salidas.listarProductos(p)),
+  'salidasProductos.crear': conSesion((p) => salidas.crearProducto(p)),
+  'salidasProductos.actualizar': conSesion((p) => salidas.actualizarProducto(p)),
+  'salidasProductos.archivar': conSesion((p) => salidas.archivarProducto(p)),
+  'salidasProductos.reactivar': conSesion((p) => salidas.reactivarProducto(p)),
+
   // ── El administrador de la APLICACIÓN ─────────────────────────────
   'modulos.actualizar': conSesion(aplicacion.actualizarModulo),
   'ajustes.listar': conSesion(() => aplicacion.ajustes()),
@@ -218,6 +236,10 @@ const MODULO_DE: Record<string, string> = {
   reservas: 'reservas',
   menu: 'reservas',
   pedidos: 'pedidos',
+  // Las dos del control de salidas. Dos prefijos y no uno porque el catálogo
+  // se administra aparte, igual que `productos` en pedidos.
+  salidas: 'salidas',
+  salidasProductos: 'salidas',
   proveedores: 'pedidos',
   productos: 'pedidos',
 };

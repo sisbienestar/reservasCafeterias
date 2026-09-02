@@ -233,7 +233,7 @@ análisis.
 | `cafeterias.listar` | `incluir_inactivas?` | `Cafeteria[]` — sin el flag, solo las activas |
 | `cafeterias.obtener` | `id` | `Cafeteria` |
 | `cafeterias.crear` | `nombre`, `ubicacion?`, `platos_fijos?` | `Cafeteria` — el `id` y el `codigo` los asigna el servidor |
-| `cafeterias.actualizar` | `id`, `nombre`, `ubicacion`, `platos_fijos` | `Cafeteria` |
+| `cafeterias.actualizar` | `id`, `nombre`, `ubicacion`, `platos_fijos`, `responsable_usuario_id?` | `Cafeteria` |
 | `cafeterias.archivar` | `id` | `Cafeteria` con `activa:false` |
 | `cafeterias.reactivar` | `id` | `Cafeteria` con `activa:true` |
 
@@ -304,6 +304,56 @@ Universidad a Ramo o a Coca-Cola.
 | `pedidos.confirmar` | `id` | `Pedido` en `confirmado`. Lo cierra, y NO manda correo |
 | `pedidos.anular` | `id` | `Pedido` en `anulado` |
 | `pedidos.eliminar` | `id` | El `Pedido` que **ya no existe**. Solo `admin` |
+
+### Control de salidas
+
+**«Salida» aquí NO es la del FBE.04.** En pedidos es lo que sale del almacén
+hacia la cafetería; aquí es lo que sale de la cafetería hacia quien come. Son
+dos cosas distintas y ninguna acción las cruza.
+
+| Acción | Params | Devuelve |
+|---|---|---|
+| `salidas.guardar` | `fecha`, `cafeteria_id`, `lineas[]` | El `Cierre` con sus `lineas[]` |
+| `salidas.obtener` | `fecha`, `cafeteria_id` | El `Cierre`, o **`null`** si esa sede no ha cerrado |
+| `salidas.buscar` | `desde`, `hasta`, `cafeteria_id?` | La FICHA de cada cierre, con sus totales |
+| `salidas.dia` | `fecha` | El día entero: productos y las cinco sedes. Solo sin sede propia |
+| `salidasProductos.listar` | `solo_activos?` | `ProductoSalida[]` |
+| `salidasProductos.crear` / `.actualizar` | `nombre` (y `id` al corregir) | `ProductoSalida` |
+| `salidasProductos.archivar` / `.reactivar` | `id` | `ProductoSalida` |
+
+Cada línea es `{producto_id, ventas_registradas, salidas}`, las dos cifras
+**enteras** y **anulables**. `null` NO es cero: cero dice «se contó y no hubo
+ninguno» y vacío dice «no se contó». Un renglón con las dos vacías se descarta
+—no es un renglón, es una casilla que no se tocó— y uno con un cero SÍ entra.
+
+**No se manda `diferencia`**: es una columna generada, la calcula Postgres como
+`salidas − ventas_registradas`. Positiva significa que salió más de lo que la
+caja registró.
+
+**No se manda el responsable.** Lo resuelve el servidor desde
+`cafeteria.responsable_usuario_id` y lo copia dentro del cierre. Quien teclea
+puede ser administración corrigiendo un cierre ajeno, y entonces poner su
+propio nombre diría que estuvo en un mostrador donde no estuvo — eso se guarda
+aparte, en `guardado_por`.
+
+**Guardar y corregir son la misma acción.** `salidas.guardar` dos veces sobre
+el mismo (fecha, sede) corrige en vez de duplicar: lo impone el índice único
+`salida_cierre_unico`, y las líneas se reemplazan enteras porque el formulario
+es la hoja entera.
+
+**`salidas.obtener` devolviendo `null` no es un error**, y por eso no hay
+`SALIDA_NO_ENCONTRADA`: un cierre que no existe es el formulario en blanco de
+esa sede ese día, que es con lo que empieza cada mañana.
+
+`salidas.dia` **cruza sedes por definición** —el control consiste en verlas
+juntas— así que no es del mostrador, por lo mismo que `pedidos.analisis`.
+Devuelve TODAS las sedes en servicio, hayan cerrado o no: las que no llevan
+`cerrado: false` y ninguna línea. Omitirlas convertiría un documento de control
+en uno que solo enseña lo que salió bien.
+
+En `salidas.guardar`, `.obtener` y `.buscar`, **`cafeteria_id` solo lo obedece
+quien no tiene sede propia**: al mostrador se le impone la suya. Es la misma
+regla de `sedePermitida` de siempre.
 
 ### El panel del módulo · solo `admin`
 

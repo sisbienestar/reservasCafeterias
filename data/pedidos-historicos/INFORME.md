@@ -11,7 +11,11 @@ node data/pedidos-historicos/carga/emparejar.mjs                        # nombre
 node data/pedidos-historicos/carga/validar.mjs                          # contra las restricciones del esquema
 node data/pedidos-historicos/carga/generar-sql.mjs                      # escribe el .sql
 node data/pedidos-historicos/carga/cuadre.mjs                           # cada fila de entrada, contada
+node data/pedidos-historicos/carga/observaciones.mjs                    # escribe el 18 (ver abajo)
 ```
+
+El último llegó **después**, el 1 de septiembre de 2026, y se puede volver a
+ejecutar suelto: solo depende de `pedidos.json`, que ya está escrito.
 
 ## Lo que entra
 
@@ -183,6 +187,72 @@ usan reservas y pedidos—, así que darla de alta activa la pondría a ofrecer
 almuerzos en `/reservas`, que no es lo que es. Inactiva queda fuera de las dos
 listas y su pedido sigue siendo consultable, que es exactamente lo que
 01-esquema.sql previó para una sede cerrada.
+
+## Las observaciones · llegaron después
+
+**No se perdieron: nunca se leyeron.** Cuando se hizo esta carga,
+`pedido.observaciones` no existía —la añadió
+`supabase/17-observaciones-y-formato-unico.sql`— y además `extraer.mjs` las
+descarta sin querer: su `esFilaDeProducto` exige que la columna `producto`
+tenga algo, y en la fila de observaciones el texto cae en `fila_no`, porque en
+la plantilla el rótulo «Observaciones:» y lo que se escribe al lado están en la
+misma celda combinada. Se filtraban junto al pie de firmas.
+
+`observaciones.mjs` las recupera y escribe
+`supabase/18-observaciones-historicas.sql`.
+
+| | |
+|---|---|
+| Filas «Observaciones» en las hojas | 359 |
+| … con algo escrito | **320** |
+| … solo el rótulo impreso | 39 |
+| De las escritas, con pedido cargado | **305** |
+| Sin pedido (bloque descartado) | 15 · en `observaciones-huerfanas.json` |
+
+Se atan por `origen_historico`, que ya guardaba `archivo::hoja#bloque` justo
+para esto. El `UPDATE` lleva `AND observaciones = ''`, así que no pisa lo que
+alguien haya escrito desde la aplicación y pegarlo dos veces deja lo mismo que
+pegarlo una.
+
+Casi todo lo que dicen son **números de remisión o de factura por sede**:
+`BE: 9 (Remision 576389)`, `CT: (FVBG1834344)`, `FEBF-056059`. Alguna trae
+además lo que faltó: `CT: 32 (Remision 578119) FALTARON 3 EMPANADAS DE YUCA`.
+
+### La sigla del principio está a veces rancia, y no se corrige
+
+En **23 de las 305** la sigla de sede contradice la casilla «Unidad de Servicio
+que solicita» del mismo bloque, que es de donde `extraer.mjs` saca
+`cafeteria_id`. En esas hojas el bloque #0 dice `ADMINISTRACION 3` y su
+observación empieza por `BE:`.
+
+**Manda la casilla, y está comprobado con el número que acompaña a la sigla:**
+
+| | |
+|---|---|
+| El número cuadra con el total pedido de SU bloque | **158** |
+| Cuadra con el de un bloque vecino | **0** |
+| No cuadra con ninguno | 16 |
+
+Cero coincidencias con un vecino es la prueba de que la observación pertenece
+al bloque con el que se extrajo. Lo que quedó viejo es la sigla: la hoja se
+hace copiando la del día anterior, se reordenan las unidades de servicio y la
+nota escrita a mano se queda como estaba. Es el mismo mecanismo que ya explica
+por qué manda el nombre de la pestaña sobre la fecha del encabezado.
+
+El texto se guarda **literal**, sigla incluida, por la misma regla que
+`producto_nombre` y `unidad_medida`: lo que decía el papel es lo que se guarda.
+Quitar la sigla es una línea en `observaciones.mjs` si algún día se decide que
+en pantalla confunde más de lo que aporta.
+
+### Lo que sigue faltando
+
+- **42 pedidos históricos se quedan sin observación.** En sus hojas el recuadro
+  estaba vacío: se imprimió el rótulo y no se escribió nada.
+- **4 hojas tienen observaciones que solo están en el respaldo crudo** y no en
+  `pedidos_bloques_diarios.csv` (dos de `ENE_-_MARZO_COCA_COLA.xlsx`, una de
+  `SALIDA COCA COLA MAYO 26` y tres de `FEBRERO__VICKY_.xlsx::VIKCYDF 3`).
+  Recuperarlas exige repetir el troceado en bloques sobre el JSON, que es otro
+  extractor entero para siete textos. No se hace.
 
 ## Cosas que había que arreglar en los datos
 

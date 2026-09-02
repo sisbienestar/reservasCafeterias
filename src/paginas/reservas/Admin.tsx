@@ -440,15 +440,11 @@ export function Admin() {
 
       {pestana === 'catalogo' && (
         <section id="vista-catalogo" role="tabpanel" aria-labelledby="pestana-catalogo">
-          <Catalogo
-            hoy={hoy}
-            permitirFinDeSemana={permitirFinDeSemana}
-            pedirConfirmacion={(p) => {
-              setConfirmacion(p);
-              setCerrarConfirmacion(() => () => setConfirmacion(null));
-            }}
-            alCambiarCafeterias={() => setVersionCafeterias((n) => n + 1)}
-          />
+          {/* Ya solo la carta de la semana: las cafeterías se mudaron al panel
+              de la aplicación. Con ellas se fueron el modal de confirmación
+              —cerrar una sede era lo único que lo pedía aquí— y la cuenta de
+              versiones que refrescaba la lista de sedes. */}
+          <Catalogo hoy={hoy} permitirFinDeSemana={permitirFinDeSemana} />
         </section>
       )}
 

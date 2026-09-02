@@ -74,7 +74,7 @@ async function correosPorId(): Promise<Map<string, string>> {
 export async function listar(): Promise<UsuarioContrato[]> {
   const perfiles = desempaquetar<FilaPerfil[]>(
     await servicio().from('perfil')
-      .select('usuario_id, nombre, rol, cafeteria_id, cafeteria(nombre)')
+      .select('usuario_id, nombre, rol, cafeteria_id, cafeteria!perfil_cafeteria_id_fkey(nombre)')
       .order('rol').order('nombre'),
   );
 
@@ -236,7 +236,7 @@ export async function actualizar(params: Record<string, unknown>, sesion: Sesion
   const fila = desempaquetar<FilaPerfil | null>(
     await servicio().from('perfil').update({ nombre, ...permisos })
       .eq('usuario_id', usuarioId)
-      .select('usuario_id, nombre, rol, cafeteria_id, cafeteria(nombre)').maybeSingle(),
+      .select('usuario_id, nombre, rol, cafeteria_id, cafeteria!perfil_cafeteria_id_fkey(nombre)').maybeSingle(),
   );
   if (!fila) romper('CUENTA_NO_ENCONTRADA', 'Esa cuenta no tiene permisos asignados.');
 

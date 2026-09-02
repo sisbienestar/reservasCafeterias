@@ -320,6 +320,74 @@
   color: var(--c-texto);
 }
 
+/* ── Tabla compacta ──────────────────────────────────────────────────────
+ *
+ * La misma tabla con los renglones apretados, para cuando lo que importa es
+ * ver muchas filas a la vez en vez de leerlas con calma. Nació con el control
+ * de salidas —cuatro cafeterías por cinco productos no cabían de una— y está
+ * pensada para irse aplicando a las demás.
+ *
+ * Es un MODIFICADOR y no una tabla nueva: hereda el fondo, el borde, la
+ * sombra, los anchos y todos los ayudantes de celda —`__nombre`, `__numero`,
+ * `__acciones`—. Lo único que cambia es el relleno y el cuerpo de letra, que
+ * es exactamente lo que significa «compacta». Una tabla paralela habría sido
+ * el error que ya hubo que deshacer en `react.css` (regla 5 de CLAUDE.md).
+ *
+ * El cuerpo BAJA un escalón, a `--texto-xs`, pero solo en las celdas: los
+ * encabezados ya estaban en ese tamaño y encogerlos más los habría dejado por
+ * debajo de lo legible.
+ */
+.tabla--compacta th {
+  padding: var(--e-2) var(--e-3);
+}
+
+.tabla--compacta td {
+  padding: var(--e-1) var(--e-3);
+  font-size: var(--texto-xs);
+}
+
+.tabla--compacta .tabla__caption {
+  padding: var(--e-2) var(--e-3);
+}
+
+/*
+ * El dato menor va AL LADO, no debajo.
+ *
+ * `.tabla__detalle` es `display: block`, así que cada celda que lo lleva ocupa
+ * dos renglones. En la tabla del día junto lo llevan casi todas —el descuadre,
+ * «sin asignar», «sin cerrar»— y entonces la altura de la fila la manda el
+ * salto de línea, no el relleno: la tabla se veía igual de alta con el
+ * modificador puesto y sin él.
+ *
+ * Apilado tiene sentido en una tabla que se lee con calma; en una compacta lo
+ * que se quiere es justo lo contrario.
+ */
+.tabla--compacta .tabla__detalle {
+  display: inline;
+  margin-top: 0;
+}
+
+/*
+ * Los controles de dentro encogen con ella.
+ *
+ * Sin esto, un `input` de 46 px de alto dentro de una celda de 8 px de relleno
+ * manda sobre la altura de la fila y la tabla no se compacta nada: se ve
+ * igual, solo que con menos aire alrededor de un control que sigue igual de
+ * grande. Se probó, y no se notaba la diferencia.
+ */
+.tabla--compacta .campo__control {
+  min-height: 28px;
+  padding: 2px var(--e-2);
+  font-size: var(--texto-xs);
+  border-radius: var(--radio-sm);
+}
+
+.tabla--compacta .boton {
+  --alto: 30px;
+  padding-inline: var(--e-3);
+  font-size: var(--texto-xs);
+}
+
 /* Reparto de anchos en la tabla del mostrador: N.º · Nombre · Menú del día ·
    Móvil · Medio · Pago · acciones.
 

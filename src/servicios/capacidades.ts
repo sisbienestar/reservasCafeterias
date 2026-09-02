@@ -57,18 +57,29 @@ export type Capacidad =
   | 'eliminarPedidos'
   /** El catálogo de proveedores y productos, y las cuentas del módulo. */
   | 'administrarCatalogo'
+  /** Cerrar la caja de una sede en el control de salidas. */
+  | 'registrarSalidas'
+  /**
+   * Ver el día completo del control de salidas, que es el impreso.
+   *
+   * Cruza las cinco cafeterías por definición —el control consiste en verlas
+   * juntas— así que no es del mostrador, por lo mismo que `verAnalisis`.
+   */
+  | 'verDiaSalidas'
+  /** El catálogo de productos del control de salidas. */
+  | 'administrarSalidas'
   /** El análisis del histórico. Cruza sedes por definición. */
   | 'verAnalisis';
 
 const CAPACIDADES: Record<Rol, readonly Capacidad[]> = {
   /* El mostrador elabora y confirma lo suyo, y ahí acaba: en cuanto el pedido
      sale de la cafetería puede haber papel circulando. */
-  mostrador: ['elaborarPedidos', 'anularPedidos'],
+  mostrador: ['elaborarPedidos', 'anularPedidos', 'registrarSalidas'],
 
   /* El auxiliar administrativo NO elabora: su encargo empieza cuando el pedido
      ya está enviado y el proveedor dice qué puede traer. Aquí es donde irán
      creciendo sus funciones. */
-  auxiliar: ['modificarEnviados', 'confirmarPedidos'],
+  auxiliar: ['modificarEnviados', 'confirmarPedidos', 'verDiaSalidas'],
 
   admin: [
     'elaborarPedidos',
@@ -79,6 +90,9 @@ const CAPACIDADES: Record<Rol, readonly Capacidad[]> = {
     'eliminarPedidos',
     'administrarCatalogo',
     'verAnalisis',
+    'registrarSalidas',
+    'verDiaSalidas',
+    'administrarSalidas',
   ],
 };
 

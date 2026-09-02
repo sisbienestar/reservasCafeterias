@@ -20,6 +20,7 @@ import {
   type Usuario,
 } from '../servicios/usuariosServicio.js';
 import { getCafeterias } from '../servicios/cafeteriasServicio.js';
+import { SeccionCafeterias } from '../componentes/admin/SeccionCafeterias.js';
 import { usePeticion } from '../utiles/usePeticion.js';
 import { BarraVolver } from '../componentes/BarraVolver.js';
 import { BloqueEstado } from '../componentes/BloqueEstado.js';
@@ -28,10 +29,16 @@ import { Pie } from '../componentes/Pie.js';
 import { useSesion, type Rol } from '../contexto/Sesion.js';
 import { formatearMarcaTemporal } from '../utiles/fechas.js';
 
-type Pestana = 'usuarios' | 'modulos' | 'ajustes' | 'registro';
+type Pestana = 'usuarios' | 'cafeterias' | 'modulos' | 'ajustes' | 'registro';
 
 const PESTANAS: { id: Pestana; texto: string }[] = [
   { id: 'usuarios', texto: 'Usuarios' },
+  /* Las cafeterías vivían en la pestaña «Catálogo» de /reservas/admin. Se
+     mudaron aquí al llegar el tercer módulo: las sedes las usan los tres, y
+     editarlas desde dentro de uno sugería que eran suyas. No es un módulo —la
+     administración no se ata a ninguno, o apagar uno cerraría la puerta para
+     encenderlo—. Ver SeccionCafeterias.tsx. */
+  { id: 'cafeterias', texto: 'Cafeterías' },
   { id: 'modulos', texto: 'Módulos' },
   { id: 'ajustes', texto: 'Ajustes' },
   { id: 'registro', texto: 'Registro' },
@@ -109,6 +116,11 @@ export function AdminGeneral() {
             cabecera leen de ahí, y sin esto seguirían enseñando lo de antes
             hasta la siguiente recarga completa.
           */}
+          {/* `refrescar` porque la portada y las tres listas de sedes leen del
+              contexto: sin esto seguirían enseñando lo de antes. */}
+          {pestana === 'cafeterias' && (
+            <SeccionCafeterias pedirConfirmacion={pedirConfirmacion} alCambiar={refrescar} />
+          )}
           {pestana === 'modulos' && <SeccionModulos alCambiar={refrescar} />}
           {pestana === 'ajustes' && <SeccionAjustes alCambiar={refrescar} />}
           {pestana === 'registro' && <SeccionRegistro />}

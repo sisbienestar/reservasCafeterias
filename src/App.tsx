@@ -27,6 +27,11 @@ import { Pedido } from './paginas/pedidos/Pedido.js';
 import { Documento } from './paginas/pedidos/Documento.js';
 import { Historial } from './paginas/pedidos/Historial.js';
 import { Admin as PedidosAdmin } from './paginas/pedidos/Admin.js';
+import { Inicio as SalidasInicio } from './paginas/salidas/Inicio.js';
+import { Cierre } from './paginas/salidas/Cierre.js';
+import { Dia } from './paginas/salidas/Dia.js';
+import { Historial as SalidasHistorial } from './paginas/salidas/Historial.js';
+import { Admin as SalidasAdmin } from './paginas/salidas/Admin.js';
 import { puede } from './servicios/capacidades.js';
 import { AdminGeneral } from './paginas/AdminGeneral.js';
 
@@ -173,6 +178,43 @@ export function App() {
           element={<ExigeModulo modulo="pedidos"><ExigeSesion portada="/"><ExigeElaborar><Pedido /></ExigeElaborar></ExigeSesion></ExigeModulo>}
         />
 
+        {/* ── Módulo: control de salidas ─────────────────────────────── */}
+
+        {/* El cierre de caja. Nada que ver con las salidas de almacén del
+            FBE.04: ver supabase/19-control-salidas.sql. */}
+        <Route
+          path="/salidas"
+          element={<ExigeModulo modulo="salidas"><ExigeSesion portada="/"><SalidasInicio /></ExigeSesion></ExigeModulo>}
+        />
+
+        {/* Tramos LITERALES, así que ganan a `:cafeteriaId` aunque midan lo
+            mismo. La consecuencia de siempre: una cafetería llamada
+            «historial» o «admin» quedaría inalcanzable. */}
+        <Route
+          path="/salidas/historial"
+          element={<ExigeModulo modulo="salidas"><ExigeSesion portada="/"><SalidasHistorial /></ExigeSesion></ExigeModulo>}
+        />
+
+        <Route
+          path="/salidas/admin"
+          element={<ExigeModulo modulo="salidas"><ExigeSesion rol="admin" portada="/"><SalidasAdmin /></ExigeSesion></ExigeModulo>}
+        />
+
+        {/* Tres tramos, así que no compite con `/salidas/:cafeteriaId`. El día
+            completo cruza las cinco sedes, así que no es del mostrador: el
+            servidor le responde que no y aquí ni se le ofrece. */}
+        <Route
+          path="/salidas/dia/:fecha"
+          element={<ExigeModulo modulo="salidas"><ExigeSesion portada="/"><ExigeVerDia><Dia /></ExigeVerDia></ExigeSesion></ExigeModulo>}
+        />
+
+        {/* `SoloSuSede` como en reservas: el mostrador acaba en la suya en vez
+            de en un error. Ver su comentario. */}
+        <Route
+          path="/salidas/:cafeteriaId"
+          element={<ExigeModulo modulo="salidas"><ExigeSesion portada="/"><SoloSuSede base="/salidas"><Cierre /></SoloSuSede></ExigeSesion></ExigeModulo>}
+        />
+
         {/*
           La dirección de antes de que reservas fuera un módulo.
 
@@ -307,7 +349,18 @@ function ExigeElaborar({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-function SoloSuSede({ children }: { children: React.ReactNode }) {
+function SoloSuSede({ base = '/reservas', children }: {
+  /**
+   * El prefijo del módulo al que devolver.
+   *
+   * Estaba escrito `/reservas` dentro, y al llegar el control de salidas eso
+   * habría sacado del módulo a quien pulsara una sede ajena: se le mandaba a
+   * reservar almuerzos cuando estaba cerrando una caja. La guarda es la misma
+   * en los dos; el destino, no.
+   */
+  base?: string;
+  children: React.ReactNode;
+}) {
   const { contexto } = useSesion();
   const { cafeteriaId = '' } = useParams();
   const perfil = contexto?.perfil;
@@ -319,12 +372,35 @@ function SoloSuSede({ children }: { children: React.ReactNode }) {
 
   // Aquí ya se sabe que tiene sede: la guarda de arriba dejó pasar a quien no
   // la tiene. Un mostrador sin sede tampoco puede existir —lo impide un CHECK
-  // de la tabla— y si existiera, redirigir a `/reservas/` daría vueltas para
+  // de la tabla— y si existiera, redirigir a `${base}/` daría vueltas para
   // siempre en vez de fallar.
   if (perfil.cafeteriaId !== cafeteriaId) {
-    return <Navigate to={`/reservas/${perfil.cafeteriaId}`} replace />;
+    return <Navigate to={`${base}/${perfil.cafeteriaId}`} replace />;
   }
 
+  return <>{children}</>;
+}
+
+/**
+ * Cierra el día completo a quien atiende una sola sede.
+ *
+ * No es desconfianza: el día completo enseña las cifras de las CINCO
+ * cafeterías, y quien atiende una no tiene por qué ver la caja de las otras.
+ * El servidor no le da `salidas.dia`, así que la pantalla se quedaría vacía
+ * con un NO_AUTORIZADO; esto la manda a lo suyo antes de pedir nada.
+ *
+ * Va aquí y no dentro de la página por lo mismo que las demás guardas: una
+ * redirección dentro del componente tendría que ir después de sus hooks, y
+ * entonces la pantalla ya habría pedido los datos que no va a enseñar.
+ */
+function ExigeVerDia({ children }: { children: React.ReactNode }) {
+  const { contexto } = useSesion();
+  const perfil = contexto?.perfil;
+
+  // Sin perfil todavía no se sabe: decide `ExigeSesion`, que va por fuera.
+  if (perfil && !puede(perfil.rol, 'verDiaSalidas')) {
+    return <Navigate to="/salidas" replace />;
+  }
   return <>{children}</>;
 }
 

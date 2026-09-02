@@ -39,7 +39,7 @@ export async function listar() {
   const filas = desempaquetar<FilaPerfil[]>(
     await servicio()
       .from('perfil')
-      .select('nombre, rol, cafeteria_id, cafeteria(nombre)')
+      .select('nombre, rol, cafeteria_id, cafeteria!perfil_cafeteria_id_fkey(nombre)')
       .order('rol')
       .order('nombre'),
   );

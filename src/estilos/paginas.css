@@ -432,6 +432,68 @@
   margin: 0 auto var(--e-6);
 }
 
+/*
+ * La cabecera de UNA cafetería dentro del cierre del día.
+ *
+ * Reutilizó `.encabezado-reserva` un rato y no encajaba: esa es la cabecera de
+ * una PÁGINA —dos rem de aire por debajo, su raya, y otros dos de margen— y
+ * aquí se repite cuatro veces, así que multiplicaba por cuatro el hueco entre
+ * el nombre de la sede y su tabla. Lo que hace falta es un renglón, no una
+ * portada.
+ *
+ * `center` y no `baseline`: al lado del texto hay un botón, y alineado por la
+ * línea base se le quedaba la cara colgando por debajo del nombre.
+ */
+/* El margen de ARRIBA también, y no solo el de abajo: encima del primer
+   bloque puede haber un aviso —`.aviso` no trae margen propio— y sin esto el
+   nombre de la sede se pegaba al borde de la caja amarilla. */
+.cierre-sede { margin: var(--e-5) 0 var(--e-6); }
+
+.cierre-sede__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--e-2) var(--e-4);
+  margin-bottom: var(--e-3);
+}
+
+/* Un `h2` de sección, no un titular: por encima de él está el de la página. */
+.cierre-sede__titulo {
+  font-size: var(--texto-lg);
+  margin: 0;
+}
+
+.cierre-sede__meta {
+  font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+  margin: 0;
+}
+
+/* El punto separador no trae espacio propio: en `.encabezado-reserva__meta` se
+   lo daba el `gap` de un contenedor flexible, y esto es un párrafo corriente.
+   Sin esta línea salía «Sin responsable asignado·Ya cerrado». */
+.cierre-sede__meta .separador {
+  margin-inline: var(--e-1);
+  color: var(--c-borde-fuerte);
+}
+
+/*
+ * Un descuadre en el control de salidas.
+ *
+ * Solo se marca lo que NO cuadra. Pintar también los ceros —de verde, de
+ * gris, de lo que sea— llenaría la tabla de color y escondería justo la
+ * casilla que hay que mirar, que suele ser una entre treinta.
+ *
+ * El color no es el dato: el número lleva su signo delante, así que quien no
+ * distinga los tonos lee «+3» igual. Es el mismo criterio que ya sigue la
+ * línea de estado de un pedido.
+ */
+.salidas__descuadre {
+  color: var(--c-error);
+  font-weight: var(--peso-fuerte);
+}
+
 /* El aviso ocupa el hueco entre el encabezado y la tabla solo cuando existe;
    `hidden` lo saca del flujo y no deja un salto en blanco. */
 #aviso:not([hidden]) { margin-bottom: var(--e-6); }

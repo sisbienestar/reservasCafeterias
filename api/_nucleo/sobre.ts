@@ -27,6 +27,11 @@ export type CodigoError =
   | 'PROVEEDOR_NO_ENCONTRADO'
   | 'PROVEEDOR_DUPLICADO'
   | 'PRODUCTO_NO_ENCONTRADO'
+  // Módulo de control de salidas. `SALIDA_INVALIDA` es a un cierre lo que
+  // `PEDIDO_INVALIDO` es a un pedido: la regla de negocio que no se cumple.
+  // No hay `SALIDA_NO_ENCONTRADA` y es deliberado — un cierre que no existe
+  // no es un error, es el formulario en blanco de esa sede ese día.
+  | 'SALIDA_INVALIDA'
   // Administración de la aplicación.
   | 'MODULO_NO_ENCONTRADO'
   | 'MODULO_INACTIVO'

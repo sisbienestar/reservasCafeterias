@@ -21,13 +21,36 @@ export interface CafeteriaContrato {
   imagen: string;
   activa: boolean;
   platos_fijos: string[];
+  /**
+   * Quién RESPONDE por la sede en el control de salidas. Vacío = nadie.
+   *
+   * No confundir con `perfil.cafeteria_id`, que es a qué sede tiene ACCESO
+   * una cuenta. Esto no abre ninguna puerta: es un dato que el cierre copia
+   * dentro para saber quién estaba. Ver 19-control-salidas.sql.
+   */
+  responsable_usuario_id: string;
+  responsable_nombre: string;
 }
 
-const COLUMNAS = 'id, codigo, nombre, ubicacion, imagen, activa, platos_fijos';
+/*
+ * El nombre del responsable viene EMBEBIDO y no en una segunda consulta: la
+ * pantalla que lo enseña lista todas las sedes, y resolverlo aparte serían
+ * cinco viajes para pintar cinco renglones.
+ *
+ * `!cafeteria_responsable_fkey` NO es decoración. Entre `cafeteria` y `perfil`
+ * hay DOS caminos —este, y el `perfil.cafeteria_id` de siempre— y sin nombrar
+ * la restricción PostgREST no sabe cuál se le pide y falla. La declara con ese
+ * nombre `supabase/19-control-salidas.sql`, a propósito para poder escribirlo
+ * aquí en vez de adivinarlo.
+ */
+const COLUMNAS = 'id, codigo, nombre, ubicacion, imagen, activa, platos_fijos,'
+  + ' responsable_usuario_id, responsable:perfil!cafeteria_responsable_fkey(nombre)';
 
 interface FilaCafeteria {
   id: string; codigo: string; nombre: string; ubicacion: string | null;
   imagen: string | null; activa: boolean; platos_fijos: string[] | null;
+  responsable_usuario_id: string | null;
+  responsable: { nombre: string } | null;
 }
 
 function aContrato(fila: FilaCafeteria): CafeteriaContrato {
@@ -39,6 +62,8 @@ function aContrato(fila: FilaCafeteria): CafeteriaContrato {
     imagen: fila.imagen ?? '',
     activa: fila.activa !== false,
     platos_fijos: Array.isArray(fila.platos_fijos) ? fila.platos_fijos : [],
+    responsable_usuario_id: fila.responsable_usuario_id ?? '',
+    responsable_nombre: fila.responsable?.nombre ?? '',
   };
 }
 
@@ -103,6 +128,7 @@ export async function crear(params: Record<string, unknown>) {
  * dejaría huérfanas. El `codigo` tampoco, por lo mismo con los identificadores.
  */
 export async function actualizar(params: Record<string, unknown>) {
+  const id = String(params.id ?? '');
   const nombre = String(params.nombre ?? '').trim();
   if (!nombre) romper('DATOS_INCOMPLETOS', 'La cafetería necesita al menos un nombre.');
 
@@ -111,10 +137,47 @@ export async function actualizar(params: Record<string, unknown>) {
       nombre,
       ubicacion: String(params.ubicacion ?? '').trim(),
       platos_fijos: limpiarPlatosFijos(params.platos_fijos),
-    }).eq('id', String(params.id ?? '')).select(COLUMNAS).maybeSingle(),
+      responsable_usuario_id: await responsableValido(params.responsable_usuario_id, id),
+    }).eq('id', id).select(COLUMNAS).maybeSingle(),
   );
   if (!fila) romper('CAFETERIA_NO_ENCONTRADA', `No existe la cafetería «${params.id}».`);
   return aContrato(fila);
+}
+
+/**
+ * El responsable tiene que ser una cuenta que ATIENDA esta sede.
+ *
+ * La clave foránea solo garantiza que la cuenta existe; que sea de ESTA
+ * cafetería es una regla de negocio y por eso vive aquí. Sin esto se podría
+ * poner de responsable de Camilo Torres a quien atiende Bienestar, y el
+ * cierre saldría firmado por alguien que no estaba.
+ *
+ * Vacío borra la asignación, y es un estado legítimo: una sede recién abierta
+ * todavía no tiene a nadie. El cierre saldrá sin nombre, que es la verdad.
+ *
+ * Solo `mostrador`: administración y el auxiliar no tienen sede —las ven
+ * todas— así que ninguno «estaba» en una cafetería un día concreto. Se
+ * pregunta por la sede de su perfil y no por el rol, que es la regla de
+ * siempre: un rol nuevo con sede entraría solo.
+ */
+async function responsableValido(
+  valor: unknown,
+  cafeteriaId: string,
+): Promise<string | null> {
+  const usuarioId = String(valor ?? '').trim();
+  if (!usuarioId) return null;
+
+  const perfil = desempaquetar<{ nombre: string; cafeteria_id: string | null } | null>(
+    await servicio().from('perfil').select('nombre, cafeteria_id')
+      .eq('usuario_id', usuarioId).maybeSingle(),
+  );
+
+  if (!perfil) romper('DATOS_INCOMPLETOS', 'Esa cuenta no existe.');
+  if (perfil.cafeteria_id !== cafeteriaId) {
+    romper('DATOS_INCOMPLETOS',
+      `«${perfil.nombre}» no atiende esta cafetería, así que no puede responder por ella.`);
+  }
+  return usuarioId;
 }
 
 /**

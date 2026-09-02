@@ -5,9 +5,9 @@ las cafeterías de la Universidad Industrial de Santander, no una página para
 los comensales.
 
 La aplicación se divide en **módulos**, y el repositorio todavía se llama como
-el primero de ellos. Hoy hay uno en servicio —reservas de almuerzos, donde
-quien la usa anota la reserva a nombre de otra persona— y uno anunciado sin
-construir, pedidos a proveedores.
+el primero de ellos. Hoy hay tres: reservas de almuerzos —donde quien la usa
+anota la reserva a nombre de otra persona—, pedidos a proveedores, y control
+de salidas, que nace apagado hasta que se pruebe.
 
 ## Dónde está esto hoy (27 de agosto de 2026)
 
@@ -48,6 +48,11 @@ administración.
 | `/pedidos/historial` | Los pedidos hechos, filtrables | con sesión; el mostrador solo ve su sede |
 | `/pedidos/admin` | Proveedores, productos y cuentas | rol `admin` |
 | `/pedidos/documento/:pedidoId` | El pedido, listo para imprimir | con sesión |
+| `/salidas` | Las cafeterías, para cerrar caja | con sesión |
+| `/salidas/:cafeteriaId` | El cierre de una sede en un día | con sesión, y solo a su sede |
+| `/salidas/historial` | Los cierres hechos, filtrables | con sesión; el mostrador solo ve su sede |
+| `/salidas/dia/:fecha` | El día completo, las cinco sedes | rol `admin` o `auxiliar` |
+| `/salidas/admin` | El catálogo de productos del control | rol `admin` |
 
 **Hay tres roles.** `mostrador` lleva SIEMPRE una sede y solo ve la suya.
 `admin` y `auxiliar` —«Auxiliar Administrativo Cafeterías»— van SIN sede y las
@@ -71,8 +76,14 @@ No es esconder la tarjeta. `enrutador.ts` rechaza sus acciones con
 las dos, para poder probarlo antes de publicarlo.
 
 `cafeterias.*` NO está atado a ningún módulo, y es deliberado: las sedes las
-usan los dos, y atarlas habría hecho que apagar reservas rompiera pedidos. La
+usan los TRES, y atarlas habría hecho que apagar reservas rompiera pedidos. La
 administración tampoco, o apagar un módulo cerraría la puerta para encenderlo.
+
+Por eso mismo **las cafeterías se administran en `/admin`**, en su propia
+pestaña, y no dentro de ningún módulo. Vivieron en la pestaña «Catálogo» de
+`/reservas/admin` hasta que hubo tres módulos usándolas; allí sugerían que
+eran de reservas, que es justo lo que no son. La carta de la semana sí se
+quedó, porque esa sí es suya.
 
 ### Lo que ya no está en el código
 
@@ -185,6 +196,53 @@ Tres cosas que conviene no deshacer:
   `/reservas`, `admin` gana a `:cafeteriaId`, y en `/pedidos`, `historial` gana
   a `:proveedorId`. La consecuencia a recordar es que una cafetería llamada
   `admin` o un proveedor llamado `historial` quedarían inalcanzables.
+
+## El control de salidas
+
+El **cierre de caja**: por sede y por día, lo que registró la caja frente a lo
+que de verdad salió. La diferencia es el hallazgo, y es para lo que existe.
+
+> ### «Salida» significa DOS cosas en esta aplicación
+>
+> En pedidos, la columna «Cant. Total Salida de almacén» del FBE.04 es el
+> producto que sale del **almacén hacia la cafetería**. En este módulo, una
+> salida es el producto que sale de la **cafetería hacia quien come**.
+>
+> **No se cruzan.** Ni una tabla de `19-control-salidas.sql` apunta a
+> `pedido`, `producto` ni `proveedor`, y el catálogo —`salida_producto`— es
+> propio. Se llama así, y no `producto`, porque ese nombre ya está cogido.
+>
+> Es exactamente el tipo de colisión de vocabulario que costó tres días con
+> `borrador/confirmado/definitivo`. Queda dicha aquí y en la cabecera del SQL.
+
+**Cada sede guarda lo suyo y el día se arma juntando las cinco.** No hay
+ninguna entidad «día»: el día es la consulta. Así una cafetería cierra a su
+hora sin esperar a las demás, y la que no cerró sale en el impreso como el
+hueco que es — omitirla convertiría un control en un resumen de lo que salió
+bien.
+
+**Sin ciclo de estados, a propósito.** Se guarda y se corrige; guardar dos
+veces el mismo (fecha, sede) corrige en vez de duplicar, y eso lo impone un
+índice único. Añadir estados después es aditivo; quitarlos, no.
+
+**Vacío no es cero**, y es la regla que sostiene todo: un cero dice «se contó y
+no hubo ninguno» y una casilla en blanco dice «no se contó». La distinción está
+en el esquema, en `api/` y en el formulario.
+
+**La diferencia la calcula la base**, en una columna generada. Nadie puede
+dejarla descuadrada.
+
+### El responsable de una sede no es un permiso
+
+`cafeteria.responsable_usuario_id` dice **quién responde** por esa sede, y su
+nombre se copia dentro de cada cierre — cambiarlo mañana no reescribe quién
+estaba en marzo. `perfil.cafeteria_id` dice **a qué sede tiene acceso** una
+cuenta, y eso sí es un permiso.
+
+Se editan en dos pestañas distintas de `/admin` y se parecen lo bastante como
+para confundirse. Una sede puede tener varias cuentas con acceso y una sola
+responsable; lo que no se puede es nombrar responsable a quien no la atiende, y
+eso lo impide `api/_nucleo/acciones/cafeterias.ts`.
 
 ## Las dos aplicaciones que conviven
 

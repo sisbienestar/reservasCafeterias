@@ -1,16 +1,16 @@
 /**
- * El catálogo: las cafeterías y la carta de la semana.
+ * La carta de la semana.
  *
- * Son las dos cosas que se administran y no se consultan, y están juntas
- * porque se tocan a la vez —se abre una sede nueva y se le ponen sus platos
- * fijos— y porque las dos son semanales o menos: nadie entra aquí a diario.
+ * Compartió pestaña con las cafeterías hasta que hubo tres módulos usando las
+ * sedes: una cafetería no es de reservas, así que se mudó al panel de la
+ * aplicación —`componentes/admin/SeccionCafeterias.tsx`—. La carta sí es de
+ * reservas y se queda.
+ *
+ * El nombre del archivo se conserva: la pestaña sigue llamándose «Catálogo» y
+ * renombrarlo obligaría a tocar cinco importaciones para no ganar nada.
  */
 
 import { useCallback, useState, type FormEvent } from 'react';
-import {
-  actualizarCafeteria, archivarCafeteria, crearCafeteria, getCafeterias,
-  reactivarCafeteria, type Cafeteria,
-} from '../../servicios/cafeteriasServicio.js';
 import { getMenuSemana, guardarMenuSemana } from '../../servicios/menuServicio.js';
 import { usePeticion } from '../../utiles/usePeticion.js';
 import {
@@ -18,247 +18,17 @@ import {
   lunesDeSemana, nombreDiaCorto, sumarDias,
 } from '../../utiles/fechas.js';
 import { BloqueEstado } from '../BloqueEstado.js';
-import type { PeticionConfirmacion } from '../ModalConfirmacion.js';
 
 interface Props {
   hoy: string;
   permitirFinDeSemana: boolean;
-  pedirConfirmacion: (peticion: PeticionConfirmacion) => void;
-  /** Para que la pantalla de reservas se entere de un alta o un archivado. */
-  alCambiarCafeterias: () => void;
 }
 
-export function Catalogo({ hoy, permitirFinDeSemana, pedirConfirmacion, alCambiarCafeterias }: Props) {
+export function Catalogo({ hoy, permitirFinDeSemana }: Props) {
   return (
     <div className="catalogo">
-      <SeccionCafeterias
-        pedirConfirmacion={pedirConfirmacion}
-        alCambiar={alCambiarCafeterias}
-      />
       <SeccionCarta hoy={hoy} permitirFinDeSemana={permitirFinDeSemana} />
     </div>
-  );
-}
-
-/* ── Cafeterías ─────────────────────────────────────────────────────────── */
-
-function SeccionCafeterias({ pedirConfirmacion, alCambiar }: {
-  pedirConfirmacion: (p: PeticionConfirmacion) => void;
-  alCambiar: () => void;
-}) {
-  const consultar = useCallback(() => getCafeterias({ incluirInactivas: true }), []);
-  const { datos: cafeterias, cargando, error, recargar } = usePeticion(consultar, []);
-
-  /** `null` = el formulario está en modo alta. */
-  const [editando, setEditando] = useState<Cafeteria | null>(null);
-  const [nombre, setNombre] = useState('');
-  const [ubicacion, setUbicacion] = useState('');
-  /** Un plato fijo por línea. Es la forma más directa de editar una lista
-   *  corta de texto libre, y no hace falta enseñar a usarla. */
-  const [platosFijos, setPlatosFijos] = useState('');
-  const [aviso, setAviso] = useState<{ tipo: string; mensaje: string } | null>(null);
-  const [guardando, setGuardando] = useState(false);
-
-  function empezarEdicion(cafeteria: Cafeteria) {
-    setEditando(cafeteria);
-    setNombre(cafeteria.nombre);
-    setUbicacion(cafeteria.ubicacion);
-    setPlatosFijos(cafeteria.platosFijos.join('\n'));
-    setAviso(null);
-  }
-
-  function terminarEdicion() {
-    setEditando(null);
-    setNombre('');
-    setUbicacion('');
-    setPlatosFijos('');
-  }
-
-  async function guardar(evento: FormEvent) {
-    evento.preventDefault();
-    if (guardando) return;
-
-    setAviso(null);
-    setGuardando(true);
-    const datos = {
-      nombre: nombre.trim(),
-      ubicacion: ubicacion.trim(),
-      platosFijos: platosFijos.split('\n').map((p) => p.trim()).filter(Boolean),
-    };
-
-    try {
-      if (editando) {
-        await actualizarCafeteria(editando.id, datos);
-        setAviso({ tipo: 'exito', mensaje: `«${datos.nombre}» actualizada.` });
-      } else {
-        const nueva = await crearCafeteria(datos);
-        setAviso({
-          tipo: 'exito',
-          mensaje: `«${nueva.nombre}» creada con el código ${nueva.codigo}.`,
-        });
-      }
-      terminarEdicion();
-      recargar();
-      alCambiar();
-    } catch (e) {
-      setAviso({ tipo: 'error', mensaje: (e as Error).message });
-    } finally {
-      setGuardando(false);
-    }
-  }
-
-  /**
-   * Archivar es un borrado lógico y aun así se confirma: la sede desaparece
-   * del inicio y del mostrador, y quien la archive por error puede tardar en
-   * enterarse. Reactivar no se confirma — no destruye nada.
-   */
-  function pedirArchivar(cafeteria: Cafeteria) {
-    pedirConfirmacion({
-      titulo: `¿Cerrar «${cafeteria.nombre}»?`,
-      detalle:
-        'Dejará de aparecer en el inicio y no se podrán registrar reservas en ella. ' +
-        'Sus reservas históricas se conservan y se puede reactivar cuando haga falta.',
-      textoConfirmar: 'Cerrar la cafetería',
-      alConfirmar: async () => {
-        try {
-          await archivarCafeteria(cafeteria.id);
-          setAviso({ tipo: 'exito', mensaje: `«${cafeteria.nombre}» cerrada.` });
-          recargar();
-          alCambiar();
-        } catch (e) {
-          setAviso({ tipo: 'error', mensaje: (e as Error).message });
-        }
-      },
-    });
-  }
-
-  async function reactivar(cafeteria: Cafeteria) {
-    try {
-      await reactivarCafeteria(cafeteria.id);
-      setAviso({ tipo: 'exito', mensaje: `«${cafeteria.nombre}» vuelve a estar en servicio.` });
-      recargar();
-      alCambiar();
-    } catch (e) {
-      setAviso({ tipo: 'error', mensaje: (e as Error).message });
-    }
-  }
-
-  return (
-    <section className="bloque-admin">
-      <h2 className="seccion__titulo">Cafeterías</h2>
-
-      {aviso && <p className={`aviso aviso--${aviso.tipo}`} role="status">{aviso.mensaje}</p>}
-
-      <form className="formulario-catalogo" onSubmit={guardar} noValidate>
-        <div className="filtros__campo filtros__campo--ancho">
-          <label className="campo__etiqueta" htmlFor="cafeteria-nombre">Nombre</label>
-          <input className="campo__control" id="cafeteria-nombre" type="text"
-                 autoComplete="off" placeholder="Cafetería de Salud"
-                 value={nombre} onChange={(e) => setNombre(e.target.value)}
-                 required disabled={guardando} />
-        </div>
-
-        <div className="filtros__campo filtros__campo--ancho">
-          <label className="campo__etiqueta" htmlFor="cafeteria-ubicacion">Ubicación</label>
-          <input className="campo__control" id="cafeteria-ubicacion" type="text"
-                 autoComplete="off" placeholder="Facultad de Salud · Primer piso"
-                 value={ubicacion} onChange={(e) => setUbicacion(e.target.value)}
-                 disabled={guardando} />
-        </div>
-
-        <div className="filtros__campo filtros__campo--ancho">
-          <label className="campo__etiqueta" htmlFor="cafeteria-fijos">Platos fijos</label>
-          <textarea className="campo__control" id="cafeteria-fijos" rows={3} spellCheck={false}
-                    placeholder="Uno por línea. Se ofrecen todos los días."
-                    value={platosFijos} onChange={(e) => setPlatosFijos(e.target.value)}
-                    disabled={guardando} />
-        </div>
-
-        {/* El identificador y el código no se editan, y se dice por qué: son
-            la clave con la que las reservas históricas apuntan aquí. */}
-        {editando && (
-          <p className="campo__ayuda">
-            Identificador <code>{editando.id}</code> · código <code>{editando.codigo}</code>.
-            No se pueden cambiar: las reservas ya registradas apuntan a ellos.
-          </p>
-        )}
-
-        <div className="filtros__acciones">
-          <button type="submit" className="boton boton--primario" disabled={guardando}>
-            {editando ? 'Guardar cambios' : 'Añadir cafetería'}
-          </button>
-          {editando && (
-            <button type="button" className="boton boton--secundario"
-                    onClick={terminarEdicion} disabled={guardando}>
-              Cancelar edición
-            </button>
-          )}
-        </div>
-      </form>
-
-      {cargando && <BloqueEstado tipo="cargando" titulo="Cargando cafeterías…" />}
-      {error && (
-        <BloqueEstado tipo="error" titulo="No se pudo cargar el catálogo"
-                      detalle={error} accion={{ texto: 'Reintentar', alPulsar: recargar }} />
-      )}
-
-      {cafeterias && (
-        <div className="tabla-envoltorio">
-          <table className="tabla tabla--admin">
-            <thead>
-              <tr>
-                <th scope="col">Cafetería</th>
-                <th scope="col">Ubicación</th>
-                <th scope="col">Platos fijos</th>
-                <th scope="col">Estado</th>
-                <th className="tabla__acciones" scope="col">
-                  <span className="visualmente-oculto">Acciones</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {cafeterias.map((cafeteria) => (
-                <tr key={cafeteria.id}
-                    className={cafeteria.activa ? 'tabla__fila' : 'tabla__fila tabla__fila--apagada'}>
-                  <td className="tabla__nombre">{cafeteria.nombre}</td>
-                  <td className="tabla__menu">{cafeteria.ubicacion || '—'}</td>
-                  {/* Los NOMBRES, no cuántos hay: «3» no dice si falta alguno,
-                      y esta tabla existe para revisarlos de un vistazo. */}
-                  <td className="tabla__menu">
-                    {cafeteria.platosFijos.join(' · ') || '—'}
-                  </td>
-                  <td>
-                    <span className={`marca-estado marca-estado--${cafeteria.activa ? 'activa' : 'cancelada'}`}>
-                      {cafeteria.activa ? 'En servicio' : 'Cerrada'}
-                    </span>
-                  </td>
-                  <td className="tabla__acciones">
-                    <button type="button" className="boton boton--secundario boton--sm"
-                            onClick={() => empezarEdicion(cafeteria)}
-                            aria-label={`Editar ${cafeteria.nombre}`}>
-                      Editar
-                    </button>
-                    {cafeteria.activa ? (
-                      <button type="button" className="boton boton--secundario boton--sm"
-                              onClick={() => pedirArchivar(cafeteria)}
-                              aria-label={`Cerrar ${cafeteria.nombre}`}>
-                        Cerrar
-                      </button>
-                    ) : (
-                      <button type="button" className="boton boton--secundario boton--sm"
-                              onClick={() => void reactivar(cafeteria)}
-                              aria-label={`Reabrir ${cafeteria.nombre}`}>
-                        Reabrir
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </section>
   );
 }
 

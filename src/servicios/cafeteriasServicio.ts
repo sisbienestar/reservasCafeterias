@@ -19,11 +19,21 @@ export interface Cafeteria {
   activa: boolean;
   /** Productos que ofrece todos los días, independientes de la carta. */
   platosFijos: string[];
+  /**
+   * Quién RESPONDE por la sede en el control de salidas. Vacío = nadie.
+   *
+   * No es lo mismo que tener acceso a la sede: eso lo da el perfil de cada
+   * cuenta. Esto es el nombre que se copia dentro de cada cierre de caja, y no
+   * abre ninguna puerta.
+   */
+  responsableUsuarioId: string;
+  responsableNombre: string;
 }
 
 interface FilaCafeteria {
   id: string; codigo?: string; nombre: string; ubicacion?: string;
   imagen?: string; activa?: boolean; platos_fijos?: string[];
+  responsable_usuario_id?: string; responsable_nombre?: string;
 }
 
 function normalizar(fila: FilaCafeteria): Cafeteria {
@@ -36,6 +46,8 @@ function normalizar(fila: FilaCafeteria): Cafeteria {
     // Una fila sin la columna todavía se da por activa.
     activa: fila.activa !== false,
     platosFijos: Array.isArray(fila.platos_fijos) ? fila.platos_fijos : [],
+    responsableUsuarioId: fila.responsable_usuario_id ?? '',
+    responsableNombre: fila.responsable_nombre ?? '',
   };
 }
 
@@ -75,12 +87,15 @@ export async function crearCafeteria(datos: {
  */
 export async function actualizarCafeteria(id: string, datos: {
   nombre: string; ubicacion?: string; platosFijos?: string[];
+  /** Vacío borra la asignación, y es un estado legítimo. */
+  responsableUsuarioId?: string;
 }): Promise<Cafeteria> {
   return normalizar(await pedir<FilaCafeteria>('cafeterias.actualizar', {
     id,
     nombre: datos.nombre,
     ubicacion: datos.ubicacion,
     platos_fijos: datos.platosFijos ?? [],
+    responsable_usuario_id: datos.responsableUsuarioId ?? '',
   }));
 }
 

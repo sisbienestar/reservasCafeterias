@@ -89,6 +89,13 @@ const PERMISOS: Record<Rol, readonly string[]> = {
     'pedidos.actualizar',
     'pedidos.enviar',
     'pedidos.anular',
+    // Control de salidas: cierra la caja de SU sede y consulta lo suyo. No
+    // tiene 'salidas.dia' —el impreso cruza las cinco cafeterías— ni el
+    // catálogo de productos, que es administración.
+    'salidas.guardar',
+    'salidas.obtener',
+    'salidas.buscar',
+    'salidasProductos.listar',
   ],
   /*
    * El auxiliar vive en el módulo de pedidos y en ningún sitio más.
@@ -114,6 +121,12 @@ const PERMISOS: Record<Rol, readonly string[]> = {
     'pedidos.buscar',
     'pedidos.actualizar',
     'pedidos.confirmar',
+    // Del control de salidas solo LEE, y todas las sedes: no tiene sede
+    // propia, así que no cierra ninguna caja. Ver el comentario de arriba.
+    'salidas.obtener',
+    'salidas.buscar',
+    'salidas.dia',
+    'salidasProductos.listar',
   ],
   admin: [
     'app.contexto',
@@ -162,6 +175,17 @@ const PERMISOS: Record<Rol, readonly string[]> = {
     'modulos.actualizar',
     'ajustes.listar',
     'ajustes.guardar',
+    // Control de salidas, entero: cierra cualquier sede, ve el día completo
+    // —que es el impreso— y administra el catálogo de productos.
+    'salidas.guardar',
+    'salidas.obtener',
+    'salidas.buscar',
+    'salidas.dia',
+    'salidasProductos.listar',
+    'salidasProductos.crear',
+    'salidasProductos.actualizar',
+    'salidasProductos.archivar',
+    'salidasProductos.reactivar',
     'registro.listar',
     'usuarios.listar',
     'usuarios.crear',
@@ -252,10 +276,28 @@ export async function identificar(autorizacion: string | undefined | null): Prom
     romper('NO_AUTENTICADO', 'La sesión caducó. Vuelve a entrar.');
   }
 
+  /*
+   * `!perfil_cafeteria_id_fkey` NO es adorno, y quitarlo tira la aplicación
+   * entera.
+   *
+   * Desde `19-control-salidas.sql` hay DOS relaciones entre `perfil` y
+   * `cafeteria`: esta —a qué sede tiene acceso la cuenta— y la de vuelta,
+   * `cafeteria.responsable_usuario_id`. Con dos caminos, `cafeteria(nombre)` a
+   * secas es ambiguo y PostgREST responde «more than one relationship was
+   * found» en vez de la fila.
+   *
+   * Y esto es `identificar()`, así que ese fallo no rompe una pantalla: rompe
+   * TODAS las peticiones con sesión a la vez. Costó un acceso que se quedaba
+   * girando en «Ingresando…» sin decir por qué, porque el modal espera al
+   * perfil y el perfil no llegaba nunca.
+   *
+   * Las otras tres consultas que incrustan la sede desde el perfil llevan el
+   * mismo nombre: `usuarios.ts` (dos) y `cuentas.ts`.
+   */
   const perfil = desempaquetar<FilaPerfil | null>(
     await servicio()
       .from('perfil')
-      .select('usuario_id, nombre, rol, cafeteria_id, cafeteria(nombre)')
+      .select('usuario_id, nombre, rol, cafeteria_id, cafeteria!perfil_cafeteria_id_fkey(nombre)')
       .eq('usuario_id', data.user.id)
       .maybeSingle(),
   );
