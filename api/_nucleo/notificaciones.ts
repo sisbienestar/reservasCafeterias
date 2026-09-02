@@ -61,6 +61,8 @@ function redactar(pedido: PedidoNotificable) {
   const asunto =
     `Pedido n.º ${pedido.id} · ${pedido.proveedor_nombre} · ${pedido.cafeteria_nombre}`;
 
+  const base = urlBase();
+
   const cuerpo = [
     `${pedido.cafeteria_nombre} confirmó un pedido y está listo para imprimir y firmar.`,
     '',
@@ -69,7 +71,17 @@ function redactar(pedido: PedidoNotificable) {
     `Elaborado por: ${pedido.elaborado_por || '—'}`,
     `Productos:   ${pedido.lineas.length}`,
     '',
-    `${urlBase()}/pedidos/documento/${pedido.id}`,
+    /*
+     * Sin dirección, NO se inventa un enlace.
+     *
+     * Un enlace roto es peor que ninguno: quien lo pulsa acaba en una página
+     * de error y se queda sin saber si el problema es el pedido o el correo.
+     * Sin él, el aviso sigue diciendo lo esencial —hay un pedido n.º tal que
+     * imprimir— y quien lo lea entra por donde entra siempre.
+     */
+    base
+      ? `${base}/pedidos/documento/${pedido.id}`
+      : `Búscalo en la aplicación: pedido n.º ${pedido.id}.`,
   ].join('\n');
 
   return { asunto, cuerpo };
@@ -77,11 +89,40 @@ function redactar(pedido: PedidoNotificable) {
 
 /**
  * La dirección pública de la aplicación, para que el aviso lleve el enlace al
- * documento. Sin ella el correo dice que hay un pedido pero no dónde está.
+ * documento.
+ *
+ * ── Aquí NO hay ninguna URL escrita ──────────────────────────────────────
+ *
+ * La hubo, y por eso existe este comentario. `https://reservas-kappa-ten
+ * .vercel.app` estaba puesta como valor por defecto; el día que el despliegue
+ * cambió de nombre, ese dominio pasó a responder DEPLOYMENT_NOT_FOUND y todos
+ * los avisos siguieron saliendo con un enlace muerto —sin fallar, sin avisar,
+ * y sin que nada en el código lo delatara—.
+ *
+ * Ahora se pregunta, en este orden:
+ *
+ *   1. `URL_PUBLICA`      · para un dominio propio. Manda sobre todo lo demás.
+ *   2. `VERCEL_PROJECT_PRODUCTION_URL` · el dominio de producción del
+ *      proyecto. Lo pone Vercel solo y SIGUE al proyecto: si mañana se llama
+ *      de otra forma, esto se entera sin que nadie toque nada.
+ *   3. `VERCEL_URL`       · la de ESTE despliegue. Es la red de seguridad para
+ *      una vista previa, donde el enlace correcto es el de la propia rama.
+ *
+ * Las dos de Vercel vienen sin esquema —`cafeteriasuis.vercel.app`—, así que
+ * se les pone. Y son siempre https: Vercel no sirve por http.
  */
-function urlBase(): string {
-  return (process.env.URL_PUBLICA ?? 'https://reservas-kappa-ten.vercel.app')
-    .replace(/\/+$/, '');
+// Se exporta SOLO para poder probarla: `pruebas/urlpublica.mjs` la ejercita
+// caso por caso. Es la línea que dejó todos los avisos con un enlace muerto
+// durante quién sabe cuánto, así que conviene que esté sujeta.
+export function urlBase(): string {
+  const bruta = process.env.URL_PUBLICA
+    || process.env.VERCEL_PROJECT_PRODUCTION_URL
+    || process.env.VERCEL_URL
+    || '';
+
+  const limpia = bruta.trim().replace(/\/+$/, '');
+  if (!limpia) return '';
+  return /^https?:\/\//i.test(limpia) ? limpia : `https://${limpia}`;
 }
 
 /**

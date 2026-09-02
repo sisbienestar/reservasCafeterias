@@ -24,11 +24,42 @@ import { manejar } from './_nucleo/enrutador.js';
  * entorno. Sin ella no se responde a nadie con credenciales: un `*` aquí
  * dejaría que cualquier página abierta en el mismo navegador hiciera
  * peticiones con la sesión de quien atiende el mostrador.
+ *
+ * ── Y además, el dominio de uno mismo, sin escribirlo ────────────────────
+ *
+ * A la lista se le suman los dominios que Vercel declara para ESTE proyecto.
+ * No es que hagan falta hoy: el frontend y la API se sirven desde el mismo
+ * origen, así que las peticiones del navegador ni siquiera pasan por CORS.
+ * Es para el día que el despliegue cambie de nombre —ya ha pasado— y alguien
+ * se pregunte por qué una vista previa no responde: sin esto habría que
+ * acordarse de editar una variable de entorno cada vez, y de eso no se acuerda
+ * nadie hasta que algo se rompe.
+ *
+ * Lo que NO se hace es aceptar cualquier `*.vercel.app`. Eso abriría la sesión
+ * del mostrador a cualquier proyecto de cualquier cuenta de Vercel, que es
+ * exactamente el agujero que este archivo existe para tapar.
  */
+function propios(): string[] {
+  return [
+    process.env.URL_PUBLICA,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL,
+    process.env.VERCEL_URL,
+  ]
+    .map((v) => (v ?? '').trim().replace(/\/+$/, ''))
+    .filter(Boolean)
+    // Vercel las da sin esquema; un origen sin él no casa nunca.
+    .map((v) => (/^https?:\/\//i.test(v) ? v : `https://${v}`));
+}
+
 function origenPermitido(origen: string | undefined): string | null {
-  const lista = (process.env.ORIGENES_PERMITIDOS ?? '')
-    .split(',').map((o) => o.trim()).filter(Boolean);
   if (!origen) return null;
+
+  const lista = [
+    ...(process.env.ORIGENES_PERMITIDOS ?? '')
+      .split(',').map((o) => o.trim()).filter(Boolean),
+    ...propios(),
+  ];
+
   return lista.includes(origen) ? origen : null;
 }
 

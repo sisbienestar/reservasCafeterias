@@ -6,7 +6,7 @@ Supabase y a Vercel.
 
 > ## Estado: pasos 1 a 7 HECHOS (27 de agosto de 2026)
 >
-> La aplicación está desplegada en `https://reservas-kappa-ten.vercel.app` y
+> La aplicación está desplegada en `https://cafeteriasuis.vercel.app` y
 > funcionando: portada, acceso, mostrador y administración, contra Supabase.
 >
 > **Queda el paso 8, y tiene una condición previa**: corregir en la hoja el
@@ -240,7 +240,8 @@ Variables`):
 | `SUPABASE_URL` | la URL del proyecto | |
 | `SUPABASE_SERVICE_ROLE_KEY` | la clave de servicio | **Nunca con prefijo `VITE_`.** Una variable `VITE_*` se empaqueta dentro del JavaScript que descarga el navegador. |
 | `SUPABASE_ANON_KEY` | la clave anónima | |
-| `ORIGENES_PERMITIDOS` | `https://TU-APP.vercel.app` | Sin esto no se responde a nadie con credenciales |
+| `ORIGENES_PERMITIDOS` | los de FUERA del proyecto | Sin esto no se responde a nadie con credenciales. Los dominios del propio proyecto se añaden solos |
+| `URL_PUBLICA` | *(vacía)* | Solo para un dominio propio. Sin ella, el enlace de los avisos usa el que Vercel declara, que sigue al proyecto |
 | `PERMITIR_FIN_DE_SEMANA` | `false` | |
 | `VITE_SUPABASE_URL` | la URL del proyecto | |
 | `VITE_SUPABASE_ANON_KEY` | la clave anónima | |

@@ -51,6 +51,7 @@ const SUITES = [
   ['dom', 'las páginas completas en jsdom'],
   ['finde', 'la regla de sábados y domingos', { FECHA_PRUEBA: '2026-08-23T10:30:00' }],
   ['interruptor', 'que el modo pruebas esté apagado en los dos lados'],
+  ['urlpublica', 'la dirección pública que va dentro de los avisos'],
   ['contrato', 'el contrato ejecutable de la API'],
 ];
 

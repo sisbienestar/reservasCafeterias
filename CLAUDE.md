@@ -15,7 +15,7 @@ La migración a **Supabase + Vercel + React** está **hecha y desplegada**.
 
 | | |
 |---|---|
-| Producción | `https://reservas-kappa-ten.vercel.app` |
+| Producción | `https://cafeteriasuis.vercel.app` · **temporal**, ver abajo |
 | Repositorio | `github.com/sisbienestar/reservasCafeterias` · rama `master` |
 | Base de datos | Supabase, proyecto `fpladdbnrwcoskbmkzfk` (`us-east-1`) |
 | Datos dentro | 5 cafeterías · 34 platos · 17 reservas · 32 asientos de historial |
@@ -341,6 +341,34 @@ Las variables de entorno **no** están en el repositorio: viven en `.env.local`
 —ignorado por git— y en el panel de Vercel. Si añades una `VITE_*`, hay que
 **redesplegar sin caché**: esas se incrustan al construir, no se leen al
 arrancar, así que añadirlas sin reconstruir no cambia nada.
+
+### La URL de producción es temporal, y el código no la sabe
+
+`cafeteriasuis.vercel.app` no es definitiva, y la de antes tampoco lo era:
+`reservas-kappa-ten.vercel.app` dejó de existir y **nadie se enteró**, porque
+lo único que la usaba eran los enlaces dentro de los correos de aviso — que se
+seguían enviando «bien», con un enlace a DEPLOYMENT_NOT_FOUND.
+
+Por eso **no hay ninguna URL escrita en `api/`**, y hay una prueba que lo
+comprueba: `pruebas/urlpublica.mjs` falla si alguien vuelve a poner una «de
+momento». Se resuelve preguntando, en este orden:
+
+| | |
+|---|---|
+| `URL_PUBLICA` | para un dominio propio. Manda sobre todo lo demás |
+| `VERCEL_PROJECT_PRODUCTION_URL` | el dominio del proyecto. **Lo pone Vercel solo** |
+| `VERCEL_URL` | la de ESTE despliegue, para que una vista previa enlace a sí misma |
+
+O sea que **cambiar de dominio no exige tocar nada**: la segunda lo sigue. Solo
+hace falta poner `URL_PUBLICA` el día que haya un dominio de la UIS.
+
+Y si no hay ninguna, el aviso **no inventa un enlace**: dice «búscalo en la
+aplicación: pedido n.º tal». Un enlace roto es peor que ninguno.
+
+Lo mismo en `ORIGENES_PERMITIDOS`: a la lista se le suman esos tres dominios,
+así que una vista previa responde sin editar variables. Lo que NO se acepta es
+cualquier `*.vercel.app` — eso abriría la sesión del mostrador a cualquier
+proyecto de cualquier cuenta de Vercel.
 
 ## Reglas que no se negocian
 
