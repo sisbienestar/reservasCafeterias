@@ -22,8 +22,10 @@
  * cada sede, que es un dato del cierre de caja y no abre ninguna puerta.
  *
  * Se pueden contradecir a propósito: una sede puede tener tres cuentas con
- * acceso y una sola responsable. Lo que NO se puede es nombrar responsable a
- * quien no atiende la sede, y eso lo impide el servidor.
+ * acceso y una sola responsable, y la responsable puede ser una cuenta que
+ * atienda otra sede. Lo único que el servidor exige es que sea de MOSTRADOR:
+ * administración y el auxiliar van sin sede, así que ninguno «estaba» en una
+ * cafetería un día concreto.
  */
 
 import { useCallback, useState, type FormEvent } from 'react';
@@ -44,9 +46,9 @@ export function SeccionCafeterias({ pedirConfirmacion, alCambiar }: {
   const consultar = useCallback(() => getCafeterias({ incluirInactivas: true }), []);
   const { datos: cafeterias, cargando, error, recargar } = usePeticion(consultar, []);
 
-  /* Las cuentas, para el desplegable de responsable. Se piden una vez y se
-     filtran por sede al editar: son unas pocas filas y traerlas por cafetería
-     serían cinco viajes para pintar un desplegable. */
+  /* Las cuentas, para el desplegable de responsable. Se piden UNA vez y se
+     filtran aquí: son unas pocas filas, y traerlas por cafetería serían cinco
+     viajes para pintar cinco desplegables con la misma lista. */
   const consultarCuentas = useCallback(() => getUsuarios(), []);
   const { datos: cuentas } = usePeticion(consultarCuentas, []);
 
@@ -62,13 +64,18 @@ export function SeccionCafeterias({ pedirConfirmacion, alCambiar }: {
   const [guardando, setGuardando] = useState(false);
 
   /*
-   * Solo las cuentas que ATIENDEN esta sede pueden responder por ella. Es la
-   * misma regla que comprueba el servidor, repetida aquí para no ofrecer un
-   * nombre que va a devolver un error al guardar.
+   * Cualquier cuenta de MOSTRADOR puede responder por cualquier sede.
+   *
+   * Estuvo limitado a las que atendían esa misma cafetería, y era demasiado:
+   * con una sola cuenta de mostrador dada de alta, tres de las cuatro sedes
+   * tenían el desplegable vacío sin que fuera un fallo. Responder por una sede
+   * y tener acceso a ella son dos cosas distintas — ver el comentario de la
+   * columna en `19-control-salidas.sql`.
+   *
+   * Es la misma regla que comprueba el servidor, repetida aquí para no ofrecer
+   * un nombre que va a devolver un error al guardar.
    */
-  const candidatos = (cuentas ?? []).filter(
-    (u) => editando && u.cafeteriaId === editando.id,
-  );
+  const candidatos = (cuentas ?? []).filter((u) => u.rol === 'mostrador');
 
   function empezarEdicion(cafeteria: Cafeteria) {
     setEditando(cafeteria);
@@ -208,16 +215,22 @@ export function SeccionCafeterias({ pedirConfirmacion, alCambiar }: {
                     value={responsable} disabled={guardando}
                     onChange={(e) => setResponsable(e.target.value)}>
               <option value="">Sin asignar</option>
+              {/* Con la sede detrás: es lo que distingue a dos personas del
+                  mismo nombre, y deja ver de un vistazo si se está nombrando a
+                  alguien de otra cafetería —que se puede, pero conviene que se
+                  vea—. */}
               {candidatos.map((u) => (
-                <option key={u.usuarioId} value={u.usuarioId}>{u.nombre}</option>
+                <option key={u.usuarioId} value={u.usuarioId}>
+                  {u.nombre}{u.cafeteriaNombre ? ` · ${u.cafeteriaNombre}` : ''}
+                </option>
               ))}
             </select>
             <span className="campo__ayuda">
               {candidatos.length === 0
-                ? 'Ninguna cuenta atiende esta sede todavía. Se asigna en la pestaña Usuarios.'
-                : 'Su nombre queda copiado dentro de cada cierre de caja, así que '
-                  + 'cambiarlo no altera los cierres ya guardados. No es un permiso: '
-                  + 'el acceso a la sede se da en Usuarios.'}
+                ? 'No hay ninguna cuenta de mostrador dada de alta. Se crean en la pestaña Usuarios.'
+                : 'Cualquier cuenta de mostrador. Su nombre queda copiado dentro de '
+                  + 'cada cierre, así que cambiarlo no altera los ya guardados. NO es '
+                  + 'un permiso: el acceso a la sede se da en Usuarios.'}
             </span>
           </div>
         )}

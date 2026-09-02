@@ -24,19 +24,19 @@
  */
 
 import { useCallback, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import {
   getCierre, getDia, getProductosSalida,
 } from '../../servicios/salidasServicio.js';
 import { getCafeterias } from '../../servicios/cafeteriasServicio.js';
 import { usePeticion } from '../../utiles/usePeticion.js';
 import { CierreSede, type DatosSede } from '../../componentes/salidas/CierreSede.js';
+import { NavSalidas } from '../../componentes/salidas/NavSalidas.js';
+import { SelectorDia } from '../../componentes/salidas/SelectorDia.js';
 import { BloqueEstado } from '../../componentes/BloqueEstado.js';
 import { BarraVolver } from '../../componentes/BarraVolver.js';
 import { Pie } from '../../componentes/Pie.js';
 import { useHoy, useSesion } from '../../contexto/Sesion.js';
 import { puede } from '../../servicios/capacidades.js';
-import { formatearFechaLarga } from '../../utiles/fechas.js';
 
 export function Inicio() {
   const hoy = useHoy();
@@ -103,41 +103,37 @@ export function Inicio() {
           <div className="encabezado-reserva__texto">
             <div className="encabezado-reserva__linea">
               <h1 className="encabezado-reserva__titulo">Control de salidas</h1>
+              {/* Sin la fecha larga: la dice el selector de abajo, y decirla
+                  dos veces —una en cristiano y otra en el formato del
+                  navegador— era lo que hacía leer «09/02/2026» como 9 de
+                  febrero justo debajo de «2 de septiembre». */}
               <p className="encabezado-reserva__meta">
-                {formatearFechaLarga(fecha)}
-                <span className="separador" aria-hidden="true">·</span>
                 {suSede ? 'Tu cafetería' : `${sedes.length} cafeterías`}
               </p>
             </div>
           </div>
 
-          <div className="filtros__acciones">
-            {puede(perfil?.rol, 'administrarSalidas') && (
-              <Link className="boton boton--sm boton--secundario" to="/salidas/admin">
-                Productos
-              </Link>
-            )}
-            {verTodas && (
-              <Link className="boton boton--sm boton--secundario" to={`/salidas/dia/${fecha}`}>
-                Ver el día junto
-              </Link>
-            )}
-            <Link className="boton boton--sm boton--secundario" to="/salidas/historial">
-              Historial
-            </Link>
-          </div>
-        </section>
+          {/*
+            El día va EN LA CABECERA, junto a los enlaces.
 
-        <section className="filtros" aria-label="Día del cierre">
-          <div className="campo filtros__campo">
-            <label className="campo__etiqueta" htmlFor="fecha-cierre">Día</label>
-            <input
-              id="fecha-cierre"
-              className="campo__control"
-              type="date"
-              value={fecha}
-              onChange={(e) => setFecha(e.target.value)}
-            />
+            Tuvo su propia `.filtros`, que es la caja blanca de los filtros del
+            historial — pensada para cuatro o cinco campos. Con uno solo dentro
+            se llevaba media pantalla para pedir una fecha, y empujaba las
+            cuatro cafeterías por debajo del pliegue. Es la misma solución que
+            ya usa `/salidas/dia/:fecha`.
+          */}
+          {/*
+            Solo el día. Los enlaces del módulo los pone `NavSalidas`, que va
+            en las cuatro pantallas.
+
+            «Ver el día junto» ya no está aquí: ese nombre es el del formato de
+            IMPRESIÓN, que sale del cierre del día y del historial, no de una
+            barra de navegación. El resumen del día se abre pulsando su fila en
+            el historial.
+          */}
+          <div className="filtros__acciones">
+            <SelectorDia fecha={fecha} alCambiar={setFecha} />
+            <NavSalidas />
           </div>
         </section>
 

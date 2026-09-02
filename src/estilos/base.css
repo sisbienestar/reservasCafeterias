@@ -149,7 +149,27 @@
 *::before,
 *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; }
+/*
+ * El hueco de la barra de desplazamiento se reserva SIEMPRE.
+ *
+ * Sin esto, cualquier pantalla que crezca hasta pasar del alto de la ventana
+ * hace aparecer la barra, y con ella la página entera salta quince píxeles a
+ * la izquierda. Se vio al desplegar una cafetería en el control de salidas: el
+ * clic abría el panel y de paso movía de golpe el título, la fecha y los
+ * cuatro botones. Parece un fallo de la pantalla y no lo es.
+ *
+ * Pasa en todas las pantallas que cambian de alto —abrir un modal, filtrar una
+ * tabla, cargar más filas— así que la regla va aquí, en la raíz, y no en el
+ * módulo donde se notó.
+ *
+ * `scrollbar-gutter` y no `overflow-y: scroll`: el segundo también lo arregla,
+ * pero dibuja el carril vacío en las páginas cortas. Este reserva el sitio sin
+ * pintar nada.
+ */
+html {
+  -webkit-text-size-adjust: 100%;
+  scrollbar-gutter: stable;
+}
 
 body {
   margin: 0;

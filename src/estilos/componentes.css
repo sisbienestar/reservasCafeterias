@@ -327,6 +327,12 @@
  * de salidas —cuatro cafeterías por cinco productos no cabían de una— y está
  * pensada para irse aplicando a las demás.
  *
+ * Hay DOS tablas en la aplicación, y la elección es por pantalla, no por
+ * módulo: se llegó a poner en las cuatro del control de salidas y se quitó de
+ * dos. Donde se TECLEA —el cierre del día, el catálogo de productos— compacta;
+ * donde se LEE —el día junto, el historial— la normal, que es la que se deja
+ * repasar con la vista sin apretar los ojos.
+ *
  * Es un MODIFICADOR y no una tabla nueva: hereda el fondo, el borde, la
  * sombra, los anchos y todos los ayudantes de celda —`__nombre`, `__numero`,
  * `__acciones`—. Lo único que cambia es el relleno y el cuerpo de letra, que

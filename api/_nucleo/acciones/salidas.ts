@@ -198,6 +198,37 @@ export async function buscar(params: Record<string, unknown>, sesion: Sesion) {
 }
 
 /**
+ * Los DÍAS con cierre de un rango, con los totales consolidados.
+ *
+ * Es lo que lista el historial: una fila por fecha y no por (fecha, sede).
+ * Con cuatro cafeterías, un mes son ciento veinte filas para responder a una
+ * pregunta que se hace por días — «¿cómo cerró el martes?» — y la respuesta
+ * sede por sede está a un clic, en `salidas.dia`.
+ *
+ * `salidas.buscar` sigue existiendo para la otra pregunta: cómo ha ido UNA
+ * sede a lo largo del tiempo.
+ */
+export async function dias(params: Record<string, unknown>, sesion: Sesion) {
+  const desde = fechaDe(params, 'desde');
+  const hasta = fechaDe(params, 'hasta');
+
+  if (desde > hasta) romper('RANGO_INVALIDO', 'La fecha inicial es posterior a la final.');
+  if (diasEntre(desde, hasta) > MAX_DIAS_RANGO) {
+    romper('RANGO_INVALIDO', `El rango no puede pasar de ${MAX_DIAS_RANGO} días.`);
+  }
+
+  // El mostrador ve SUS días, con sus propias cifras. Quien no tiene sede
+  // —administración, el auxiliar— recibe null y ve el consolidado de todas.
+  const cafeteriaId = sedePermitida(sesion, params.cafeteria_id);
+
+  return desempaquetar(
+    await servicio().rpc('dias_salidas', {
+      p_desde: desde, p_hasta: hasta, p_cafeteria_id: cafeteriaId ?? '',
+    }),
+  );
+}
+
+/**
  * Se quedan solo los renglones con ALGO escrito.
  *
  * Un producto con las dos casillas en blanco no es un renglón del cierre: es

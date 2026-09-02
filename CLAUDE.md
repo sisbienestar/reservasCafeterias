@@ -239,10 +239,23 @@ nombre se copia dentro de cada cierre — cambiarlo mañana no reescribe quién
 estaba en marzo. `perfil.cafeteria_id` dice **a qué sede tiene acceso** una
 cuenta, y eso sí es un permiso.
 
+Que la copia aguante costó un segundo archivo. El UPSERT de
+`guardar_cierre_salidas` la pisaba en cada guardado, así que solo duraba
+mientras nadie tocara el cierre: corregir en abril una cifra de marzo le ponía
+al cierre de marzo el responsable de abril. Desde
+`22-responsable-no-se-reescribe.sql` **el nombre se sella al cerrar el día por
+primera vez** y solo se rellena si quedó vacío. `guardado_por` sí se actualiza
+—esa es la pregunta «quién tocó esto»— y son dos cosas distintas.
+
 Se editan en dos pestañas distintas de `/admin` y se parecen lo bastante como
 para confundirse. Una sede puede tener varias cuentas con acceso y una sola
-responsable; lo que no se puede es nombrar responsable a quien no la atiende, y
-eso lo impide `api/_nucleo/acciones/cafeterias.ts`.
+responsable, y esa responsable **puede ser una cuenta que atienda otra sede**.
+
+Lo único que se exige es el ROL: tiene que ser `mostrador`. Llegó a exigirse
+además que atendiera esa misma cafetería, y era demasiado — con una sola cuenta
+de mostrador dada de alta, tres de las cuatro sedes no podían tener responsable
+y el desplegable salía vacío sin que fuera un fallo. Lo comprueba
+`api/_nucleo/acciones/cafeterias.ts`.
 
 ## Las dos aplicaciones que conviven
 

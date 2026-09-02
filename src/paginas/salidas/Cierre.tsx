@@ -115,6 +115,9 @@ export function Cierre() {
             productos={productos}
             datos={guardado ?? null}
             alGuardar={() => setVersion((n) => n + 1)}
+            /* Sin plegar: aquí solo hay una sede, y llegar a un panel cerrado
+               obligaría a un clic para ver lo único que la pantalla tiene. */
+            plegable={false}
           />
         )}
       </main>

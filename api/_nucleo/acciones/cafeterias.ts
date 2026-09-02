@@ -137,7 +137,7 @@ export async function actualizar(params: Record<string, unknown>) {
       nombre,
       ubicacion: String(params.ubicacion ?? '').trim(),
       platos_fijos: limpiarPlatosFijos(params.platos_fijos),
-      responsable_usuario_id: await responsableValido(params.responsable_usuario_id, id),
+      responsable_usuario_id: await responsableValido(params.responsable_usuario_id),
     }).eq('id', id).select(COLUMNAS).maybeSingle(),
   );
   if (!fila) romper('CAFETERIA_NO_ENCONTRADA', `No existe la cafetería «${params.id}».`);
@@ -145,37 +145,39 @@ export async function actualizar(params: Record<string, unknown>) {
 }
 
 /**
- * El responsable tiene que ser una cuenta que ATIENDA esta sede.
+ * El responsable tiene que ser una cuenta de MOSTRADOR.
  *
- * La clave foránea solo garantiza que la cuenta existe; que sea de ESTA
- * cafetería es una regla de negocio y por eso vive aquí. Sin esto se podría
- * poner de responsable de Camilo Torres a quien atiende Bienestar, y el
- * cierre saldría firmado por alguien que no estaba.
+ * Y solo eso. Exigió durante un rato que además atendiera esta misma sede
+ * —`perfil.cafeteria_id` igual a la cafetería— y era demasiado: con una sola
+ * cuenta de mostrador dada de alta, tres de las cuatro cafeterías no podían
+ * tener responsable, y el desplegable salía vacío sin que fuera un fallo.
+ *
+ * Responder por una sede y tener acceso a ella son dos cosas distintas, que es
+ * justo lo que dice el comentario de la columna en `19-control-salidas.sql`.
+ * Atarlas obligaba a crear una cuenta por sede antes de poder nombrar a nadie.
+ *
+ * Lo que SÍ se sigue exigiendo es el rol. Administración y el auxiliar van sin
+ * sede —las ven todas—, así que ninguno «estaba» en una cafetería un día
+ * concreto, y firmarles un cierre sería atribuirles un mostrador que no
+ * atienden.
  *
  * Vacío borra la asignación, y es un estado legítimo: una sede recién abierta
  * todavía no tiene a nadie. El cierre saldrá sin nombre, que es la verdad.
- *
- * Solo `mostrador`: administración y el auxiliar no tienen sede —las ven
- * todas— así que ninguno «estaba» en una cafetería un día concreto. Se
- * pregunta por la sede de su perfil y no por el rol, que es la regla de
- * siempre: un rol nuevo con sede entraría solo.
  */
-async function responsableValido(
-  valor: unknown,
-  cafeteriaId: string,
-): Promise<string | null> {
+async function responsableValido(valor: unknown): Promise<string | null> {
   const usuarioId = String(valor ?? '').trim();
   if (!usuarioId) return null;
 
-  const perfil = desempaquetar<{ nombre: string; cafeteria_id: string | null } | null>(
-    await servicio().from('perfil').select('nombre, cafeteria_id')
+  const perfil = desempaquetar<{ nombre: string; rol: string } | null>(
+    await servicio().from('perfil').select('nombre, rol')
       .eq('usuario_id', usuarioId).maybeSingle(),
   );
 
   if (!perfil) romper('DATOS_INCOMPLETOS', 'Esa cuenta no existe.');
-  if (perfil.cafeteria_id !== cafeteriaId) {
+  if (perfil.rol !== 'mostrador') {
     romper('DATOS_INCOMPLETOS',
-      `«${perfil.nombre}» no atiende esta cafetería, así que no puede responder por ella.`);
+      `«${perfil.nombre}» no es una cuenta de mostrador, así que no puede `
+      + 'responder por una cafetería.');
   }
   return usuarioId;
 }

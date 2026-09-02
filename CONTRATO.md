@@ -336,6 +336,12 @@ puede ser administración corrigiendo un cierre ajeno, y entonces poner su
 propio nombre diría que estuvo en un mostrador donde no estuvo — eso se guarda
 aparte, en `guardado_por`.
 
+Y se copia **una sola vez**, al cerrar el día por primera vez. Volver a guardar
+NO lo reescribe: cambiar quién responde por una sede no puede cambiar quién
+estaba en ella el mes pasado. La única excepción es el hueco — un día cerrado
+antes de asignar a nadie recibe el nombre al siguiente guardado, porque ahí no
+se reescribe nada, se completa.
+
 **Guardar y corregir son la misma acción.** `salidas.guardar` dos veces sobre
 el mismo (fecha, sede) corrige en vez de duplicar: lo impone el índice único
 `salida_cierre_unico`, y las líneas se reemplazan enteras porque el formulario

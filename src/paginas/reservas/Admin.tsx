@@ -25,7 +25,7 @@ import { usePeticion } from '../../utiles/usePeticion.js';
 import { useSesion } from '../../contexto/Sesion.js';
 import { aCSV, descargarTexto } from '../../utiles/csv.js';
 import { formatearTelefono } from '../../utiles/telefono.js';
-import { lunesDeSemana, sumarDias } from '../../utiles/fechas.js';
+import { PERIODOS, rangoDePeriodo } from '../../utiles/periodos.js';
 
 import { BloqueEstado } from '../../componentes/BloqueEstado.js';
 import { ModalReserva, type DatosReserva } from '../../componentes/ModalReserva.js';
@@ -52,37 +52,6 @@ interface Filtros {
   cafeteriaId: string;
   estado: EstadoReserva | '';
   texto: string;
-}
-
-/** Primer día del mes al que pertenece una fecha ISO. */
-const primeroDelMes = (fechaISO: string) => `${fechaISO.slice(0, 8)}01`;
-
-/** Traduce el desplegable de periodo a un par de fechas. */
-function rangoDePeriodo(periodo: string, hoy: string): [string, string] | null {
-  const lunes = lunesDeSemana(hoy);
-  switch (periodo) {
-    case 'hoy': return [hoy, hoy];
-    case 'semana': return [lunes, sumarDias(lunes, 6)];
-    case 'semana-pasada': {
-      const lunesPasado = sumarDias(lunes, -7);
-      return [lunesPasado, sumarDias(lunesPasado, 6)];
-    }
-    case '30': return [sumarDias(hoy, -29), hoy];
-    case 'mes': return [primeroDelMes(hoy), hoy];
-    case 'mes-pasado': {
-      const finMesPasado = sumarDias(primeroDelMes(hoy), -1);
-      return [primeroDelMes(finMesPasado), finMesPasado];
-    }
-    /**
-     * «Todo el histórico» son seis meses, no todo.
-     *
-     * El servidor rechaza rangos de más de 366 días con RANGO_INVALIDO, así
-     * que un «todo» literal fallaría siempre. Seis meses cubre cualquier
-     * consulta que se haga de verdad, y es lo que hacía el original.
-     */
-    case 'todo': return [sumarDias(hoy, -180), hoy];
-    default: return null; // personalizado: mandan las fechas escritas
-  }
 }
 
 export function Admin() {
@@ -327,14 +296,9 @@ export function Admin() {
             <label className="campo__etiqueta" htmlFor="filtro-periodo">Periodo</label>
             <select className="campo__control" id="filtro-periodo" value={periodo}
                     onChange={(e) => cambiarPeriodo(e.target.value)}>
-              <option value="hoy">Hoy</option>
-              <option value="semana">Esta semana</option>
-              <option value="semana-pasada">Semana pasada</option>
-              <option value="30">Últimos 30 días</option>
-              <option value="mes">Este mes</option>
-              <option value="mes-pasado">Mes pasado</option>
-              <option value="todo">Todo el histórico</option>
-              <option value="personalizado">Personalizado</option>
+              {PERIODOS.map((p) => (
+                <option key={p.id} value={p.id}>{p.texto}</option>
+              ))}
             </select>
           </div>
 

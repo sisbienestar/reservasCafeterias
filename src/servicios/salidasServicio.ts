@@ -81,6 +81,22 @@ export interface FichaCierre {
   totalDiferencia: number;
 }
 
+/**
+ * Un DÍA con cierre, con los totales de todas las sedes juntas.
+ *
+ * Es lo que lista el historial. `cerradas` de `sedes` se lee «3 de 4»: las
+ * que cerraron caja ese día frente a las cafeterías en servicio.
+ */
+export interface DiaCierre {
+  fecha: string;
+  cerradas: number;
+  sedes: number;
+  renglones: number;
+  totalVentas: number;
+  totalSalidas: number;
+  totalDiferencia: number;
+}
+
 /** Lo que la pantalla manda por cada producto con algo escrito. */
 export interface LineaNueva {
   productoId: number;
@@ -190,6 +206,36 @@ export async function buscarCierres(filtros: {
     cafeteriaId: f.cafeteria_id,
     cafeteriaNombre: f.cafeteria_nombre,
     responsableNombre: f.responsable_nombre ?? '',
+    renglones: Number(f.renglones ?? 0),
+    totalVentas: Number(f.total_ventas ?? 0),
+    totalSalidas: Number(f.total_salidas ?? 0),
+    totalDiferencia: Number(f.total_diferencia ?? 0),
+  }));
+}
+
+/**
+ * Los DÍAS con cierre de un rango, con el consolidado de cada uno.
+ *
+ * Es lo que lista el historial: una fila por fecha y no por (fecha, sede).
+ * Con cuatro cafeterías, un mes serían ciento veinte filas para responder a
+ * una pregunta que se hace por días. El detalle sede por sede está a un clic,
+ * en `getDia`.
+ *
+ * A quien atiende una sede el servidor le devuelve SUS días, con sus propias
+ * cifras: la misma pantalla sirve para los dos alcances.
+ */
+export async function getDiasCierre(filtros: {
+  desde: string; hasta: string;
+}): Promise<DiaCierre[]> {
+  const filas = await pedir<{
+    fecha: string; cerradas: number; sedes: number; renglones: number;
+    total_ventas: number; total_salidas: number; total_diferencia: number;
+  }[]>('salidas.dias', { desde: filtros.desde, hasta: filtros.hasta });
+
+  return (filas ?? []).map((f) => ({
+    fecha: f.fecha,
+    cerradas: Number(f.cerradas ?? 0),
+    sedes: Number(f.sedes ?? 0),
     renglones: Number(f.renglones ?? 0),
     totalVentas: Number(f.total_ventas ?? 0),
     totalSalidas: Number(f.total_salidas ?? 0),

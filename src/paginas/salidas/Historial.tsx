@@ -1,53 +1,83 @@
 /**
- * Los cierres ya hechos, por rango de fechas.
+ * El historial: los CIERRES DIARIOS, uno por fila.
  *
- * Enseña la FICHA de cada uno —fecha, sede, responsable y los tres totales—,
- * no sus renglones: las cifras por producto se ven abriendo el cierre. Es la
- * misma disciplina de un viaje por gesto que sigue el historial de pedidos.
+ * Listó un rato una fila por (fecha, sede), y con cuatro cafeterías un mes
+ * eran ciento veinte renglones para responder a una pregunta que se hace por
+ * días: «¿cómo cerró el martes?». Ahora cada fila es un día con el consolidado
+ * de las cuatro, y el detalle sede por sede está a un clic — en el resumen
+ * diario, que es a donde lleva la fila.
  *
- * El filtro de sede solo se pinta para quien no tiene una asignada. Al
- * mostrador el servidor le impone la suya, mande lo que mande, así que un
- * desplegable ahí sería un adorno que no cambia nada.
+ * A quien atiende una sede el servidor le devuelve SUS días con sus propias
+ * cifras, así que la pantalla es la misma para los dos alcances y no pregunta
+ * por el rol en ninguna parte.
+ *
+ * ── El periodo son atajos, no un grano ────────────────────────────────────
+ *
+ * «Día», «Semana» y «Mes» solo mueven las dos fechas del rango; las filas
+ * siguen siendo días. Agrupar por semanas —una fila con los totales de la
+ * semana— sería otra cosa, y entonces habría que decidir a dónde lleva pulsar
+ * una fila que no es un día. No se ha hecho.
  */
 
-import { useCallback, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { buscarCierres } from '../../servicios/salidasServicio.js';
-import { getCafeterias } from '../../servicios/cafeteriasServicio.js';
+import { useCallback, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getDiasCierre } from '../../servicios/salidasServicio.js';
 import { usePeticion } from '../../utiles/usePeticion.js';
 import { BloqueEstado } from '../../componentes/BloqueEstado.js';
 import { BarraVolver } from '../../componentes/BarraVolver.js';
+import { NavSalidas } from '../../componentes/salidas/NavSalidas.js';
 import { Pie } from '../../componentes/Pie.js';
 import { useHoy, useSesion } from '../../contexto/Sesion.js';
-import { puede } from '../../servicios/capacidades.js';
-import { formatearFechaCorta, sumarDias } from '../../utiles/fechas.js';
+import { formatearFechaLarga, nombreDiaCorto } from '../../utiles/fechas.js';
+import { PERIODOS, rangoDePeriodo } from '../../utiles/periodos.js';
 
 export function Historial() {
   const hoy = useHoy();
+  const navegar = useNavigate();
   const { contexto } = useSesion();
-  const perfil = contexto?.perfil ?? null;
+  const suSede = contexto?.perfil?.cafeteriaId ?? null;
 
-  /* Quién ve TODAS las sedes: quien no tiene ninguna asignada. Se pregunta por
-     la sede y no por el rol, que es la regla de siempre. */
-  const todasLasSedes = !perfil?.cafeteriaId;
+  /* El mismo desplegable que la administración de reservas, y el mismo cálculo:
+     `utiles/periodos.ts`. Dos listas de periodos habrían acabado diciendo cosas
+     distintas por «Semana pasada» en dos pantallas de la misma aplicación. */
+  const [periodo, setPeriodo] = useState('30');
+  /* La tupla, escrita: sin ella `rango[0]` es `string | undefined` —el
+     proyecto compila con `noUncheckedIndexedAccess`— y habría que comprobar
+     dos veces algo que por construcción siempre tiene dos fechas. */
+  const [rango, setRango] = useState<[string, string]>(
+    () => rangoDePeriodo('30', hoy) ?? [hoy, hoy],
+  );
+  const [desde, hasta] = rango;
 
-  const [desde, setDesde] = useState(() => sumarDias(hoy, -30));
-  const [hasta, setHasta] = useState(hoy);
-  const [sede, setSede] = useState('');
+  /* Elegir un periodo rellena las dos fechas; tocar una fecha pasa a
+     «Personalizado». Es el mismo par de gestos que allí, y hace que el
+     desplegable nunca diga «Este mes» sobre unas fechas que no son las suyas. */
+  function cambiarPeriodo(nuevo: string) {
+    setPeriodo(nuevo);
+    const calculado = rangoDePeriodo(nuevo, hoy);
+    if (calculado) setRango(calculado);
+  }
+
+  function cambiarFecha(cual: 0 | 1, valor: string) {
+    setPeriodo('personalizado');
+    setRango((r) => (cual === 0 ? [valor, r[1]] : [r[0], valor]));
+  }
 
   const consultar = useCallback(
-    () => buscarCierres({ desde, hasta, cafeteriaId: sede }),
-    [desde, hasta, sede],
+    () => getDiasCierre({ desde, hasta }), [desde, hasta],
   );
-  const { datos, cargando, error, recargar } = usePeticion(consultar, [desde, hasta, sede]);
+  const { datos, cargando, error, recargar } = usePeticion(consultar, [desde, hasta]);
 
-  const consultarSedes = useCallback(
-    () => (todasLasSedes ? getCafeterias({ incluirInactivas: true }) : Promise.resolve([])),
-    [todasLasSedes],
-  );
-  const { datos: sedes } = usePeticion(consultarSedes, [todasLasSedes]);
+  const dias = datos ?? [];
 
-  const cierres = datos ?? [];
+  /* El consolidado del PERIODO, que es la otra pregunta que se hace mirando
+     esto: «¿cómo fue el mes?». Sale de lo que ya está en pantalla, sin otro
+     viaje al servidor. */
+  const total = useMemo(() => dias.reduce((t, d) => ({
+    ventas: t.ventas + d.totalVentas,
+    salidas: t.salidas + d.totalSalidas,
+    diferencia: t.diferencia + d.totalDiferencia,
+  }), { ventas: 0, salidas: 0, diferencia: 0 }), [dias]);
 
   return (
     <>
@@ -59,38 +89,41 @@ export function Historial() {
             <div className="encabezado-reserva__linea">
               <h1 className="encabezado-reserva__titulo">Historial de cierres</h1>
               <p className="encabezado-reserva__meta">
-                {todasLasSedes ? 'Todas las cafeterías' : 'Los cierres de tu sede'}
+                {suSede ? 'Tu cafetería' : 'Todas las cafeterías'}
               </p>
             </div>
           </div>
+
+          <div className="filtros__acciones">
+            <NavSalidas />
+          </div>
         </section>
 
-        <section className="filtros" aria-label="Filtros del historial">
-          <div className="campo filtros__campo">
-            <label className="campo__etiqueta" htmlFor="desde">Desde</label>
-            <input id="desde" className="campo__control" type="date"
-                   value={desde} onChange={(e) => setDesde(e.target.value)} />
+        {/* El mismo filtro que en la administración de reservas: el periodo
+            manda y las dos fechas se rellenan solas, salvo que se toquen. */}
+        <form className="filtros" onSubmit={(e) => e.preventDefault()}>
+          <div className="filtros__campo filtros__campo--ancho">
+            <label className="campo__etiqueta" htmlFor="filtro-periodo">Periodo</label>
+            <select className="campo__control" id="filtro-periodo" value={periodo}
+                    onChange={(e) => cambiarPeriodo(e.target.value)}>
+              {PERIODOS.map((p) => (
+                <option key={p.id} value={p.id}>{p.texto}</option>
+              ))}
+            </select>
           </div>
 
-          <div className="campo filtros__campo">
-            <label className="campo__etiqueta" htmlFor="hasta">Hasta</label>
-            <input id="hasta" className="campo__control" type="date"
-                   value={hasta} onChange={(e) => setHasta(e.target.value)} />
+          <div className="filtros__campo">
+            <label className="campo__etiqueta" htmlFor="filtro-desde">Desde</label>
+            <input className="campo__control" id="filtro-desde" type="date" value={desde}
+                   onChange={(e) => cambiarFecha(0, e.target.value)} />
           </div>
 
-          {todasLasSedes && (
-            <div className="campo filtros__campo filtros__campo--ancho">
-              <label className="campo__etiqueta" htmlFor="sede">Cafetería</label>
-              <select id="sede" className="campo__control" value={sede}
-                      onChange={(e) => setSede(e.target.value)}>
-                <option value="">Todas</option>
-                {(sedes ?? []).map((s) => (
-                  <option key={s.id} value={s.id}>{s.nombre}</option>
-                ))}
-              </select>
-            </div>
-          )}
-        </section>
+          <div className="filtros__campo">
+            <label className="campo__etiqueta" htmlFor="filtro-hasta">Hasta</label>
+            <input className="campo__control" id="filtro-hasta" type="date" value={hasta}
+                   onChange={(e) => cambiarFecha(1, e.target.value)} />
+          </div>
+        </form>
 
         {cargando && <BloqueEstado tipo="cargando" titulo="Cargando cierres…" />}
 
@@ -103,71 +136,103 @@ export function Historial() {
           />
         )}
 
-        {datos && cierres.length === 0 && (
+        {datos && dias.length === 0 && (
           <BloqueEstado
             tipo="vacio"
-            titulo="No hay cierres en ese rango"
-            detalle="Cambia las fechas, o registra el cierre desde la cafetería."
+            titulo="No hay cierres en ese periodo"
+            detalle={periodo === 'hoy'
+              ? 'Hoy todavía no se ha cerrado ninguna caja.'
+              : 'Prueba con un periodo más amplio, o registra el cierre desde el módulo.'}
           />
         )}
 
-        {cierres.length > 0 && (
+        {dias.length > 0 && (
           <div className="tabla-envoltorio bloque-tabla">
-            <table className="tabla tabla--compacta">
+            <table className="tabla">
               <caption className="tabla__caption">
-                {cierres.length} {cierres.length === 1 ? 'cierre' : 'cierres'}.
+                {desde === hasta
+                  ? formatearFechaLarga(desde)
+                  : `Del ${formatearFechaLarga(desde)} al ${formatearFechaLarga(hasta)}`}
+                {' · '}
+                {dias.length} {dias.length === 1 ? 'día' : 'días'} con cierre
               </caption>
+
               <thead>
                 <tr>
-                  <th scope="col">Fecha</th>
-                  <th scope="col">Cafetería</th>
-                  <th scope="col">Responsable</th>
+                  <th scope="col">Día</th>
+                  {/* Solo tiene sentido con varias sedes: para el mostrador
+                      sería siempre «1 de 1». */}
+                  {!suSede && <th scope="col">Cerradas</th>}
                   <th scope="col">Ventas</th>
                   <th scope="col">Salidas</th>
                   <th scope="col">Diferencia</th>
                   <th scope="col"><span className="visualmente-oculto">Acciones</span></th>
                 </tr>
               </thead>
+
               <tbody>
-                {cierres.map((c) => (
-                  <tr key={c.id}>
-                    <td className="tabla__fecha">{formatearFechaCorta(c.fecha)}</td>
-                    <td className="tabla__nombre">{c.cafeteriaNombre}</td>
-                    {/* Vacío y no un guion: no es que falte el dato, es que esa
-                        sede no tenía responsable asignado cuando se cerró. */}
-                    <td className="tabla__menu">
-                      {c.responsableNombre || <span className="tabla__detalle">sin asignar</span>}
-                    </td>
-                    <td className="tabla__numero">{c.totalVentas}</td>
-                    <td className="tabla__numero">{c.totalSalidas}</td>
-                    <td className={`tabla__numero${c.totalDiferencia ? ' salidas__descuadre' : ''}`}>
-                      {c.totalDiferencia > 0 ? `+${c.totalDiferencia}` : c.totalDiferencia}
-                    </td>
-                    <td className="tabla__acciones">
-                      {/*
-                        Al formulario de esa sede, no a una pantalla de solo
-                        lectura: corregir un cierre es rellenar la misma hoja,
-                        y son la misma acción. La fecha se elige dentro, así
-                        que se llega al día de hoy y hay que moverla — se
-                        arregla cuando el enlace pueda llevarla.
-                      */}
-                      <Link className="boton boton--sm boton--secundario"
-                            to={`/salidas/${c.cafeteriaId}`}>
-                        Abrir
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
+                {dias.map((d) => {
+                  const completo = d.cerradas >= d.sedes;
+                  return (
+                    <tr
+                      key={d.fecha}
+                      /* La fila entera lleva al resumen del día. El botón de la
+                         derecha se queda igualmente: es lo que se ve, y es lo
+                         que funciona con el teclado — una fila no se enfoca. */
+                      className="tabla__fila--pulsable"
+                      onClick={() => navegar(`/salidas/dia/${d.fecha}`)}
+                    >
+                      <td className="tabla__nombre">
+                        {nombreDiaCorto(d.fecha)}
+                        {' '}
+                        {formatearFechaLarga(d.fecha).replace(/^[^,]+,\s*/, '')}
+                      </td>
+
+                      {!suSede && (
+                        <td className="tabla__numero">
+                          {d.cerradas} de {d.sedes}
+                          {!completo && (
+                            <span className="tabla__detalle salidas__descuadre">incompleto</span>
+                          )}
+                        </td>
+                      )}
+
+                      <td className="tabla__numero">{d.totalVentas}</td>
+                      <td className="tabla__numero">{d.totalSalidas}</td>
+                      <td className={`tabla__numero${d.totalDiferencia ? ' salidas__descuadre' : ''}`}>
+                        {d.totalDiferencia > 0 ? `+${d.totalDiferencia}` : d.totalDiferencia}
+                      </td>
+
+                      <td className="tabla__acciones">
+                        <button
+                          type="button"
+                          className="boton boton--sm boton--secundario"
+                          /* El clic de la fila ya navega; sin frenarlo aquí se
+                             llamaría dos veces al pulsar el botón. */
+                          onClick={(e) => { e.stopPropagation(); navegar(`/salidas/dia/${d.fecha}`); }}
+                        >
+                          Ver el día
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
+
+              <tfoot>
+                <tr>
+                  <th scope="row">Total del periodo</th>
+                  {!suSede && <td />}
+                  <td className="tabla__numero">{total.ventas}</td>
+                  <td className="tabla__numero">{total.salidas}</td>
+                  <td className={`tabla__numero${total.diferencia ? ' salidas__descuadre' : ''}`}>
+                    {total.diferencia > 0 ? `+${total.diferencia}` : total.diferencia}
+                  </td>
+                  <td />
+                </tr>
+              </tfoot>
             </table>
           </div>
-        )}
-
-        {puede(perfil?.rol, 'verDiaSalidas') && (
-          <p className="campo__ayuda">
-            Para ver un día con todas las cafeterías juntas —que es lo que se
-            imprime— entra por «Ver el día junto» en la portada del módulo.
-          </p>
         )}
       </main>
 

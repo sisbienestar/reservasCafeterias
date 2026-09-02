@@ -95,6 +95,7 @@ const PERMISOS: Record<Rol, readonly string[]> = {
     'salidas.guardar',
     'salidas.obtener',
     'salidas.buscar',
+    'salidas.dias',
     'salidasProductos.listar',
   ],
   /*
@@ -125,6 +126,7 @@ const PERMISOS: Record<Rol, readonly string[]> = {
     // propia, así que no cierra ninguna caja. Ver el comentario de arriba.
     'salidas.obtener',
     'salidas.buscar',
+    'salidas.dias',
     'salidas.dia',
     'salidasProductos.listar',
   ],
@@ -180,6 +182,7 @@ const PERMISOS: Record<Rol, readonly string[]> = {
     'salidas.guardar',
     'salidas.obtener',
     'salidas.buscar',
+    'salidas.dias',
     'salidas.dia',
     'salidasProductos.listar',
     'salidasProductos.crear',

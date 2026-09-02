@@ -192,6 +192,8 @@ const ACCIONES: Record<string, Manejador> = {
   'salidas.guardar': conSesion(salidas.guardar),
   'salidas.obtener': conSesion(salidas.obtener),
   'salidas.buscar': conSesion(salidas.buscar),
+  // Una fila por DÍA con el consolidado: es lo que lista el historial.
+  'salidas.dias': conSesion(salidas.dias),
   // El día entero, cruzando sedes: alimenta el impreso. Solo `admin`, por lo
   // mismo que `pedidos.analisis`.
   'salidas.dia': conSesion((p) => salidas.dia(p)),

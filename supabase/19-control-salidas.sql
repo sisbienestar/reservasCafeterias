@@ -225,6 +225,11 @@ ON CONFLICT (id) DO NOTHING;
  * Las líneas se reemplazan enteras porque el formulario es la hoja entera,
  * igual que en `actualizar_pedido`.
  *
+ * OJO: el `ON CONFLICT` de abajo pisa `responsable_nombre` en cada guardado, y
+ * eso está MAL — corregir en abril un cierre de marzo le ponía el responsable
+ * de abril, que es justo lo que la copia venía a impedir. Lo arregla
+ * `22-responsable-no-se-reescribe.sql`. Aquí se deja lo que se ejecutó.
+ *
  * A diferencia de un pedido, un cierre SÍ puede quedarse sin líneas: una sede
  * que abrió y no vendió nada es un cierre legítimo, y de hecho es justo lo
  * que hay que poder registrar.

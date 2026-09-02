@@ -20,6 +20,7 @@ import { usePeticion } from '../../utiles/usePeticion.js';
 import { BloqueEstado } from '../../componentes/BloqueEstado.js';
 import { BarraVolver } from '../../componentes/BarraVolver.js';
 import { ModalConfirmacion, type PeticionConfirmacion } from '../../componentes/ModalConfirmacion.js';
+import { NavSalidas } from '../../componentes/salidas/NavSalidas.js';
 import { Pie } from '../../componentes/Pie.js';
 
 export function Admin() {
@@ -96,13 +97,13 @@ export function Admin() {
       <main className="contenedor pagina">
         <BarraVolver volver={{ a: '/salidas', texto: '← Control de salidas' }} />
 
-        <section className="encabezado-admin">
+        {/* Sin bajada. Lo que decía —que son los mismos en todas las sedes y que
+            este orden es el del formulario— se lee de la propia tabla: la
+            columna «N.º» ES el orden. Un párrafo para explicar lo que ya está
+            delante es un párrafo que se salta. */}
+        <section className="encabezado-admin encabezado-admin--con-nav">
           <h1 className="encabezado-admin__titulo">Productos del control</h1>
-          <p className="encabezado-admin__bajada">
-            Lo que se cuenta al cerrar la caja de cada cafetería. Son los mismos
-            en todas las sedes, y el orden de esta lista es el del formulario y
-            el del impreso.
-          </p>
+          <NavSalidas />
         </section>
 
         {aviso && (
@@ -152,7 +153,7 @@ export function Admin() {
 
         {productos && productos.length > 0 && (
           <div className="tabla-envoltorio bloque-tabla">
-            <table className="tabla tabla--compacta">
+            <table className="tabla">
               <thead>
                 <tr>
                   <th scope="col" className="tabla__numero">N.º</th>

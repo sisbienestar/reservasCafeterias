@@ -444,6 +444,137 @@
  * `center` y no `baseline`: al lado del texto hay un botón, y alineado por la
  * línea base se le quedaba la cara colgando por debajo del nombre.
  */
+/*
+ * La barra del módulo de salidas: las mismas secciones en todas sus pantallas.
+ *
+ * Va justo debajo del «← Módulos» y encima del título, que es donde se espera
+ * una navegación: antes del contenido y después de la salida.
+ */
+.nav-salidas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+}
+
+/* La cabecera de Productos no era flexible —solo un título y su bajada— y
+   necesita serlo para que la barra quede frente al título como en las otras
+   tres. Por el CENTRO: el título es una sola línea desde que se le quitó la
+   bajada, así que alinearlo por arriba dejaría la barra medio renglón alta. */
+.encabezado-admin--con-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--e-4);
+}
+
+/* El margen del título separaba del subtítulo, y ya no hay subtítulo. */
+.encabezado-admin--con-nav .encabezado-admin__titulo { margin-bottom: 0; }
+
+/*
+ * Una fila de tabla que lleva a alguna parte.
+ *
+ * El cursor y el resalte al pasar por encima son lo único que dice que la fila
+ * entera se puede pulsar; sin ellos, quien no vea el botón de la derecha no
+ * tiene forma de saberlo.
+ *
+ * La fila NO se enfoca con el teclado, y no se le pone `tabindex` para que lo
+ * haga: sería un elemento más en el recorrido que anuncia toda la fila de
+ * corrido. Para eso está el botón, que ya es el camino de teclado y dice a
+ * dónde va.
+ */
+.tabla__fila--pulsable { cursor: pointer; }
+
+.tabla__fila--pulsable:hover { background: var(--c-superficie-2); }
+
+/*
+ * El selector de día.
+ *
+ * Una sola caja: el texto que se lee, el icono de calendario, y encima el
+ * `<input type="date">` transparente que recibe el clic y el teclado. Ver
+ * `SelectorDia.tsx`, que explica por qué el input no puede verse.
+ *
+ * Tuvo flechas de día anterior y siguiente, y un botón «Hoy». Se quitaron: con
+ * el calendario abriéndose de verdad, tres controles para elegir una fecha son
+ * dos de más.
+ */
+.selector-dia {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-2);
+  flex: 0 0 auto;
+  min-height: 30px;
+  padding-inline: var(--e-3);
+  border: 1px solid var(--c-borde-fuerte);
+  border-radius: var(--radio-pildora);
+  background: var(--c-superficie);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--c-texto);
+  white-space: nowrap;
+  transition: background var(--transicion), border-color var(--transicion);
+}
+
+.selector-dia:hover {
+  background: var(--c-superficie-2);
+  border-color: var(--c-texto-3);
+}
+
+/* El foco se pinta sobre la caja que SÍ se ve, no sobre el input invisible. */
+.selector-dia:focus-within {
+  outline: 2px solid var(--c-acento);
+  outline-offset: 2px;
+}
+
+.selector-dia__icono {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  stroke: var(--c-texto-3);
+  fill: none;
+}
+
+/*
+ * El input, encima de todo y transparente.
+ *
+ * No es `display: none` ni `visibility: hidden`: tiene que seguir siendo un
+ * elemento presentado para que `showPicker()` sepa dónde anclar el calendario
+ * y para que el teclado lo alcance. Lo que se le quita es el color, no el
+ * sitio.
+ */
+.selector-dia__nativo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/*
+ * El selector de día, dentro de la cabecera y no en su propia caja.
+ *
+ * Tuvo una `.filtros` para él solo —la caja blanca del historial, pensada
+ * para cuatro o cinco campos— y con uno dentro se llevaba media pantalla para
+ * pedir una fecha, empujando las cuatro cafeterías por debajo del pliegue.
+ *
+ * El ancho es el de una fecha y nada más. Sin fijarlo, el campo se estira a lo
+ * que le dé el contenedor, que es justo lo que se venía a arreglar.
+ */
+.campo--dia {
+  flex: 0 0 auto;
+  width: 9.5rem;
+}
+
+/* Por la línea de ABAJO, que es donde están el campo y los botones. Alineados
+   arriba, el botón se estiraba hasta cubrir la etiqueta «Día» y el campo. */
+.encabezado-reserva .filtros__acciones { align-items: flex-end; }
+
 /* El margen de ARRIBA también, y no solo el de abajo: encima del primer
    bloque puede haber un aviso —`.aviso` no trae margen propio— y sin esto el
    nombre de la sede se pegaba al borde de la caja amarilla. */
@@ -458,24 +589,110 @@
   margin-bottom: var(--e-3);
 }
 
-/* Un `h2` de sección, no un titular: por encima de él está el de la página. */
+/* El `h2` no aporta tamaño ni margen: es solo la etiqueta correcta para que la
+   sede sea un encabezado navegable. Lo que se ve lo pone el botón de dentro. */
+.cierre-sede__encabezado {
+  margin: 0;
+  /* Que se lleve el ancho que sobra, para que el botón de acción quede pegado
+     al margen derecho y las cuatro filas se alineen entre sí. */
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/*
+ * El título entero es el interruptor.
+ *
+ * NO usa `.boton`: aquello es una píldora con fondo y borde, y esto tiene que
+ * leerse como el encabezado que es. Lo único que hereda de un botón es que se
+ * puede pulsar y enfocar, y eso ya lo da el elemento.
+ */
+.cierre-sede__interruptor {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  width: 100%;
+  padding: var(--e-2) 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  border-radius: var(--radio-sm);
+}
+
+/* El foco SÍ se ve, y con holgura: sin fondo ni borde propios, un contorno
+   pegado al texto se confundiría con un subrayado. */
+.cierre-sede__interruptor:focus-visible {
+  outline: 2px solid var(--c-acento);
+  outline-offset: 3px;
+}
+
+.cierre-sede__interruptor:hover .cierre-sede__titulo { color: var(--c-acento); }
+
+/*
+ * La flecha, con el chevron de una sola tecla: `›`.
+ *
+ * Girado 90° apunta abajo cuando está abierto. Es `aria-hidden` porque lo que
+ * dice ya lo dice `aria-expanded`, y leerlo en voz alta sería «mayor que».
+ */
+.cierre-sede__flecha {
+  flex-shrink: 0;
+  font-size: var(--texto-lg);
+  line-height: 1;
+  color: var(--c-texto-3);
+  transition: transform var(--transicion);
+}
+
+.cierre-sede__flecha--abierta { transform: rotate(90deg); }
+
+/* El nombre y el responsable, apilados y encogibles: son lo único de la fila
+   que puede ser largo, así que son lo que cede cuando no cabe. */
+.cierre-sede__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .cierre-sede__titulo {
   font-size: var(--texto-lg);
-  margin: 0;
+  font-weight: var(--peso-fuerte);
+  transition: color var(--transicion);
 }
 
 .cierre-sede__meta {
   font-size: var(--texto-xs);
   color: var(--c-texto-3);
-  margin: 0;
+  font-weight: var(--peso-normal);
 }
 
-/* El punto separador no trae espacio propio: en `.encabezado-reserva__meta` se
-   lo daba el `gap` de un contenedor flexible, y esto es un párrafo corriente.
-   Sin esta línea salía «Sin responsable asignado·Ya cerrado». */
-.cierre-sede__meta .separador {
-  margin-inline: var(--e-1);
-  color: var(--c-borde-fuerte);
+/*
+ * El despliegue, animado sobre una altura que NO se conoce.
+ *
+ * `grid-template-rows` de `0fr` a `1fr` es lo que lo hace posible. Sobre
+ * `height: auto` no hay nada que interpolar —el navegador no sabe a qué va— y
+ * `max-height` obliga a inventarse un número: corto recorta la tabla, y largo
+ * deja la animación floja mientras recorre el sobrante. La fracción de rejilla
+ * se interpola sola y siempre acaba en el alto exacto del contenido.
+ *
+ * `prefers-reduced-motion` no hace falta atenderlo aquí: `base.css` ya deja
+ * todas las transiciones en 0,01 ms para quien lo pide.
+ */
+.cierre-sede__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--transicion);
+}
+
+.cierre-sede__panel--abierto { grid-template-rows: 1fr; }
+
+/* Quien recorta mientras crece. `min-height: 0` porque un elemento de rejilla
+   no baja por debajo de su contenido sin él, y entonces no habría animación:
+   se vería aparecer y desaparecer de golpe. */
+.cierre-sede__panel-interior {
+  overflow: hidden;
+  min-height: 0;
 }
 
 /*

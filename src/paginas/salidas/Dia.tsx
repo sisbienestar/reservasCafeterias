@@ -26,6 +26,7 @@ import { getDia, type SedeDelDia } from '../../servicios/salidasServicio.js';
 import { usePeticion } from '../../utiles/usePeticion.js';
 import { BloqueEstado } from '../../componentes/BloqueEstado.js';
 import { BarraVolver } from '../../componentes/BarraVolver.js';
+import { NavSalidas } from '../../componentes/salidas/NavSalidas.js';
 import { Pie } from '../../componentes/Pie.js';
 import { useHoy } from '../../contexto/Sesion.js';
 import { formatearFechaLarga } from '../../utiles/fechas.js';
@@ -61,7 +62,8 @@ export function Dia() {
             </div>
           </div>
 
-          <div className="campo filtros__campo">
+          <div className="filtros__acciones">
+          <div className="campo campo--dia">
             <label className="campo__etiqueta" htmlFor="fecha-dia">Día</label>
             <input
               id="fecha-dia"
@@ -75,6 +77,8 @@ export function Dia() {
                  de días al mover el calendario. */
               onChange={(e) => navegar(`/salidas/dia/${e.target.value}`, { replace: true })}
             />
+          </div>
+            <NavSalidas />
           </div>
         </section>
 
@@ -113,7 +117,7 @@ export function Dia() {
 
         {datos && datos.productos.length > 0 && (
           <div className="tabla-envoltorio bloque-tabla">
-            <table className="tabla tabla--compacta">
+            <table className="tabla">
               <caption className="tabla__caption">
                 Por cada producto, las ventas que registró la caja y lo que
                 salió. «—» es una casilla que no se contó, que no es lo mismo
@@ -150,21 +154,12 @@ export function Dia() {
                           {cifra(l.ventasRegistradas)} / {cifra(l.salidas)}
                           {/* La diferencia solo se dice cuando la hay: un cero
                               repetido treinta veces esconde el que no lo es.
-
-                              El `{' '}` es el espacio que la separa del número,
-                              y va en el marcado a propósito. En CSS habría
-                              tenido que ser un margen, y un margen no se puede
-                              condicionar a que haya algo delante: `:first-child`
-                              cuenta ELEMENTOS y no texto, así que este `<span>`
-                              es el primero aunque tenga «2 / 3» a su izquierda.
-                              Se probó, y salía «2 / 3+1». */}
+                              Cae a su propio renglón, porque `.tabla__detalle`
+                              es de bloque y esta tabla es de las normales. */}
                           {l.diferencia !== null && l.diferencia !== 0 && (
-                            <>
-                              {' '}
-                              <span className="tabla__detalle salidas__descuadre">
-                                {l.diferencia > 0 ? `+${l.diferencia}` : l.diferencia}
-                              </span>
-                            </>
+                            <span className="tabla__detalle salidas__descuadre">
+                              {l.diferencia > 0 ? `+${l.diferencia}` : l.diferencia}
+                            </span>
                           )}
                         </td>
                       );
