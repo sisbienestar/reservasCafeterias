@@ -30,6 +30,7 @@ import { Admin as PedidosAdmin } from './paginas/pedidos/Admin.js';
 import { Inicio as SalidasInicio } from './paginas/salidas/Inicio.js';
 import { Cierre } from './paginas/salidas/Cierre.js';
 import { Dia } from './paginas/salidas/Dia.js';
+import { Documento as SalidasDocumento } from './paginas/salidas/Documento.js';
 import { Historial as SalidasHistorial } from './paginas/salidas/Historial.js';
 import { Admin as SalidasAdmin } from './paginas/salidas/Admin.js';
 import { puede } from './servicios/capacidades.js';
@@ -198,6 +199,14 @@ export function App() {
         <Route
           path="/salidas/admin"
           element={<ExigeModulo modulo="salidas"><ExigeSesion rol="admin" portada="/"><SalidasAdmin /></ExigeSesion></ExigeModulo>}
+        />
+
+        {/* Cuatro tramos: el consolidado de un rango, que es lo que se
+            imprime. Cruza sedes igual que el día completo, así que va tras la
+            misma guarda. */}
+        <Route
+          path="/salidas/documento/:desde/:hasta"
+          element={<ExigeModulo modulo="salidas"><ExigeSesion portada="/"><ExigeVerDia><SalidasDocumento /></ExigeVerDia></ExigeSesion></ExigeModulo>}
         />
 
         {/* Tres tramos, así que no compite con `/salidas/:cafeteriaId`. El día

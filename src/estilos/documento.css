@@ -364,6 +364,99 @@
 .documento__und { width: 76px; }
 .documento__cant { width: 78px; text-align: right; }
 
+/* ── La matriz del consolidado ───────────────────────────────────────────
+ *
+ * Productos en filas, y en columnas cada cafetería con sus días dentro. Cuatro
+ * sedes por cinco días son VEINTE columnas de cifras, así que esta hoja es de
+ * otra anchura que el FBE.04 y hay que decirlo.
+ */
+
+/*
+ * Más ancha en pantalla, y APAISADA al imprimir.
+ *
+ * El FBE.04 es un formulario vertical de ocho columnas; esto es una matriz. A
+ * lo ancho de una carta vertical las dieciséis casillas de fecha caían a
+ * veinticinco píxeles, y «16-mar» se salía de la suya pisando a la de al lado:
+ * se veía como texto encimado, no como una tabla apretada.
+ *
+ * Una `@page` CON NOMBRE es la única forma de que UNA hoja salga apaisada sin
+ * volver del revés todo lo demás: el FBE.04 comparte esta hoja de estilos y
+ * tiene que seguir imprimiéndose vertical.
+ */
+@page apaisado { size: landscape; margin: 0; }
+
+.documento--ancho {
+  max-width: 1180px;
+  page: apaisado;
+}
+
+.documento__matriz {
+  table-layout: fixed;
+}
+
+.documento__matriz th,
+.documento__matriz td {
+  padding: 2px 3px;
+  font-size: 9px;
+}
+
+/* El nombre del producto es lo único que puede ser largo, así que es lo único
+   que recibe ancho fijo; las columnas de día se reparten el resto por igual.
+
+   Bajó del 30 % al 22 % cuando las sedes pasaron de tres a cuatro: lo que
+   sobra ahí es justo lo que necesitan las casillas de fecha para no pisarse. */
+.documento__matriz td:nth-child(2),
+.documento__matriz thead th:nth-child(2) {
+  width: 22%;
+  text-align: left;
+}
+
+/* Las dos de la derecha se rellenan a mano, así que necesitan sitio para un
+   número de bolígrafo y nada más. Fijarlas devuelve ancho a las de fecha. */
+.documento__matriz .documento__cant { width: 60px; }
+
+/* Las casillas de día: estrechas, centradas y con cifras de ancho constante,
+   para que las columnas se lean como columnas y no como un texto irregular. */
+.documento__dia {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* La fila FECHA de cada bloque. Reutiliza `.documento__seccion`, que ya es la
+   franja gris de un encabezado dentro de la tabla; aquí solo se centra, porque
+   allí son títulos de sección y esto son fechas.
+
+   Y se le quita la CAJA ALTA que aquella trae: los títulos de sección de un
+   pedido van en mayúsculas —GALLETAS, CHOCOLATINAS— y estas son fechas, que en
+   la plantilla se escriben «14-mar». */
+.documento__matriz .documento__seccion th {
+  text-align: center;
+  text-transform: none;
+  /* «16-mar» es el texto más ancho de una casilla de día: si algo se pisa, se
+     pisa aquí. Un punto menos que las cifras, y sin letra espaciada. */
+  font-size: 8px;
+  letter-spacing: 0;
+}
+.documento__matriz .documento__seccion th[colspan] { text-align: left; }
+
+/*
+ * Cada bloque de semana empieza con una línea más marcada.
+ *
+ * Sin ella, tres bloques seguidos se leen como una sola tabla de quince filas
+ * y hay que buscar la fila FECHA para saber de qué semana es cada renglón.
+ */
+.documento__matriz tbody + tbody th,
+.documento__matriz tbody + tbody td { border-top: 2px solid #000; }
+
+/* Una nota para la pantalla: explica dos columnas que salen vacías a
+   propósito, y en el papel sobraría — ahí se ve que están para escribir. */
+.documento__nota-columnas {
+  margin-top: var(--e-4);
+  font-size: 11px;
+  color: var(--c-texto-3);
+}
+
 /* El encabezado de sección de la plantilla: GALLETAS, CHOCOLATINAS… */
 .documento__seccion th {
   background: #e6e6e6;

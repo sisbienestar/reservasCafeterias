@@ -97,6 +97,23 @@ export interface DiaCierre {
   totalDiferencia: number;
 }
 
+/**
+ * El consolidado de un rango: la matriz que se imprime.
+ *
+ * `celdas` viene PLANA —(día, sede, producto) → salidas— y no anidada en tres
+ * niveles: la hoja la vuelca en un índice y busca por las tres claves a la vez
+ * mientras dibuja. Anidada habría que recorrer dos arreglos por casilla.
+ */
+export interface Consolidado {
+  desde: string;
+  hasta: string;
+  productos: { productoId: number; nombre: string }[];
+  cafeterias: { cafeteriaId: string; nombre: string }[];
+  /** Solo los días CON cierre: un mes de columnas vacías no dice nada. */
+  dias: string[];
+  celdas: { fecha: string; cafeteriaId: string; productoId: number; salidas: number }[];
+}
+
 /** Lo que la pantalla manda por cada producto con algo escrito. */
 export interface LineaNueva {
   productoId: number;
@@ -241,6 +258,36 @@ export async function getDiasCierre(filtros: {
     totalSalidas: Number(f.total_salidas ?? 0),
     totalDiferencia: Number(f.total_diferencia ?? 0),
   }));
+}
+
+/**
+ * El consolidado de un rango, para el documento imprimible.
+ *
+ * Cruza sedes por definición, así que el servidor solo se lo sirve a quien no
+ * atiende una en concreto.
+ */
+export async function getConsolidado(desde: string, hasta: string): Promise<Consolidado> {
+  const fila = await pedir<{
+    desde: string; hasta: string;
+    productos: { producto_id: number; nombre: string }[];
+    cafeterias: { cafeteria_id: string; nombre: string }[];
+    dias: string[];
+    celdas: { fecha: string; cafeteria_id: string; producto_id: number; salidas: number }[];
+  }>('salidas.consolidado', { desde, hasta });
+
+  return {
+    desde: fila.desde,
+    hasta: fila.hasta,
+    productos: (fila.productos ?? []).map((p) => ({ productoId: p.producto_id, nombre: p.nombre })),
+    cafeterias: (fila.cafeterias ?? []).map((c) => ({ cafeteriaId: c.cafeteria_id, nombre: c.nombre })),
+    dias: fila.dias ?? [],
+    celdas: (fila.celdas ?? []).map((x) => ({
+      fecha: x.fecha,
+      cafeteriaId: x.cafeteria_id,
+      productoId: x.producto_id,
+      salidas: Number(x.salidas),
+    })),
+  };
 }
 
 /**

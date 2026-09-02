@@ -20,7 +20,7 @@
  */
 
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getDiasCierre } from '../../servicios/salidasServicio.js';
 import { usePeticion } from '../../utiles/usePeticion.js';
 import { BloqueEstado } from '../../componentes/BloqueEstado.js';
@@ -95,6 +95,13 @@ export function Historial() {
           </div>
 
           <div className="filtros__acciones">
+            {/* El consolidado del periodo que se está mirando: lleva el rango
+                en la dirección, así que la hoja se puede enlazar y volver a
+                abrir tal cual. */}
+            <Link className="boton boton--sm boton--secundario"
+                  to={`/salidas/documento/${desde}/${hasta}`}>
+              Imprimir el periodo
+            </Link>
             <NavSalidas />
           </div>
         </section>

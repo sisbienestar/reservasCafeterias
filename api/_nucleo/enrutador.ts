@@ -197,6 +197,9 @@ const ACCIONES: Record<string, Manejador> = {
   // El día entero, cruzando sedes: alimenta el impreso. Solo `admin`, por lo
   // mismo que `pedidos.analisis`.
   'salidas.dia': conSesion((p) => salidas.dia(p)),
+  // La matriz de un rango: el documento imprimible. Cruza sedes igual que
+  // `salidas.dia`, así que tampoco es del mostrador.
+  'salidas.consolidado': conSesion((p) => salidas.consolidado(p)),
   'salidasProductos.listar': conSesion((p) => salidas.listarProductos(p)),
   'salidasProductos.crear': conSesion((p) => salidas.crearProducto(p)),
   'salidasProductos.actualizar': conSesion((p) => salidas.actualizarProducto(p)),

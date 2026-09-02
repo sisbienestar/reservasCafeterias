@@ -198,6 +198,30 @@ export async function buscar(params: Record<string, unknown>, sesion: Sesion) {
 }
 
 /**
+ * El consolidado de un RANGO, para el documento imprimible.
+ *
+ * Devuelve la matriz entera de una vez —productos, cafeterías, días y
+ * casillas— porque la hoja necesita las cuatro cosas para dibujarse y pedirlas
+ * por separado serían cuatro viajes para pintar un papel.
+ *
+ * Cruza sedes por definición, como `salidas.dia`: el consolidado es
+ * precisamente verlas juntas. Por eso no es del mostrador.
+ */
+export async function consolidado(params: Record<string, unknown>) {
+  const desde = fechaDe(params, 'desde');
+  const hasta = fechaDe(params, 'hasta');
+
+  if (desde > hasta) romper('RANGO_INVALIDO', 'La fecha inicial es posterior a la final.');
+  if (diasEntre(desde, hasta) > MAX_DIAS_RANGO) {
+    romper('RANGO_INVALIDO', `El rango no puede pasar de ${MAX_DIAS_RANGO} días.`);
+  }
+
+  return desempaquetar(
+    await servicio().rpc('consolidado_salidas', { p_desde: desde, p_hasta: hasta }),
+  );
+}
+
+/**
  * Los DÍAS con cierre de un rango, con los totales consolidados.
  *
  * Es lo que lista el historial: una fila por fecha y no por (fecha, sede).
