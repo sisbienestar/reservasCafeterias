@@ -64,7 +64,7 @@ function useAncho(contenedor: React.RefObject<HTMLDivElement | null>) {
 }
 
 export const COLOR_DATO = 'var(--c-acento)';
-export const GROSOR_MAXIMO = 24;
+export const GROSOR_MAXIMO = 18;
 export const RADIO = 4;
 export const AIRE = 2;
 
@@ -174,16 +174,55 @@ export interface Serie { nombre: string; color: string }
  * caja con un cuadrito solo gasta sitio—, que es lo que ya hacían las dos
  * gráficas de reservas.
  */
-export function Leyenda({ series }: { series: Serie[] }) {
+export function Leyenda({ series, resaltada, alPulsar }: {
+  series: Serie[];
+  /**
+   * Qué serie está aislada, o `null` si se ven todas. Junto con `alPulsar`
+   * convierte la leyenda en el mando de la gráfica: sin las dos, se pinta
+   * inerte como siempre y quien no la necesite no cambia nada.
+   */
+  resaltada?: number | null;
+  alPulsar?: (indice: number) => void;
+}) {
   if (series.length < 2) return null;
+
+  /* Inerte: una lista, como era. No se envuelve en botones «por si acaso»
+     porque un botón que no hace nada es peor que ningún botón. */
+  if (!alPulsar) {
+    return (
+      <ul className="leyenda">
+        {series.map((s) => (
+          <li key={s.nombre} className="leyenda__item">
+            <span className="leyenda__marca" style={{ background: s.color }} aria-hidden="true" />
+            {s.nombre}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
   return (
     <ul className="leyenda">
-      {series.map((s) => (
-        <li key={s.nombre} className="leyenda__item">
-          <span className="leyenda__marca" style={{ background: s.color }} aria-hidden="true" />
-          {s.nombre}
-        </li>
-      ))}
+      {series.map((s, i) => {
+        const activa = resaltada === i;
+        const apagada = resaltada !== null && resaltada !== undefined && !activa;
+        return (
+          <li key={s.nombre}>
+            {/* Botón de verdad: con esto se llega por tabulador y se acciona
+                con la barra, que es lo que un `li` con `onClick` no da. */}
+            <button
+              type="button"
+              className={`leyenda__item leyenda__item--pulsable${
+                apagada ? ' leyenda__item--apagado' : ''}`}
+              aria-pressed={activa}
+              onClick={() => alPulsar(i)}
+            >
+              <span className="leyenda__marca" style={{ background: s.color }} aria-hidden="true" />
+              {s.nombre}
+            </button>
+          </li>
+        );
+      })}
     </ul>
   );
 }

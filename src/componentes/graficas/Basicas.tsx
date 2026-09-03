@@ -29,8 +29,8 @@ export function GraficaColumnas({ datos, titulo }: { datos: DatoColumna[]; titul
   const { contenedor, vigilar, nodoGlobo, ancho: ANCHO } = useGlobo();
   if (datos.length === 0) return <SinDatos />;
 
-  const ALTO = 260;
-  const margen = { arriba: 16, derecha: 8, abajo: 34, izquierda: 44 };
+  const ALTO = 190;
+  const margen = { arriba: 10, derecha: 8, abajo: 26, izquierda: 36 };
   const anchoUtil = ANCHO - margen.izquierda - margen.derecha;
   const altoUtil = ALTO - margen.arriba - margen.abajo;
 
@@ -101,11 +101,11 @@ export function GraficaBarras({ datos, titulo }: { datos: DatoBarra[]; titulo: s
   const { contenedor, vigilar, nodoGlobo, ancho: ANCHO } = useGlobo();
   if (datos.length === 0) return <SinDatos />;
 
-  const ALTO_FILA = 30;
-  /* El hueco de los rótulos ya no es fijo: con escala 1:1 un margen de 210 px
-     se comería una pantalla estrecha entera. Se reserva un tercio del ancho
-     como mucho, que es lo que deja sitio para la barra. */
-  const margen = { arriba: 8, derecha: 56, abajo: 8, izquierda: Math.min(210, ANCHO * 0.34) };
+  const ALTO_FILA = 22;
+  /* El hueco de los rótulos no es fijo: con escala 1:1 un margen grande se
+     comería una pantalla estrecha entera. Se reserva un 30% del ancho como
+     mucho —y nunca más de 150 px—, que es lo que deja sitio para la barra. */
+  const margen = { arriba: 6, derecha: 44, abajo: 6, izquierda: Math.min(150, ANCHO * 0.30) };
   const alto = margen.arriba + margen.abajo + datos.length * ALTO_FILA;
   const anchoUtil = ANCHO - margen.izquierda - margen.derecha;
 

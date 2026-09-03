@@ -38,9 +38,9 @@ export function MapaCalor({ columnas, filas, celdas, titulo, sufijo = '' }: {
   if (columnas.length === 0 || filas.length === 0) return <SinDatos />;
 
   
-  const ALTO_FILA = 30;
+  const ALTO_FILA = 22;
   /* Igual que en las barras: proporcional en pantalla estrecha, tope en ancha. */
-  const margen = { arriba: 8, derecha: 8, abajo: 34, izquierda: Math.min(190, ANCHO * 0.3) };
+  const margen = { arriba: 6, derecha: 8, abajo: 26, izquierda: Math.min(140, ANCHO * 0.28) };
   const alto = margen.arriba + margen.abajo + filas.length * ALTO_FILA;
   const anchoUtil = ANCHO - margen.izquierda - margen.derecha;
   const anchoCelda = anchoUtil / columnas.length;

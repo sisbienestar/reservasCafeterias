@@ -19,6 +19,7 @@
  * escalas, y eso hace decir a la gráfica lo que uno quiera.
  */
 
+import { useState } from 'react';
 import {
   AIRE, GROSOR_MAXIMO, Leyenda, SinDatos,
   marcasEje, rutaColumna, saltoDeEtiquetas, topeRedondo, useGlobo, type Serie,
@@ -44,10 +45,29 @@ export function GraficaLineas({ series, periodos, titulo, sufijo = '' }: {
   sufijo?: string;
 }) {
   const { contenedor, vigilar, nodoGlobo, ancho: ANCHO } = useGlobo();
+  /*
+   * Qué serie está aislada. Pulsar su rótulo en la leyenda la deja sola —las
+   * demás casi transparentes— y volver a pulsarlo las devuelve todas: con
+   * cuatro sedes sobre el mismo eje, mirar una sin perder de vista dónde caen
+   * las otras es la única forma de leer la gráfica.
+   *
+   * El estado vive AQUÍ y no en quien la usa: no hay ninguna pantalla que
+   * necesite decidirlo desde fuera, y ponerlo en las props obligaría a
+   * cablearlo en cada sitio para tener lo mismo.
+   *
+   * Va antes del `return` de «sin datos» porque un hook no puede quedar
+   * detrás de una salida temprana.
+   */
+  const [seleccion, setSeleccion] = useState<number | null>(null);
   if (series.length === 0 || periodos.length === 0) return <SinDatos />;
 
-  const ALTO = 300;
-  const margen = { arriba: 16, derecha: 16, abajo: 38, izquierda: 52 };
+  /* Si cambia el filtro y ahora hay menos series, el índice guardado podría
+     no señalar a ninguna: entonces no hay ninguna aislada, y no todas
+     apagadas. */
+  const resaltada = seleccion !== null && seleccion < series.length ? seleccion : null;
+
+  const ALTO = 210;
+  const margen = { arriba: 10, derecha: 12, abajo: 28, izquierda: 40 };
   const anchoUtil = ANCHO - margen.izquierda - margen.derecha;
   const altoUtil = ALTO - margen.arriba - margen.abajo;
 
@@ -85,7 +105,12 @@ export function GraficaLineas({ series, periodos, titulo, sufijo = '' }: {
             )
           ))}
 
-          {series.map((serie) => {
+          {series.map((serie, indiceSerie) => {
+            /* Al aislar una, las demás se apagan casi del todo y dejan de
+             * recibir el ratón: si no, el globo saltaría sobre una línea que
+             * ya casi no se ve. */
+            const apagada = resaltada !== null && resaltada !== indiceSerie;
+
             /* Cada tramo continuo va en su propio `path`. Es lo que hace que
              * un hueco parta la línea en vez de saltarlo con una recta. */
             const tramos: string[] = [];
@@ -101,7 +126,8 @@ export function GraficaLineas({ series, periodos, titulo, sufijo = '' }: {
             if (actual.length) tramos.push(actual.join(' '));
 
             return (
-              <g key={serie.nombre}>
+              <g key={serie.nombre}
+                 className={`grafica__serie${apagada ? ' grafica__serie--apagada' : ''}`}>
                 {tramos.map((d, i) => (
                   <path key={i} d={d} fill="none" stroke={serie.color} strokeWidth="2"
                         strokeLinecap="round" strokeLinejoin="round" />
@@ -124,7 +150,12 @@ export function GraficaLineas({ series, periodos, titulo, sufijo = '' }: {
         </svg>
         {nodoGlobo}
       </div>
-      <Leyenda series={series} />
+      <Leyenda
+        series={series}
+        resaltada={resaltada}
+        /* Volver a pulsar la que ya está aislada las devuelve todas. */
+        alPulsar={(i) => setSeleccion((antes) => (antes === i ? null : i))}
+      />
     </>
   );
 }
@@ -154,8 +185,8 @@ export function GraficaBarrasAgrupadas({ grupos, series, titulo, sufijo = '' }: 
   const { contenedor, vigilar, nodoGlobo, ancho: ANCHO } = useGlobo();
   if (grupos.length === 0 || series.length === 0) return <SinDatos />;
 
-  const ALTO = 300;
-  const margen = { arriba: 16, derecha: 8, abajo: 46, izquierda: 52 };
+  const ALTO = 210;
+  const margen = { arriba: 10, derecha: 8, abajo: 32, izquierda: 40 };
   const anchoUtil = ANCHO - margen.izquierda - margen.derecha;
   const altoUtil = ALTO - margen.arriba - margen.abajo;
 

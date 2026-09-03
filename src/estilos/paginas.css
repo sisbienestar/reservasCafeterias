@@ -488,6 +488,245 @@
 .tabla__fila--pulsable:hover { background: var(--c-superficie-2); }
 
 /*
+ * Una fila que despliega otras debajo, y las que despliega.
+ *
+ * No había nada equivalente en las otras cuatro hojas, y se buscó antes:
+ * `.cierre-sede__interruptor` y su flecha son del acordeón de una sede entera
+ * —con su animación de altura y su panel— y traerlos a una celda de tabla
+ * habría metido todo ese mecanismo donde solo hacen falta dos filas más. Estas
+ * viven en la familia `.tabla__`, que es donde está el resto de lo que viste
+ * una tabla, y no en una paralela.
+ */
+.tabla__desplegar {
+  padding: 0;
+  margin-right: var(--e-2);
+  border: 0;
+  background: none;
+  color: var(--c-texto-3);
+  cursor: pointer;
+}
+
+.tabla__desplegar:hover { color: var(--c-texto); }
+
+/* La hija se sangra y pesa menos: es el detalle de la fila de arriba, no una
+   más de la lista. El sangrado va sobre el relleno normal de la celda
+   —`var(--e-5)`— para que se lea como un escalón y no como un desalineado. */
+.tabla__fila--hija > td:first-child { padding-left: var(--e-7); }
+
+.tabla__fila--hija > td { color: var(--c-texto-2); }
+
+/*
+ * El despliegue entra con un desvanecido y un empujón corto, escalonado.
+ *
+ * NO es `entrada-fila` de `componentes.css`, y se miró antes: aquella tiñe de
+ * verde la fila recién CREADA durante dos segundos y medio para que se vea
+ * llegar un dato nuevo. Aquí no llega nada nuevo, solo se descubre lo que ya
+ * estaba, y por eso es corta y sin color.
+ *
+ * El escalón hace que las filas caigan una detrás de otra en vez de aparecer
+ * en bloque; con seis peldaños basta, las siguientes comparten el último y
+ * nadie nota la diferencia. `both` para que las que esperan su turno empiecen
+ * ya invisibles y no parpadeen.
+ *
+ * `prefers-reduced-motion` no hace falta atenderlo aquí: `base.css` ya deja
+ * todas las animaciones en 0,01 ms cuando se pide.
+ */
+.tabla__fila--hija {
+  animation: despliegue-fila 240ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.tabla__fila--hija:nth-of-type(3) { animation-delay: 25ms; }
+.tabla__fila--hija:nth-of-type(4) { animation-delay: 50ms; }
+.tabla__fila--hija:nth-of-type(5) { animation-delay: 75ms; }
+.tabla__fila--hija:nth-of-type(6) { animation-delay: 100ms; }
+.tabla__fila--hija:nth-of-type(n + 7) { animation-delay: 125ms; }
+
+@keyframes despliegue-fila {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/*
+ * La franja de días del control de salidas: un rectángulo por día, en fila.
+ *
+ * No es el `MapaCalor` de `componentes/graficas/`, y se miró antes de
+ * escribir esto: aquella es una rejilla SVG con una rampa de UN tono para
+ * decir «cuánto», y aquí los peldaños no son más o menos de lo mismo —cuadró,
+ * se perdió, vino de otra sede, no se cerró son estados distintos— y además
+ * hay que poder desplegar filas debajo, que un SVG de altura fija no permite.
+ *
+ * Los colores salen de los tokens semánticos que ya existen. El color no es
+ * el único que lo dice: cada día lleva su `title` con la fecha y la cifra, y
+ * debajo de la franja va la cuenta en texto.
+ */
+.franja-dias {
+  display: flex;
+  /* Un píxel, como el mapa de calor: con ciento treinta días por fila, dos
+     separaban más de lo que unían. */
+  gap: 1px;
+  align-items: stretch;
+  min-width: 0;
+}
+
+/*
+ * La columna de los nombres se encoge a su contenido.
+ *
+ * Por defecto una tabla reparte el ancho entre las dos columnas y el nombre se
+ * llevaba casi la mitad de la pantalla, dejando las franjas —que son el dato—
+ * apretadas en lo que sobraba. `width: 1%` con `nowrap` es el idiom de
+ * siempre para «solo lo que necesites»; ya se usa en `.tabla__numero-reserva`.
+ */
+/*
+ * Ancho FIJO, no ajustado al contenido.
+ *
+ * Con `width: 1%` la columna se encogía a lo más largo que hubiera escrito, y
+ * al desplegar una sede entraban nombres de producto mucho más largos: la
+ * columna daba un salto, las franjas se encogían con ella y la vista entera
+ * parecía romperse. Ninguna transición arregla eso — lo que hay que hacer es
+ * que el ancho no cambie. Lo que no cabe se corta con puntos suspensivos, y el
+ * nombre completo sigue estando en el `title` de la celda.
+ */
+.tabla--franjas th:first-child,
+.tabla--franjas td:first-child {
+  width: 200px;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /*
+   * Los rótulos, como los del mapa de calor: 11 px, gris apagado y alineados
+   * a la derecha para que queden pegados a la rejilla. Es lo que los deja
+   * acompañar al dato en vez de competir con él — mismos valores que
+   * `.grafica__marca`, que es de donde vienen.
+   */
+  text-align: right;
+  font-size: 11px;
+  color: var(--c-texto-3);
+}
+
+/* La sede conserva algo de peso: es la fila que resume, no el detalle. */
+.tabla--franjas td.tabla__nombre {
+  color: var(--c-texto-2);
+  font-weight: var(--peso-medio);
+}
+
+.franja-dias__dia {
+  flex: 1 1 0;
+  min-width: 3px;
+  height: 18px;
+  border-radius: 2px;
+  /*
+   * El día que no se cerró: un hueco, no un color. Es la ausencia de dato.
+   *
+   * Relleno plano y NINGÚN borde, igual que las casillas del mapa de calor y
+   * por su misma razón, que está escrita en `MapaCalor.tsx`: un borde por
+   * casilla pinta una rejilla que compite con el dato en cuanto la cuadrícula
+   * es densa. Con ciento treinta días por fila, densa se queda corto.
+   */
+  background: var(--c-borde);
+}
+
+/*
+ * Dentro del despliegue: más bajos y más claros.
+ *
+ * La jerarquía se lee en el tamaño y en el tono, no en la sangría — el
+ * resumen de la sede pisa fuerte y el detalle acompaña. El `opacity` sobre la
+ * franja entera y no un color aparte por estado: son los mismos cuatro
+ * significados, aclarados a la vez, y con tokens nuevos habría que mantener
+ * dos escalas que decir lo mismo.
+ */
+.tabla__fila--hija .franja-dias__dia { height: 9px; }
+
+.tabla__fila--hija .franja-dias { opacity: 0.65; }
+
+/*
+ * Y sin relleno de sobra: con trece productos desplegados, los doce píxeles
+ * de arriba y de abajo de cada celda pesaban más que las franjas. Esto es lo
+ * que de verdad recupera la pantalla.
+ */
+.tabla__fila--hija > td {
+  padding-top: var(--e-1);
+  padding-bottom: var(--e-1);
+}
+
+/*
+ * El primer día de cada semana abre hueco y lleva una línea detrás.
+ *
+ * Es lo que deja contar semanas sin leer las fechas de arriba. La línea va en
+ * un pseudoelemento DENTRO del hueco, no como borde de la casilla: un borde
+ * se llevaría un píxel del ancho de ese día y lo dejaría más estrecho que los
+ * demás, que es justo lo que no puede pasar cuando todos valen lo mismo.
+ */
+.franja-dias__dia--semana {
+  position: relative;
+  /* Tres píxeles y no más: con seis meses en pantalla cada día mide unos
+     cuatro, y un hueco de cinco sería más ancho que el propio dato. */
+  margin-left: 3px;
+}
+
+.franja-dias__dia--semana::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  left: -2px;
+  width: 1px;
+  background: var(--c-borde);
+}
+
+.franja-dias__dia--cuadra        { background: var(--c-exito); }
+.franja-dias__dia--perdida       { background: var(--c-aviso); }
+.franja-dias__dia--perdida-alta  { background: var(--c-error); }
+/* Se vendió más de lo producido: ni bien ni mal, otra cosa. */
+.franja-dias__dia--transferencia { background: var(--c-texto-3); }
+
+/*
+ * El eje de fechas, una sola vez en la cabecera.
+ *
+ * Las marcas se reparten a lo ancho en vez de clavarse bajo su día: es un eje
+ * para situarse en el tiempo, no una regla de medir, y anclarlas al píxel
+ * habría pedido una capa posicionada encima de la franja para nada.
+ */
+.franja-dias__eje {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--e-2);
+  font-weight: var(--peso-normal);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* La leyenda de los cuatro estados. */
+.franja-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-4);
+  margin-bottom: var(--e-4);
+  font-size: var(--texto-xs);
+  color: var(--c-texto-3);
+}
+
+/*
+ * La muestra de color de la leyenda: solo la forma, NUNCA el fondo.
+ *
+ * Lo llevó un tiempo y las pintaba todas de gris: esta regla y los
+ * `.franja-dias__dia--*` que le ponen el color encima tienen la misma
+ * especificidad, y como esta va después en el archivo, ganaba siempre. El
+ * hueco tiene su propio modificador por eso — para no volver a competir con
+ * los estados desde la clase base.
+ */
+.franja-leyenda__marca {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: var(--e-1);
+  border-radius: 2px;
+  vertical-align: baseline;
+}
+
+.franja-leyenda__marca--vacio { background: var(--c-borde); }
+
+/*
  * El selector de día.
  *
  * Una sola caja: el texto que se lee, el icono de calendario, y encima el

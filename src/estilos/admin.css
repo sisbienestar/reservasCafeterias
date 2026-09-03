@@ -679,6 +679,45 @@
   flex: none;
 }
 
+/*
+ * La leyenda como mando: pulsar un rótulo aísla su serie.
+ *
+ * Con cuatro líneas sobre el mismo eje, seguir una es imposible aunque los
+ * colores se distingan — el problema no es el color, es el cruce. Aislar deja
+ * ver una sin perder de vista dónde caen las otras, que es lo que un filtro
+ * que las QUITA no daría.
+ *
+ * Es un `<button>` de verdad, no un `li` con `onClick`: así se llega por
+ * tabulador y se acciona con la barra. Hereda tipografía porque un botón trae
+ * la suya del navegador.
+ */
+.leyenda__item--pulsable {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: opacity var(--transicion);
+}
+
+.leyenda__item--pulsable:hover { color: var(--c-texto); }
+
+/* Apagada, pero legible: sigue haciendo falta leer su nombre para volver a
+   pulsarla. Las líneas de la gráfica sí bajan mucho más. */
+.leyenda__item--apagado { opacity: 0.45; }
+
+/*
+ * La serie que no está aislada: casi transparente y sorda al ratón. Sin lo
+ * segundo, el globo saltaría sobre una línea que ya no se ve.
+ */
+.grafica__serie { transition: opacity var(--transicion); }
+
+.grafica__serie--apagada {
+  opacity: 0.12;
+  pointer-events: none;
+}
+
 /* ── Anillo ──────────────────────────────────────────────────────────── */
 
 /* El anillo no se estira a todo el ancho: un círculo de mil píxeles deja los

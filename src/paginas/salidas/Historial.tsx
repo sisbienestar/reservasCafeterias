@@ -1,41 +1,68 @@
 /**
- * El historial: los CIERRES DIARIOS, uno por fila.
+ * El historial: el periodo mandado por un filtro, mirado de varias maneras.
  *
- * Listó un rato una fila por (fecha, sede), y con cuatro cafeterías un mes
- * eran ciento veinte renglones para responder a una pregunta que se hace por
- * días: «¿cómo cerró el martes?». Ahora cada fila es un día con el consolidado
- * de las cuatro, y el detalle sede por sede está a un clic — en el resumen
- * diario, que es a donde lleva la fila.
+ * Es la pantalla desde la que se estudia lo ya cerrado, y por eso las pestañas
+ * viven AQUÍ y no en «Ver el día»: allí se mira un día concreto, aquí se mira
+ * un rango. Tenerlas en la pantalla del día dejaba dos sitios haciendo lo
+ * mismo, y el selector de periodo en una pantalla que se llama «del día».
  *
- * A quien atiende una sede el servidor le devuelve SUS días con sus propias
- * cifras, así que la pantalla es la misma para los dos alcances y no pregunta
- * por el rol en ninguna parte.
+ *   Consolidado        · lo del periodo sumado por sede y producto
+ *   Detallado del día  · un día por fila, desplegable sede por sede
+ *   Variabilidad       · un rectángulo por día, para ver rachas
+ *   Análisis           · las gráficas: tendencia, rankings y el cruce
+ *
+ * Añadir una vista es una entrada más en `PESTANAS` y su panel: el filtro de
+ * periodo ya manda sobre todas por igual.
+ *
+ * ── El alcance decide qué pestañas hay ─────────────────────────────────────
+ *
+ * «Consolidado» cruza sedes —pide `salidas.periodo`— y el mostrador no tiene
+ * esa acción, así que a quien atiende una sede no se le ofrece: se le queda el
+ * detallado, que el servidor ya le acota a lo suyo. Se decide por
+ * `cafeteriaId` nulo o no, NUNCA enumerando roles: un rol nuevo sin sede las
+ * ve las dos sin tocar esta línea.
  *
  * ── El periodo son atajos, no un grano ────────────────────────────────────
  *
- * «Día», «Semana» y «Mes» solo mueven las dos fechas del rango; las filas
- * siguen siendo días. Agrupar por semanas —una fila con los totales de la
- * semana— sería otra cosa, y entonces habría que decidir a dónde lleva pulsar
- * una fila que no es un día. No se ha hecho.
+ * «Día», «Semana» y «Mes» solo mueven las dos fechas del rango; las filas del
+ * detallado siguen siendo días. Agrupar por semanas —una fila con los totales
+ * de la semana— sería otra cosa, y entonces habría que decidir a dónde lleva
+ * desplegar una fila que no es un día. No se ha hecho.
  */
 
-import { useCallback, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { getDiasCierre } from '../../servicios/salidasServicio.js';
-import { usePeticion } from '../../utiles/usePeticion.js';
-import { BloqueEstado } from '../../componentes/BloqueEstado.js';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { BarraVolver } from '../../componentes/BarraVolver.js';
 import { NavSalidas } from '../../componentes/salidas/NavSalidas.js';
+import { VistaConsolidado } from '../../componentes/salidas/VistaConsolidado.js';
+import { VistaDetallado } from '../../componentes/salidas/VistaDetallado.js';
+import { VistaVariabilidad } from '../../componentes/salidas/VistaVariabilidad.js';
+import { VistaAnalisis } from '../../componentes/salidas/VistaAnalisis.js';
 import { Pie } from '../../componentes/Pie.js';
 import { useHoy, useSesion } from '../../contexto/Sesion.js';
-import { formatearFechaLarga, nombreDiaCorto } from '../../utiles/fechas.js';
+import { formatearFechaLarga } from '../../utiles/fechas.js';
 import { PERIODOS, rangoDePeriodo } from '../../utiles/periodos.js';
+
+type Pestana = 'consolidado' | 'detallado' | 'variabilidad' | 'analisis';
 
 export function Historial() {
   const hoy = useHoy();
-  const navegar = useNavigate();
   const { contexto } = useSesion();
   const suSede = contexto?.perfil?.cafeteriaId ?? null;
+  const verTodas = !suSede;
+
+  /* Las que hay para quien mira. Al mostrador le falta `salidas.periodo`, así
+     que ofrecerle «Consolidado» sería ofrecerle un error. */
+  const PESTANAS: { id: Pestana; texto: string }[] = verTodas
+    ? [
+      { id: 'consolidado', texto: 'Consolidado' },
+      { id: 'detallado', texto: 'Detallado del día' },
+      { id: 'variabilidad', texto: 'Variabilidad' },
+      { id: 'analisis', texto: 'Análisis' },
+    ]
+    : [{ id: 'detallado', texto: 'Detallado del día' }];
+
+  const [pestana, setPestana] = useState<Pestana>(verTodas ? 'consolidado' : 'detallado');
 
   /* El mismo desplegable que la administración de reservas, y el mismo cálculo:
      `utiles/periodos.ts`. Dos listas de periodos habrían acabado diciendo cosas
@@ -63,22 +90,6 @@ export function Historial() {
     setRango((r) => (cual === 0 ? [valor, r[1]] : [r[0], valor]));
   }
 
-  const consultar = useCallback(
-    () => getDiasCierre({ desde, hasta }), [desde, hasta],
-  );
-  const { datos, cargando, error, recargar } = usePeticion(consultar, [desde, hasta]);
-
-  const dias = datos ?? [];
-
-  /* El consolidado del PERIODO, que es la otra pregunta que se hace mirando
-     esto: «¿cómo fue el mes?». Sale de lo que ya está en pantalla, sin otro
-     viaje al servidor. */
-  const total = useMemo(() => dias.reduce((t, d) => ({
-    ventas: t.ventas + d.totalVentas,
-    produccion: t.produccion + d.totalProduccion,
-    diferencia: t.diferencia + d.totalDiferencia,
-  }), { ventas: 0, produccion: 0, diferencia: 0 }), [dias]);
-
   return (
     <>
       <main className="contenedor pagina">
@@ -89,7 +100,11 @@ export function Historial() {
             <div className="encabezado-reserva__linea">
               <h1 className="encabezado-reserva__titulo">Historial de cierres</h1>
               <p className="encabezado-reserva__meta">
-                {suSede ? 'Tu cafetería' : 'Todas las cafeterías'}
+                {desde === hasta
+                  ? formatearFechaLarga(desde)
+                  : `Del ${formatearFechaLarga(desde)} al ${formatearFechaLarga(hasta)}`}
+                {' · '}
+                {verTodas ? 'Todas las cafeterías' : 'Tu cafetería'}
               </p>
             </div>
           </div>
@@ -107,7 +122,8 @@ export function Historial() {
         </section>
 
         {/* El mismo filtro que en la administración de reservas: el periodo
-            manda y las dos fechas se rellenan solas, salvo que se toquen. */}
+            manda y las dos fechas se rellenan solas, salvo que se toquen.
+            Manda sobre todas las pestañas por igual. */}
         <form className="filtros" onSubmit={(e) => e.preventDefault()}>
           <div className="filtros__campo filtros__campo--ancho">
             <label className="campo__etiqueta" htmlFor="filtro-periodo">Periodo</label>
@@ -132,114 +148,62 @@ export function Historial() {
           </div>
         </form>
 
-        {cargando && <BloqueEstado tipo="cargando" titulo="Cargando cierres…" />}
-
-        {error && (
-          <BloqueEstado
-            tipo="error"
-            titulo="No se pudo cargar el historial"
-            detalle={error}
-            accion={{ texto: 'Reintentar', alPulsar: recargar }}
-          />
+        {/* El mismo patrón ARIA que ya usa `paginas/reservas/Admin.tsx`:
+            <nav> por fuera, role="tablist" en la lista de dentro. Con una sola
+            pestaña no se pinta: una lista de uno no es una elección. */}
+        {PESTANAS.length > 1 && (
+          <nav className="pestanas" aria-label="Vistas del historial">
+            <div className="pestanas__lista" role="tablist">
+              {PESTANAS.map((p) => (
+                <button
+                  key={p.id}
+                  role="tab"
+                  type="button"
+                  id={`pestana-${p.id}`}
+                  aria-selected={pestana === p.id}
+                  aria-controls={`vista-${p.id}`}
+                  className={pestana === p.id ? 'pestana pestana--activa' : 'pestana'}
+                  onClick={() => setPestana(p.id)}
+                  onKeyDown={(e) => {
+                    const i = PESTANAS.findIndex((x) => x.id === pestana);
+                    if (e.key === 'ArrowRight') {
+                      setPestana(PESTANAS[(i + 1) % PESTANAS.length]!.id);
+                    } else if (e.key === 'ArrowLeft') {
+                      setPestana(PESTANAS[(i - 1 + PESTANAS.length) % PESTANAS.length]!.id);
+                    }
+                  }}
+                >
+                  {p.texto}
+                </button>
+              ))}
+            </div>
+          </nav>
         )}
 
-        {datos && dias.length === 0 && (
-          <BloqueEstado
-            tipo="vacio"
-            titulo="No hay cierres en ese periodo"
-            detalle={periodo === 'hoy'
-              ? 'Hoy todavía no se ha cerrado ninguna caja.'
-              : 'Prueba con un periodo más amplio, o registra el cierre desde el módulo.'}
-          />
+        {/* Montaje condicional a propósito: es lo que hace que cambiar de
+            pestaña dispare la petición de la otra vista, y no antes. */}
+        {pestana === 'consolidado' && verTodas && (
+          <section id="vista-consolidado" role="tabpanel" aria-labelledby="pestana-consolidado">
+            <VistaConsolidado desde={desde} hasta={hasta} />
+          </section>
         )}
 
-        {dias.length > 0 && (
-          <div className="tabla-envoltorio bloque-tabla">
-            <table className="tabla">
-              <caption className="tabla__caption">
-                {desde === hasta
-                  ? formatearFechaLarga(desde)
-                  : `Del ${formatearFechaLarga(desde)} al ${formatearFechaLarga(hasta)}`}
-                {' · '}
-                {dias.length} {dias.length === 1 ? 'día' : 'días'} con cierre
-              </caption>
+        {pestana === 'detallado' && (
+          <section id="vista-detallado" role="tabpanel" aria-labelledby="pestana-detallado">
+            <VistaDetallado desde={desde} hasta={hasta} suSede={suSede} />
+          </section>
+        )}
 
-              <thead>
-                <tr>
-                  <th scope="col">Día</th>
-                  {/* Solo tiene sentido con varias sedes: para el mostrador
-                      sería siempre «1 de 1». */}
-                  {!suSede && <th scope="col">Cerradas</th>}
-                  <th scope="col">Ventas</th>
-                  <th scope="col">Producción</th>
-                  <th scope="col">Diferencia</th>
-                  <th scope="col"><span className="visualmente-oculto">Acciones</span></th>
-                </tr>
-              </thead>
+        {pestana === 'variabilidad' && verTodas && (
+          <section id="vista-variabilidad" role="tabpanel" aria-labelledby="pestana-variabilidad">
+            <VistaVariabilidad desde={desde} hasta={hasta} />
+          </section>
+        )}
 
-              <tbody>
-                {dias.map((d) => {
-                  const completo = d.cerradas >= d.sedes;
-                  return (
-                    <tr
-                      key={d.fecha}
-                      /* La fila entera lleva al resumen del día. El botón de la
-                         derecha se queda igualmente: es lo que se ve, y es lo
-                         que funciona con el teclado — una fila no se enfoca. */
-                      className="tabla__fila--pulsable"
-                      onClick={() => navegar(`/salidas/dia/${d.fecha}`)}
-                    >
-                      <td className="tabla__nombre">
-                        {nombreDiaCorto(d.fecha)}
-                        {' '}
-                        {formatearFechaLarga(d.fecha).replace(/^[^,]+,\s*/, '')}
-                      </td>
-
-                      {!suSede && (
-                        <td className="tabla__numero">
-                          {d.cerradas} de {d.sedes}
-                          {!completo && (
-                            <span className="tabla__detalle salidas__descuadre">incompleto</span>
-                          )}
-                        </td>
-                      )}
-
-                      <td className="tabla__numero">{d.totalVentas}</td>
-                      <td className="tabla__numero">{d.totalProduccion}</td>
-                      <td className={`tabla__numero${d.totalDiferencia ? ' salidas__descuadre' : ''}`}>
-                        {d.totalDiferencia > 0 ? `+${d.totalDiferencia}` : d.totalDiferencia}
-                      </td>
-
-                      <td className="tabla__acciones">
-                        <button
-                          type="button"
-                          className="boton boton--sm boton--secundario"
-                          /* El clic de la fila ya navega; sin frenarlo aquí se
-                             llamaría dos veces al pulsar el botón. */
-                          onClick={(e) => { e.stopPropagation(); navegar(`/salidas/dia/${d.fecha}`); }}
-                        >
-                          Ver el día
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-
-              <tfoot>
-                <tr>
-                  <th scope="row">Total del periodo</th>
-                  {!suSede && <td />}
-                  <td className="tabla__numero">{total.ventas}</td>
-                  <td className="tabla__numero">{total.produccion}</td>
-                  <td className={`tabla__numero${total.diferencia ? ' salidas__descuadre' : ''}`}>
-                    {total.diferencia > 0 ? `+${total.diferencia}` : total.diferencia}
-                  </td>
-                  <td />
-                </tr>
-              </tfoot>
-            </table>
-          </div>
+        {pestana === 'analisis' && verTodas && (
+          <section id="vista-analisis" role="tabpanel" aria-labelledby="pestana-analisis">
+            <VistaAnalisis desde={desde} hasta={hasta} />
+          </section>
         )}
       </main>
 
