@@ -308,8 +308,9 @@ Universidad a Ramo o a Coca-Cola.
 ### Control de salidas
 
 **«Salida» aquí NO es la del FBE.04.** En pedidos es lo que sale del almacén
-hacia la cafetería; aquí es lo que sale de la cafetería hacia quien come. Son
-dos cosas distintas y ninguna acción las cruza.
+hacia la cafetería; este módulo se llama así en general, pero la cifra que
+mide cada renglón es cuánto se PRODUJO en cocina, contra lo que la caja
+registró vendido. Son dos cosas distintas y ninguna acción las cruza.
 
 | Acción | Params | Devuelve |
 |---|---|---|
@@ -317,18 +318,21 @@ dos cosas distintas y ninguna acción las cruza.
 | `salidas.obtener` | `fecha`, `cafeteria_id` | El `Cierre`, o **`null`** si esa sede no ha cerrado |
 | `salidas.buscar` | `desde`, `hasta`, `cafeteria_id?` | La FICHA de cada cierre, con sus totales |
 | `salidas.dia` | `fecha` | El día entero: productos y las cinco sedes. Solo sin sede propia |
+| `salidas.periodo` | `desde`, `hasta` | El consolidado del rango, SUMADO por sede y producto. Solo sin sede propia |
 | `salidasProductos.listar` | `solo_activos?` | `ProductoSalida[]` |
 | `salidasProductos.crear` / `.actualizar` | `nombre` (y `id` al corregir) | `ProductoSalida` |
 | `salidasProductos.archivar` / `.reactivar` | `id` | `ProductoSalida` |
 
-Cada línea es `{producto_id, ventas_registradas, salidas}`, las dos cifras
+Cada línea es `{producto_id, ventas_registradas, produccion}`, las dos cifras
 **enteras** y **anulables**. `null` NO es cero: cero dice «se contó y no hubo
 ninguno» y vacío dice «no se contó». Un renglón con las dos vacías se descarta
 —no es un renglón, es una casilla que no se tocó— y uno con un cero SÍ entra.
 
 **No se manda `diferencia`**: es una columna generada, la calcula Postgres como
-`salidas − ventas_registradas`. Positiva significa que salió más de lo que la
-caja registró.
+`producción − ventas_registradas`. Positiva significa que se produjo más de lo
+que la caja registró vendido — es decir, que se perdió producto. Negativa
+significa que se vendió más de lo que esta sede produjo, casi siempre porque
+se trajo de otra.
 
 **No se manda el responsable.** Lo resuelve el servidor desde
 `cafeteria.responsable_usuario_id` y lo copia dentro del cierre. Quien teclea
@@ -356,6 +360,14 @@ juntas— así que no es del mostrador, por lo mismo que `pedidos.analisis`.
 Devuelve TODAS las sedes en servicio, hayan cerrado o no: las que no llevan
 `cerrado: false` y ninguna línea. Omitirlas convertiría un documento de control
 en uno que solo enseña lo que salió bien.
+
+`salidas.periodo` es el hermano de `salidas.dia` por rango: misma forma y
+misma restricción de sede, pero cada línea es la SUMA de ese producto para esa
+sede en TODO el rango, no un día suelto. No lleva `cerrado` —en varios días eso
+no es sí/no— sino `dias_cerrados` por sede y `dias_con_cierre` en la raíz, el
+mismo «de cuántos» que ya usa `salidas.dias`. El `responsable_nombre` se
+resuelve en vivo desde `cafeteria.responsable_usuario_id`, no del nombre
+sellado de un cierre: un rango no tiene un único cierre del que copiarlo.
 
 En `salidas.guardar`, `.obtener` y `.buscar`, **`cafeteria_id` solo lo obedece
 quien no tiene sede propia**: al mostrador se le impone la suya. Es la misma

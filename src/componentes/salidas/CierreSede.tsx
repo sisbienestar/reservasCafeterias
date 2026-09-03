@@ -26,10 +26,10 @@ import type { Cafeteria } from '../../servicios/cafeteriasServicio.js';
 /** Lo tecleado en un renglón. Cadenas, porque es lo que hay en los inputs. */
 interface Casillas {
   ventas: string;
-  salidas: string;
+  produccion: string;
 }
 
-const VACIO: Casillas = { ventas: '', salidas: '' };
+const VACIO: Casillas = { ventas: '', produccion: '' };
 
 /**
  * Una casilla a número, o `null` si está vacía.
@@ -85,7 +85,7 @@ export function CierreSede({ fecha, cafeteria, productos, datos, alGuardar, pleg
       l.productoId,
       {
         ventas: l.ventasRegistradas === null ? '' : String(l.ventasRegistradas),
-        salidas: l.salidas === null ? '' : String(l.salidas),
+        produccion: l.produccion === null ? '' : String(l.produccion),
       },
     ])));
   }, [datos, fecha]);
@@ -102,9 +102,9 @@ export function CierreSede({ fecha, cafeteria, productos, datos, alGuardar, pleg
     const salida: LineaNueva[] = [];
     for (const [id, c] of Object.entries(casillas)) {
       const ventas = aCuenta(c.ventas);
-      const salidas = aCuenta(c.salidas);
-      if (ventas === null && salidas === null) continue;
-      salida.push({ productoId: Number(id), ventasRegistradas: ventas, salidas });
+      const produccion = aCuenta(c.produccion);
+      if (ventas === null && produccion === null) continue;
+      salida.push({ productoId: Number(id), ventasRegistradas: ventas, produccion });
     }
     return salida;
   }, [casillas]);
@@ -112,9 +112,9 @@ export function CierreSede({ fecha, cafeteria, productos, datos, alGuardar, pleg
   /**
    * Los totales de la hoja.
    *
-   * La diferencia NO es «total de salidas menos total de ventas». Ese cálculo
+   * La diferencia NO es «total producido menos total de ventas». Ese cálculo
    * mezcla columnas que cubren renglones distintos: una sede con tres ventas
-   * anotadas y las salidas todavía sin contar salía con un −3 en rojo, un
+   * anotadas y la producción todavía sin contar salía con un −3 en rojo, un
    * descuadre que nadie tuvo. Es exactamente el fallo que
    * `20-diferencia-solo-si-se-conto.sql` corrigió en la base, colado aquí.
    *
@@ -124,19 +124,19 @@ export function CierreSede({ fecha, cafeteria, productos, datos, alGuardar, pleg
    * se dice con un guion, no con un cero: un cero afirmaría que cuadra.
    */
   const totales = useMemo(() => {
-    let ventas = 0; let salidas = 0;
+    let ventas = 0; let produccion = 0;
     let diferencia = 0; let completos = 0;
 
     for (const l of lineas) {
       ventas += l.ventasRegistradas ?? 0;
-      salidas += l.salidas ?? 0;
-      if (l.ventasRegistradas !== null && l.salidas !== null) {
-        diferencia += l.salidas - l.ventasRegistradas;
+      produccion += l.produccion ?? 0;
+      if (l.ventasRegistradas !== null && l.produccion !== null) {
+        diferencia += l.produccion - l.ventasRegistradas;
         completos += 1;
       }
     }
 
-    return { ventas, salidas, diferencia: completos ? diferencia : null };
+    return { ventas, produccion, diferencia: completos ? diferencia : null };
   }, [lineas]);
 
   const guardar = useCallback(async () => {
@@ -267,7 +267,7 @@ export function CierreSede({ fecha, cafeteria, productos, datos, alGuardar, pleg
             <tr>
               <th scope="col">Producto</th>
               <th scope="col">Ventas registradas</th>
-              <th scope="col">Salidas</th>
+              <th scope="col">Producción</th>
               <th scope="col">Diferencia</th>
             </tr>
           </thead>
@@ -276,11 +276,11 @@ export function CierreSede({ fecha, cafeteria, productos, datos, alGuardar, pleg
             {productos.map((producto) => {
               const c = casillas[producto.id] ?? VACIO;
               const ventas = aCuenta(c.ventas);
-              const salidas = aCuenta(c.salidas);
+              const produccion = aCuenta(c.produccion);
               // Solo cuando las DOS están: media resta no dice nada, y un
               // número ahí invitaría a leerlo como si dijera algo. Es la misma
               // regla que impone la columna generada de la base.
-              const dif = ventas !== null && salidas !== null ? salidas - ventas : null;
+              const dif = ventas !== null && produccion !== null ? produccion - ventas : null;
 
               return (
                 <tr key={producto.id}>
@@ -299,10 +299,10 @@ export function CierreSede({ fecha, cafeteria, productos, datos, alGuardar, pleg
                     <input
                       className="campo__control cantidad"
                       type="number" min="0" step="1" inputMode="numeric"
-                      value={c.salidas}
+                      value={c.produccion}
                       disabled={guardando}
-                      aria-label={`Salidas de ${producto.nombre} en ${cafeteria.nombre}`}
-                      onChange={(e) => escribir(producto.id, 'salidas', e.target.value)}
+                      aria-label={`Producción de ${producto.nombre} en ${cafeteria.nombre}`}
+                      onChange={(e) => escribir(producto.id, 'produccion', e.target.value)}
                     />
                   </td>
                   <td className={dif ? 'salidas__descuadre' : undefined}>
@@ -317,7 +317,7 @@ export function CierreSede({ fecha, cafeteria, productos, datos, alGuardar, pleg
             <tr>
               <th scope="row">Total</th>
               <td>{totales.ventas}</td>
-              <td>{totales.salidas}</td>
+              <td>{totales.produccion}</td>
               <td className={totales.diferencia ? 'salidas__descuadre' : undefined}>
                 {totales.diferencia === null ? '—'
                   : totales.diferencia > 0 ? `+${totales.diferencia}` : totales.diferencia}

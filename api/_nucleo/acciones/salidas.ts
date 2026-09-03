@@ -1,9 +1,11 @@
 /**
  * Las acciones del control de salidas.
  *
- * El cierre de caja: por sede y por día, lo que la caja registró frente a lo
- * que de verdad salió. Ver `supabase/19-control-salidas.sql`, que explica por
- * qué «salida» significa aquí algo distinto que en el FBE.04 de pedidos.
+ * El cierre de caja: por sede y por día, lo que la caja registró frente a
+ * cuánto se PRODUJO. Ver `supabase/26-renombrar-salidas-a-produccion.sql`,
+ * que explica el cambio de negocio y por qué el módulo se sigue llamando
+ * «salidas» —lo describe en general— aunque la cifra que mide cada renglón ya
+ * no se llame así.
  *
  * NO cruza con pedidos: ninguna consulta de este archivo toca `pedido`,
  * `producto` ni `proveedor`. Lo único compartido es `cafeteria`.
@@ -21,7 +23,7 @@ import { sedePermitida, exigirSede, type Sesion } from '../sesion.js';
 interface LineaEntrante {
   producto_id: number;
   ventas_registradas: number | null;
-  salidas: number | null;
+  produccion: number | null;
 }
 
 /**
@@ -222,6 +224,30 @@ export async function consolidado(params: Record<string, unknown>) {
 }
 
 /**
+ * El consolidado de un RANGO, sumado por sede y producto — para la pantalla,
+ * no para el impreso.
+ *
+ * Es el hermano por rango de `dia`: misma forma, mismo cruce de sedes, pero
+ * cada línea es la suma de todo el periodo en vez de un día suelto. No
+ * generaliza `dia_salidas` porque esa función alimenta el FORMULARIO de
+ * cierre en `Inicio.tsx`, que depende de que `cerrado` sea un booleano de un
+ * día exacto — ver `supabase/24-periodo-salidas.sql`.
+ */
+export async function periodo(params: Record<string, unknown>) {
+  const desde = fechaDe(params, 'desde');
+  const hasta = fechaDe(params, 'hasta');
+
+  if (desde > hasta) romper('RANGO_INVALIDO', 'La fecha inicial es posterior a la final.');
+  if (diasEntre(desde, hasta) > MAX_DIAS_RANGO) {
+    romper('RANGO_INVALIDO', `El rango no puede pasar de ${MAX_DIAS_RANGO} días.`);
+  }
+
+  return desempaquetar(
+    await servicio().rpc('periodo_salidas', { p_desde: desde, p_hasta: hasta }),
+  );
+}
+
+/**
  * Los DÍAS con cierre de un rango, con los totales consolidados.
  *
  * Es lo que lista el historial: una fila por fecha y no por (fecha, sede).
@@ -279,15 +305,15 @@ function leerLineas(bruto: unknown): LineaEntrante[] {
     }
 
     const ventas = aCuenta(fila.ventas_registradas, 'ventas_registradas');
-    const salidas = aCuenta(fila.salidas, 'salidas');
-    if (ventas === null && salidas === null) continue;
+    const produccion = aCuenta(fila.produccion, 'produccion');
+    if (ventas === null && produccion === null) continue;
 
     if (vistos.has(productoId)) {
       romper('SALIDA_INVALIDA', 'Hay un producto repetido en el cierre.');
     }
     vistos.add(productoId);
 
-    lineas.push({ producto_id: productoId, ventas_registradas: ventas, salidas });
+    lineas.push({ producto_id: productoId, ventas_registradas: ventas, produccion });
   }
 
   return lineas;

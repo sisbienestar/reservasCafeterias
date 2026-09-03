@@ -2,8 +2,9 @@
  * El consolidado de un rango, listo para imprimir o guardar en PDF.
  *
  * Reproduce la plantilla «CONTROL DE PEDIDO Y SALIDAS DE ALMUERZOS, MINI LUNCH
- * Y ENSALADAS»: los productos en filas, y en columnas cada cafetería con sus
- * días dentro. Lo que va en cada casilla son las SALIDAS.
+ * Y ENSALADAS» —el título es el del formulario físico, FBE.XX, y no se toca—:
+ * los productos en filas, y en columnas cada cafetería con sus días dentro.
+ * Lo que va en cada casilla es la PRODUCCIÓN.
  *
  * El PDF lo hace el NAVEGADOR, con `window.print()` y las reglas de
  * `documento.css`, igual que el FBE.04 de pedidos. El membrete es el mismo
@@ -99,7 +100,7 @@ export function Documento() {
      lineales sobre el mismo arreglo. */
   const porClave = new Map<string, number>();
   for (const c of datos?.celdas ?? []) {
-    porClave.set(`${c.fecha}|${c.cafeteriaId}|${c.productoId}`, c.salidas);
+    porClave.set(`${c.fecha}|${c.cafeteriaId}|${c.productoId}`, c.produccion);
   }
 
   return (
@@ -263,8 +264,8 @@ export function Documento() {
             <p className="documento__nota-columnas no-imprimir">
               «Cant. devuelta» y «Cant. adicional» salen en blanco a propósito:
               se escriben a mano al revisar, como en el FBE.04. Cada casilla es
-              lo que SALIÓ; una casilla vacía es un día que no se contó, que no
-              es lo mismo que un cero.
+              lo que se PRODUJO; una casilla vacía es un día que no se contó,
+              que no es lo mismo que un cero.
             </p>
           </article>
         )}

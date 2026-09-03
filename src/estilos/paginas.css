@@ -711,6 +711,13 @@
   font-weight: var(--peso-fuerte);
 }
 
+/*
+ * La otra mitad del mismo criterio: una casilla que SÍ cuadra no compite por
+ * atención. No es gris porque esté deshabilitada —se puede seguir leyendo—,
+ * es gris porque ya se miró y no hubo nada que ver.
+ */
+.tabla__numero--leve { color: var(--c-texto-3); }
+
 /* El aviso ocupa el hueco entre el encabezado y la tabla solo cuando existe;
    `hidden` lo saca del flujo y no deja un salto en blanco. */
 #aviso:not([hidden]) { margin-bottom: var(--e-6); }

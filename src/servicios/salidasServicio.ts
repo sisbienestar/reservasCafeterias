@@ -4,10 +4,12 @@
  * Misma frontera que en los demás: la API habla snake_case y la interfaz
  * camelCase.
  *
- * NO tiene nada que ver con `pedidosServicio`. Aquí «salida» es el producto
- * que sale de la CAFETERÍA hacia quien come; en pedidos, la «Cant. Total
- * Salida de almacén» del FBE.04 es lo que sale del ALMACÉN hacia la cafetería.
- * Son dos cosas distintas y ninguna consulta las cruza.
+ * NO tiene nada que ver con `pedidosServicio`. En pedidos, la «Cant. Total
+ * Salida de almacén» del FBE.04 es lo que sale del ALMACÉN hacia la
+ * cafetería; este módulo sigue llamándose «salidas» en general, pero la
+ * cifra que mide cada renglón es la PRODUCCIÓN de la sede ese día, contra lo
+ * que la caja registró vendido. Son dos cosas distintas y ninguna consulta
+ * las cruza.
  */
 
 import { pedir } from './api.js';
@@ -31,8 +33,8 @@ export interface LineaSalida {
   productoId: number;
   nombre: string;
   ventasRegistradas: number | null;
-  salidas: number | null;
-  /** La calcula la base: salidas − ventas. Positiva = salió de más. */
+  produccion: number | null;
+  /** La calcula la base: producción − ventas. Positiva = se perdió producto. */
   diferencia: number | null;
 }
 
@@ -77,7 +79,7 @@ export interface FichaCierre {
   responsableNombre: string;
   renglones: number;
   totalVentas: number;
-  totalSalidas: number;
+  totalProduccion: number;
   totalDiferencia: number;
 }
 
@@ -93,14 +95,14 @@ export interface DiaCierre {
   sedes: number;
   renglones: number;
   totalVentas: number;
-  totalSalidas: number;
+  totalProduccion: number;
   totalDiferencia: number;
 }
 
 /**
  * El consolidado de un rango: la matriz que se imprime.
  *
- * `celdas` viene PLANA —(día, sede, producto) → salidas— y no anidada en tres
+ * `celdas` viene PLANA —(día, sede, producto) → cifras— y no anidada en tres
  * niveles: la hoja la vuelca en un índice y busca por las tres claves a la vez
  * mientras dibuja. Anidada habría que recorrer dos arreglos por casilla.
  */
@@ -111,21 +113,70 @@ export interface Consolidado {
   cafeterias: { cafeteriaId: string; nombre: string }[];
   /** Solo los días CON cierre: un mes de columnas vacías no dice nada. */
   dias: string[];
-  celdas: { fecha: string; cafeteriaId: string; productoId: number; salidas: number }[];
+  celdas: {
+    fecha: string; cafeteriaId: string; productoId: number;
+    ventasRegistradas: number | null; produccion: number;
+    /** NULL si faltó alguna de las dos cifras ese día — vacío no es cero. */
+    diferencia: number | null;
+  }[];
+}
+
+/**
+ * Una casilla del consolidado por rango: la SUMA de un producto para una
+ * sede en todos los días del periodo, no un día suelto. Por eso no lleva
+ * `nombre` — el catálogo de columnas ya lo trae `PeriodoSalidas.productos`.
+ */
+export interface LineaPeriodo {
+  productoId: number;
+  ventasRegistradas: number | null;
+  produccion: number | null;
+  diferencia: number | null;
+}
+
+/**
+ * Una sede dentro del consolidado por rango.
+ *
+ * No lleva `cerrado`: en un rango de varios días eso no es sí/no, es
+ * `diasCerrados` de `PeriodoSalidas.diasConCierre` — la sede pudo cerrar
+ * unos días del periodo y otros no sin que sea un hueco.
+ */
+export interface SedeDelPeriodo {
+  cafeteriaId: string;
+  cafeteriaNombre: string;
+  responsableNombre: string;
+  diasCerrados: number;
+  lineas: LineaPeriodo[];
+}
+
+/**
+ * El consolidado de un RANGO, sumado por sede y producto.
+ *
+ * Es el hermano por periodo de `DiaSalidas` —mismo cruce de sedes, misma
+ * restricción de acceso— pero sin desglose día a día: cada casilla ya es la
+ * suma del rango entero. NO sustituye a `DiaSalidas`, que sigue siendo el
+ * formulario de cierre de UN día en `Inicio.tsx`.
+ */
+export interface PeriodoSalidas {
+  desde: string;
+  hasta: string;
+  /** Días del rango con cierre en ALGUNA sede — el «de cuántos» de cada fila. */
+  diasConCierre: number;
+  productos: { productoId: number; nombre: string }[];
+  cafeterias: SedeDelPeriodo[];
 }
 
 /** Lo que la pantalla manda por cada producto con algo escrito. */
 export interface LineaNueva {
   productoId: number;
   ventasRegistradas: number | null;
-  salidas: number | null;
+  produccion: number | null;
 }
 
 /* ── Normalización ───────────────────────────────────────────────────── */
 
 interface FilaLinea {
   producto_id: number; nombre: string;
-  ventas_registradas: number | null; salidas: number | null;
+  ventas_registradas: number | null; produccion: number | null;
   diferencia: number | null;
 }
 
@@ -145,7 +196,7 @@ function normalizarLinea(fila: FilaLinea): LineaSalida {
     productoId: fila.producto_id,
     nombre: fila.nombre,
     ventasRegistradas: aCuenta(fila.ventas_registradas),
-    salidas: aCuenta(fila.salidas),
+    produccion: aCuenta(fila.produccion),
     diferencia: aCuenta(fila.diferencia),
   };
 }
@@ -192,7 +243,7 @@ export async function guardarCierre(datos: {
     lineas: datos.lineas.map((l) => ({
       producto_id: l.productoId,
       ventas_registradas: l.ventasRegistradas,
-      salidas: l.salidas,
+      produccion: l.produccion,
     })),
   });
   return normalizar(fila);
@@ -210,7 +261,7 @@ export async function buscarCierres(filtros: {
   const filas = await pedir<{
     id: number; fecha: string; cafeteria_id: string; cafeteria_nombre: string;
     responsable_nombre: string; renglones: number;
-    total_ventas: number; total_salidas: number; total_diferencia: number;
+    total_ventas: number; total_produccion: number; total_diferencia: number;
   }[]>('salidas.buscar', {
     desde: filtros.desde,
     hasta: filtros.hasta,
@@ -225,7 +276,7 @@ export async function buscarCierres(filtros: {
     responsableNombre: f.responsable_nombre ?? '',
     renglones: Number(f.renglones ?? 0),
     totalVentas: Number(f.total_ventas ?? 0),
-    totalSalidas: Number(f.total_salidas ?? 0),
+    totalProduccion: Number(f.total_produccion ?? 0),
     totalDiferencia: Number(f.total_diferencia ?? 0),
   }));
 }
@@ -246,7 +297,7 @@ export async function getDiasCierre(filtros: {
 }): Promise<DiaCierre[]> {
   const filas = await pedir<{
     fecha: string; cerradas: number; sedes: number; renglones: number;
-    total_ventas: number; total_salidas: number; total_diferencia: number;
+    total_ventas: number; total_produccion: number; total_diferencia: number;
   }[]>('salidas.dias', { desde: filtros.desde, hasta: filtros.hasta });
 
   return (filas ?? []).map((f) => ({
@@ -255,7 +306,7 @@ export async function getDiasCierre(filtros: {
     sedes: Number(f.sedes ?? 0),
     renglones: Number(f.renglones ?? 0),
     totalVentas: Number(f.total_ventas ?? 0),
-    totalSalidas: Number(f.total_salidas ?? 0),
+    totalProduccion: Number(f.total_produccion ?? 0),
     totalDiferencia: Number(f.total_diferencia ?? 0),
   }));
 }
@@ -272,7 +323,11 @@ export async function getConsolidado(desde: string, hasta: string): Promise<Cons
     productos: { producto_id: number; nombre: string }[];
     cafeterias: { cafeteria_id: string; nombre: string }[];
     dias: string[];
-    celdas: { fecha: string; cafeteria_id: string; producto_id: number; salidas: number }[];
+    celdas: {
+      fecha: string; cafeteria_id: string; producto_id: number;
+      ventas_registradas: number | null; produccion: number;
+      diferencia: number | null;
+    }[];
   }>('salidas.consolidado', { desde, hasta });
 
   return {
@@ -285,7 +340,9 @@ export async function getConsolidado(desde: string, hasta: string): Promise<Cons
       fecha: x.fecha,
       cafeteriaId: x.cafeteria_id,
       productoId: x.producto_id,
-      salidas: Number(x.salidas),
+      ventasRegistradas: aCuenta(x.ventas_registradas),
+      produccion: Number(x.produccion),
+      diferencia: aCuenta(x.diferencia),
     })),
   };
 }
@@ -315,6 +372,47 @@ export async function getDia(fecha: string): Promise<DiaSalidas> {
       cerrado: Boolean(c.cerrado),
       responsableNombre: c.responsable_nombre ?? '',
       lineas: (c.lineas ?? []).map(normalizarLinea),
+    })),
+  };
+}
+
+/**
+ * El consolidado de un RANGO, sumado por sede y producto. Cruza sedes por
+ * definición —igual que `getDia`— así que el servidor solo se lo sirve a
+ * quien no tiene una asignada.
+ */
+export async function getPeriodoSalidas(desde: string, hasta: string): Promise<PeriodoSalidas> {
+  const fila = await pedir<{
+    desde: string; hasta: string; dias_con_cierre: number;
+    productos: { producto_id: number; nombre: string }[];
+    cafeterias: {
+      cafeteria_id: string; cafeteria_nombre: string; responsable_nombre: string;
+      dias_cerrados: number;
+      lineas: {
+        producto_id: number; ventas_registradas: number | null;
+        produccion: number | null; diferencia: number | null;
+      }[];
+    }[];
+  }>('salidas.periodo', { desde, hasta });
+
+  return {
+    desde: fila.desde,
+    hasta: fila.hasta,
+    diasConCierre: Number(fila.dias_con_cierre ?? 0),
+    productos: (fila.productos ?? []).map((p) => ({
+      productoId: p.producto_id, nombre: p.nombre,
+    })),
+    cafeterias: (fila.cafeterias ?? []).map((c) => ({
+      cafeteriaId: c.cafeteria_id,
+      cafeteriaNombre: c.cafeteria_nombre,
+      responsableNombre: c.responsable_nombre ?? '',
+      diasCerrados: Number(c.dias_cerrados ?? 0),
+      lineas: (c.lineas ?? []).map((l) => ({
+        productoId: l.producto_id,
+        ventasRegistradas: aCuenta(l.ventas_registradas),
+        produccion: aCuenta(l.produccion),
+        diferencia: aCuenta(l.diferencia),
+      })),
     })),
   };
 }

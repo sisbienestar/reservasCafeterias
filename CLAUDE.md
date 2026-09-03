@@ -199,21 +199,34 @@ Tres cosas que conviene no deshacer:
 
 ## El control de salidas
 
-El **cierre de caja**: por sede y por día, lo que registró la caja frente a lo
-que de verdad salió. La diferencia es el hallazgo, y es para lo que existe.
+El **cierre de caja**: por sede y por día, lo que registró la caja frente a
+cuánto se PRODUJO. La diferencia es el hallazgo, y es para lo que existe.
+Positiva significa que se produjo más de lo que se vendió —se perdió
+producto—; negativa, que se vendió más de lo que esta sede produjo, casi
+siempre porque se trajo de otra.
 
-> ### «Salida» significa DOS cosas en esta aplicación
+> ### El módulo se llama «salidas»; la cifra que mide, ya no
 >
-> En pedidos, la columna «Cant. Total Salida de almacén» del FBE.04 es el
-> producto que sale del **almacén hacia la cafetería**. En este módulo, una
-> salida es el producto que sale de la **cafetería hacia quien come**.
+> Hasta el 3 de septiembre de 2026, la segunda cifra de cada renglón se
+> llamaba `salidas` y significaba «lo que salió del mostrador hacia quien
+> come». Cambió: ahora es `producción`, cuánto se hizo en cocina ese día. La
+> fórmula de la diferencia no cambió —sigue siendo la segunda cifra menos la
+> primera—, solo lo que la segunda representa. Ver
+> `supabase/26-renombrar-salidas-a-produccion.sql`.
 >
-> **No se cruzan.** Ni una tabla de `19-control-salidas.sql` apunta a
-> `pedido`, `producto` ni `proveedor`, y el catálogo —`salida_producto`— es
-> propio. Se llama así, y no `producto`, porque ese nombre ya está cogido.
+> El módulo, las tablas (`salida_cierre`, `salida_linea`, `salida_producto`) y
+> las acciones (`salidas.*`) NO se renombraron: «salidas» sigue siendo un
+> nombre válido para el módulo en general —lo que sale de la cocina, dicho con
+> amplitud—, aunque la cifra concreta que mide cada renglón ya no lo sea.
 >
-> Es exactamente el tipo de colisión de vocabulario que costó tres días con
-> `borrador/confirmado/definitivo`. Queda dicha aquí y en la cabecera del SQL.
+> Y sigue habiendo una colisión de vocabulario, distinta de antes: en
+> pedidos, la columna «Cant. Total Salida de almacén» del FBE.04 es el
+> producto que sale del **almacén hacia la cafetería**, un concepto que no
+> tiene nada que ver con la producción de una cocina. **No se cruzan.** Ni una
+> tabla de `19-control-salidas.sql` apunta a `pedido`, `producto` ni
+> `proveedor`, y el catálogo —`salida_producto`— es propio. Es exactamente el
+> tipo de colisión que costó tres días con `borrador/confirmado/definitivo`:
+> queda dicha aquí y en la cabecera del SQL.
 
 **Cada sede guarda lo suyo y el día se arma juntando las cinco.** No hay
 ninguna entidad «día»: el día es la consulta. Así una cafetería cierra a su

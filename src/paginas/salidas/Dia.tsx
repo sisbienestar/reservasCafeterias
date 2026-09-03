@@ -1,53 +1,95 @@
 /**
- * El día completo: todas las cafeterías juntas.
+ * El cierre de un periodo: todas las sedes juntas, un día o un rango, en dos
+ * pestañas.
  *
  * Es el control de verdad — mirar una sede sola no contrasta nada; lo que se
- * revisa al cierre es el día entero. Por eso cruza sedes, y por eso el
- * servidor solo se lo sirve a quien no atiende una en concreto.
+ * revisa es el conjunto. Por eso cruza sedes, y por eso el servidor solo se
+ * lo sirve a quien no atiende una en concreto.
  *
- * ── Las que no cerraron salen igual ───────────────────────────────────────
+ * ── Dos pestañas, dos preguntas, dos peticiones ───────────────────────────
  *
- * Y es la decisión que hace que esto sirva para algo. Omitir una sede que no
- * registró convertiría un documento de control en uno que solo enseña lo que
- * salió bien: el hueco ES el hallazgo, tanto como un descuadre.
+ * «Consolidado» suma cada producto por sede en todo el periodo —la pregunta
+ * es «¿cuadró la sede en general?»—. «Detallado del día» enseña la diferencia
+ * día a día —la pregunta es «¿qué día exacto se descuadró?»—. Son datos
+ * distintos (`VistaConsolidado`/`VistaDetallado`, cada una con su propia
+ * petición) y esta pantalla solo decide CUÁL mostrar: montar la pestaña activa
+ * nada más es lo que hace que abrir «Consolidado» no pague por el detallado
+ * que nadie pidió, ni al revés. Una tercera pestaña, «Análisis», se sumará
+ * el día que exista.
  *
- * ── Todavía no es el impreso institucional ────────────────────────────────
+ * ── Un día es un rango de uno ─────────────────────────────────────────────
  *
- * Esta es la vista en pantalla. El formato imprimible —con su membrete, su
- * código y sus firmas, como el FBE.04 de pedidos— está pendiente de que
- * llegue la plantilla. Cuando llegue, se añade una hoja como `Documento.tsx`
- * y esta pantalla le pone el botón; los datos ya vienen con la forma que hace
- * falta, una matriz de sedes por productos.
+ * La ruta sigue siendo `/salidas/dia/:fecha` —`fecha` es el «desde»— y
+ * `hasta` y `vista` son parámetros de consulta opcionales que por defecto
+ * valen «lo mismo que fecha» y «consolidado»: así todo lo que ya enlaza
+ * aquí —el historial, por ejemplo— sigue abriendo exactamente el mismo día de
+ * siempre, en la misma pestaña de siempre. El desplegable de periodo es el
+ * mismo que el del historial (`utiles/periodos.ts`), y se lee de la URL en
+ * vez de guardar su propio estado — igual que la pestaña activa.
  */
 
-import { useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getDia, type SedeDelDia } from '../../servicios/salidasServicio.js';
-import { usePeticion } from '../../utiles/usePeticion.js';
-import { BloqueEstado } from '../../componentes/BloqueEstado.js';
+import { useMemo } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { BarraVolver } from '../../componentes/BarraVolver.js';
 import { NavSalidas } from '../../componentes/salidas/NavSalidas.js';
+import { VistaConsolidado } from '../../componentes/salidas/VistaConsolidado.js';
+import { VistaDetallado } from '../../componentes/salidas/VistaDetallado.js';
 import { Pie } from '../../componentes/Pie.js';
 import { useHoy } from '../../contexto/Sesion.js';
 import { formatearFechaLarga } from '../../utiles/fechas.js';
+import { PERIODOS, rangoDePeriodo } from '../../utiles/periodos.js';
 
-/** La cifra de una casilla. Vacío se enseña como vacío, no como cero. */
-const cifra = (v: number | null): string => (v === null ? '—' : String(v));
+type Pestana = 'consolidado' | 'detallado';
 
-/** Lo pedido y lo salido de una sede para UN producto, o nada si no lo tiene. */
-function lineaDe(sede: SedeDelDia, productoId: number) {
-  return sede.lineas.find((l) => l.productoId === productoId) ?? null;
-}
+const PESTANAS: { id: Pestana; texto: string }[] = [
+  { id: 'consolidado', texto: 'Consolidado' },
+  { id: 'detallado', texto: 'Detallado del día' },
+];
 
 export function Dia() {
   const hoy = useHoy();
   const { fecha = hoy } = useParams();
+  const [parametros] = useSearchParams();
   const navegar = useNavigate();
 
-  const consultar = useCallback(() => getDia(fecha), [fecha]);
-  const { datos, cargando, error, recargar } = usePeticion(consultar, [fecha]);
+  const desde = fecha;
+  const hasta = parametros.get('hasta') || fecha;
+  const soloUnDia = desde === hasta;
+  const pestana: Pestana = parametros.get('vista') === 'detallado' ? 'detallado' : 'consolidado';
 
-  const sinCerrar = (datos?.cafeterias ?? []).filter((c) => !c.cerrado);
+  /* El desplegable no guarda su propio estado: se lee de `desde`/`hasta`, que
+     ya viven en la URL. Así un enlace compartido —o el botón «atrás»— siempre
+     enseña el periodo que de verdad corresponde a esas fechas. */
+  const periodoActual = useMemo(() => {
+    const coincide = PERIODOS.find((p) => {
+      const r = rangoDePeriodo(p.id, hoy);
+      return r !== null && r[0] === desde && r[1] === hasta;
+    });
+    return coincide?.id ?? 'personalizado';
+  }, [desde, hasta, hoy]);
+
+  function irA(nuevoDesde: string, nuevoHasta: string, nuevaPestana: Pestana) {
+    const destino = new URLSearchParams();
+    if (nuevoDesde !== nuevoHasta) destino.set('hasta', nuevoHasta);
+    if (nuevaPestana !== 'consolidado') destino.set('vista', nuevaPestana);
+    const cadena = destino.toString();
+    /* `replace` para no llenar el historial del navegador de fechas al mover
+       el desplegable, el calendario o la pestaña. */
+    navegar(`/salidas/dia/${nuevoDesde}${cadena ? `?${cadena}` : ''}`, { replace: true });
+  }
+
+  function cambiarPeriodo(nuevo: string) {
+    const calculado = rangoDePeriodo(nuevo, hoy);
+    if (calculado) irA(calculado[0], calculado[1], pestana);
+  }
+
+  function cambiarFecha(cual: 0 | 1, valor: string) {
+    irA(cual === 0 ? valor : desde, cual === 1 ? valor : hasta, pestana);
+  }
+
+  function cambiarPestana(nueva: Pestana) {
+    irA(desde, hasta, nueva);
+  }
 
   return (
     <>
@@ -57,124 +99,91 @@ export function Dia() {
         <section className="encabezado-reserva">
           <div className="encabezado-reserva__texto">
             <div className="encabezado-reserva__linea">
-              <h1 className="encabezado-reserva__titulo">Cierre del día</h1>
-              <p className="encabezado-reserva__meta">{formatearFechaLarga(fecha)}</p>
+              <h1 className="encabezado-reserva__titulo">
+                {soloUnDia ? 'Cierre del día' : 'Consolidado de cierres'}
+              </h1>
+              <p className="encabezado-reserva__meta">
+                {soloUnDia
+                  ? formatearFechaLarga(desde)
+                  : `Del ${formatearFechaLarga(desde)} al ${formatearFechaLarga(hasta)}`}
+              </p>
             </div>
           </div>
 
           <div className="filtros__acciones">
-          <div className="campo campo--dia">
-            <label className="campo__etiqueta" htmlFor="fecha-dia">Día</label>
-            <input
-              id="fecha-dia"
-              className="campo__control"
-              type="date"
-              value={fecha}
-              /* La fecha SÍ va en la dirección aquí, al revés que en el
-                 formulario de una sede: este día concreto es lo que se
-                 comparte y lo que se imprime, así que tiene que poder
-                 enlazarse. `replace` para no llenar el historial del navegador
-                 de días al mover el calendario. */
-              onChange={(e) => navegar(`/salidas/dia/${e.target.value}`, { replace: true })}
-            />
-          </div>
             <NavSalidas />
           </div>
         </section>
 
-        {cargando && <BloqueEstado tipo="cargando" titulo="Cargando el día…" />}
-
-        {error && (
-          <BloqueEstado
-            tipo="error"
-            titulo="No se pudo cargar el día"
-            detalle={error}
-            accion={{ texto: 'Reintentar', alPulsar: recargar }}
-          />
-        )}
-
-        {/*
-          El aviso de lo que FALTA va arriba y es una caja, no una fila más de
-          la tabla: es lo que interrumpe. Un día con una sede sin cerrar no se
-          puede dar por revisado, y eso hay que leerlo antes de mirar cifras.
-        */}
-        {datos && sinCerrar.length > 0 && (
-          <p className="aviso aviso--aviso" role="status">
-            {sinCerrar.length === 1
-              ? `${sinCerrar[0]!.cafeteriaNombre} todavía no ha cerrado caja este día.`
-              : `${sinCerrar.length} cafeterías todavía no han cerrado caja: `
-                + `${sinCerrar.map((c) => c.cafeteriaNombre).join(', ')}.`}
-          </p>
-        )}
-
-        {datos && datos.productos.length === 0 && (
-          <BloqueEstado
-            tipo="vacio"
-            titulo="No hay productos que controlar"
-            detalle="Administración los da de alta en «Productos»."
-          />
-        )}
-
-        {datos && datos.productos.length > 0 && (
-          <div className="tabla-envoltorio bloque-tabla">
-            <table className="tabla">
-              <caption className="tabla__caption">
-                Por cada producto, las ventas que registró la caja y lo que
-                salió. «—» es una casilla que no se contó, que no es lo mismo
-                que un cero.
-              </caption>
-
-              <thead>
-                <tr>
-                  <th scope="col">Cafetería</th>
-                  <th scope="col">Responsable</th>
-                  {datos.productos.map((p) => (
-                    <th key={p.productoId} scope="col">{p.nombre}</th>
-                  ))}
-                </tr>
-              </thead>
-
-              <tbody>
-                {datos.cafeterias.map((sede) => (
-                  <tr key={sede.cafeteriaId}
-                      className={sede.cerrado ? undefined : 'tabla__fila--apagada'}>
-                    <td className="tabla__nombre">{sede.cafeteriaNombre}</td>
-                    <td className="tabla__menu">
-                      {sede.cerrado
-                        ? (sede.responsableNombre
-                          || <span className="tabla__detalle">sin asignar</span>)
-                        : <span className="tabla__detalle">sin cerrar</span>}
-                    </td>
-
-                    {datos.productos.map((p) => {
-                      const l = sede.cerrado ? lineaDe(sede, p.productoId) : null;
-                      if (!l) return <td key={p.productoId} className="tabla__numero">—</td>;
-                      return (
-                        <td key={p.productoId} className="tabla__numero">
-                          {cifra(l.ventasRegistradas)} / {cifra(l.salidas)}
-                          {/* La diferencia solo se dice cuando la hay: un cero
-                              repetido treinta veces esconde el que no lo es.
-                              Cae a su propio renglón, porque `.tabla__detalle`
-                              es de bloque y esta tabla es de las normales. */}
-                          {l.diferencia !== null && l.diferencia !== 0 && (
-                            <span className="tabla__detalle salidas__descuadre">
-                              {l.diferencia > 0 ? `+${l.diferencia}` : l.diferencia}
-                            </span>
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {/* El mismo filtro que en el historial: el periodo manda y las dos
+            fechas se rellenan solas, salvo que se toquen. Manda sobre las dos
+            pestañas por igual. */}
+        <form className="filtros" onSubmit={(e) => e.preventDefault()}>
+          <div className="filtros__campo filtros__campo--ancho">
+            <label className="campo__etiqueta" htmlFor="periodo-dia">Periodo</label>
+            <select className="campo__control" id="periodo-dia" value={periodoActual}
+                    onChange={(e) => cambiarPeriodo(e.target.value)}>
+              {PERIODOS.map((p) => (
+                <option key={p.id} value={p.id}>{p.texto}</option>
+              ))}
+            </select>
           </div>
+
+          <div className="filtros__campo">
+            <label className="campo__etiqueta" htmlFor="desde-dia">Desde</label>
+            <input className="campo__control" id="desde-dia" type="date" value={desde}
+                   onChange={(e) => cambiarFecha(0, e.target.value)} />
+          </div>
+
+          <div className="filtros__campo">
+            <label className="campo__etiqueta" htmlFor="hasta-dia">Hasta</label>
+            <input className="campo__control" id="hasta-dia" type="date" value={hasta}
+                   onChange={(e) => cambiarFecha(1, e.target.value)} />
+          </div>
+        </form>
+
+        {/* El mismo patrón ARIA que ya usa `paginas/reservas/Admin.tsx`:
+            <nav> por fuera, role="tablist" en la lista de dentro. */}
+        <nav className="pestanas" aria-label="Vistas del cierre">
+          <div className="pestanas__lista" role="tablist">
+            {PESTANAS.map((p) => (
+              <button
+                key={p.id}
+                role="tab"
+                type="button"
+                id={`pestana-${p.id}`}
+                aria-selected={pestana === p.id}
+                aria-controls={`vista-${p.id}`}
+                className={pestana === p.id ? 'pestana pestana--activa' : 'pestana'}
+                onClick={() => cambiarPestana(p.id)}
+                onKeyDown={(e) => {
+                  const i = PESTANAS.findIndex((x) => x.id === pestana);
+                  if (e.key === 'ArrowRight') {
+                    cambiarPestana(PESTANAS[(i + 1) % PESTANAS.length]!.id);
+                  } else if (e.key === 'ArrowLeft') {
+                    cambiarPestana(PESTANAS[(i - 1 + PESTANAS.length) % PESTANAS.length]!.id);
+                  }
+                }}
+              >
+                {p.texto}
+              </button>
+            ))}
+          </div>
+        </nav>
+
+        {/* Montaje condicional a propósito: es lo que hace que cambiar de
+            pestaña dispare la petición de la otra vista, y no antes. */}
+        {pestana === 'consolidado' && (
+          <section id="vista-consolidado" role="tabpanel" aria-labelledby="pestana-consolidado">
+            <VistaConsolidado desde={desde} hasta={hasta} />
+          </section>
         )}
 
-        <p className="campo__ayuda">
-          Cada casilla dice «ventas registradas / salidas». El formato
-          imprimible llegará cuando esté decidida la plantilla.
-        </p>
+        {pestana === 'detallado' && (
+          <section id="vista-detallado" role="tabpanel" aria-labelledby="pestana-detallado">
+            <VistaDetallado desde={desde} hasta={hasta} />
+          </section>
+        )}
       </main>
 
       <Pie />

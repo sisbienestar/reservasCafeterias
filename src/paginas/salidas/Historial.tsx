@@ -75,9 +75,9 @@ export function Historial() {
      viaje al servidor. */
   const total = useMemo(() => dias.reduce((t, d) => ({
     ventas: t.ventas + d.totalVentas,
-    salidas: t.salidas + d.totalSalidas,
+    produccion: t.produccion + d.totalProduccion,
     diferencia: t.diferencia + d.totalDiferencia,
-  }), { ventas: 0, salidas: 0, diferencia: 0 }), [dias]);
+  }), { ventas: 0, produccion: 0, diferencia: 0 }), [dias]);
 
   return (
     <>
@@ -171,7 +171,7 @@ export function Historial() {
                       sería siempre «1 de 1». */}
                   {!suSede && <th scope="col">Cerradas</th>}
                   <th scope="col">Ventas</th>
-                  <th scope="col">Salidas</th>
+                  <th scope="col">Producción</th>
                   <th scope="col">Diferencia</th>
                   <th scope="col"><span className="visualmente-oculto">Acciones</span></th>
                 </tr>
@@ -205,7 +205,7 @@ export function Historial() {
                       )}
 
                       <td className="tabla__numero">{d.totalVentas}</td>
-                      <td className="tabla__numero">{d.totalSalidas}</td>
+                      <td className="tabla__numero">{d.totalProduccion}</td>
                       <td className={`tabla__numero${d.totalDiferencia ? ' salidas__descuadre' : ''}`}>
                         {d.totalDiferencia > 0 ? `+${d.totalDiferencia}` : d.totalDiferencia}
                       </td>
@@ -231,7 +231,7 @@ export function Historial() {
                   <th scope="row">Total del periodo</th>
                   {!suSede && <td />}
                   <td className="tabla__numero">{total.ventas}</td>
-                  <td className="tabla__numero">{total.salidas}</td>
+                  <td className="tabla__numero">{total.produccion}</td>
                   <td className={`tabla__numero${total.diferencia ? ' salidas__descuadre' : ''}`}>
                     {total.diferencia > 0 ? `+${total.diferencia}` : total.diferencia}
                   </td>

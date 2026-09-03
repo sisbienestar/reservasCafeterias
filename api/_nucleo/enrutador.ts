@@ -200,6 +200,10 @@ const ACCIONES: Record<string, Manejador> = {
   // La matriz de un rango: el documento imprimible. Cruza sedes igual que
   // `salidas.dia`, así que tampoco es del mostrador.
   'salidas.consolidado': conSesion((p) => salidas.consolidado(p)),
+  // El consolidado de un rango para la PANTALLA, no el impreso: sumado por
+  // sede y producto, con las tres cifras. Mismo cruce de sedes que
+  // `salidas.dia`, del que es hermano — ver 24-periodo-salidas.sql.
+  'salidas.periodo': conSesion((p) => salidas.periodo(p)),
   'salidasProductos.listar': conSesion((p) => salidas.listarProductos(p)),
   'salidasProductos.crear': conSesion((p) => salidas.crearProducto(p)),
   'salidasProductos.actualizar': conSesion((p) => salidas.actualizarProducto(p)),

@@ -129,6 +129,7 @@ const PERMISOS: Record<Rol, readonly string[]> = {
     'salidas.dias',
     'salidas.dia',
     'salidas.consolidado',
+    'salidas.periodo',
     'salidasProductos.listar',
   ],
   admin: [
@@ -186,6 +187,7 @@ const PERMISOS: Record<Rol, readonly string[]> = {
     'salidas.dias',
     'salidas.dia',
     'salidas.consolidado',
+    'salidas.periodo',
     'salidasProductos.listar',
     'salidasProductos.crear',
     'salidasProductos.actualizar',
